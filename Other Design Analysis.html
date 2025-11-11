@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Scrollable Morphological Gallery</title>
+
+<style>
+body {
+  font-family: system-ui, Arial, sans-serif;
+  background: #f3f5f8;
+  margin: 0;
+  padding: 40px;
+  color: #222;
+  display: flex;
+  justify-content: center;
+}
+
+.container {
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+  max-width: 1300px;
+  width: 100%;
+  padding: 20px;
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+p.sub {
+  text-align: center;
+  margin-bottom: 16px;
+  color: #555;
+}
+
+/* LEFT–RIGHT LAYOUT */
+.layout {
+  display: flex;
+  gap: 18px;
+}
+
+/* LEFT: scrollable gallery window */
+.gallery-window {
+  height: 950px;
+  overflow-y: scroll;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  padding: 10px;
+  background: linear-gradient(180deg, #f9fafc 0%, #f2f3f7 100%);
+  flex: 2;
+}
+
+/* Scrollbar style */
+.gallery-window::-webkit-scrollbar {
+  width: 10px;
+}
+.gallery-window::-webkit-scrollbar-thumb {
+  background: #bbb;
+  border-radius: 10px;
+}
+.gallery-window::-webkit-scrollbar-thumb:hover {
+  background: #888;
+}
+
+/* Grid layout inside scrollable area */
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr); /* 5 per row */
+  gap: 6px;
+}
+
+.card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  aspect-ratio: 1/1;
+  cursor: pointer;
+}
+
+.card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.card:hover img {
+  transform: scale(1.07);
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.8), rgba(0,0,0,0.1));
+  color: #fff;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 8px;
+  font-size: 0.75rem;
+}
+
+.card:hover .overlay {
+  opacity: 1;
+}
+
+.overlay strong {
+  display: block;
+  font-size: 0.8rem;
+  margin-bottom: 2px;
+}
+
+/* RIGHT: preview panel – can grow as tall as needed */
+.preview-panel {
+  flex: 1.2;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  background: #f9fafc;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.preview-image-wrapper {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  border-radius: 8px;
+  background: #e2e6f0;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.preview-image-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.preview-title {
+  font-weight: 600;
+  font-size: 1rem;
+  margin: 0;
+}
+
+.preview-text {
+  font-size: 0.9rem;
+  color: #444;
+  margin: 0;
+}
+
+.preview-meta {
+  font-size: 0.85rem;
+  color: #666;
+  margin: 0 0 4px 0;
+}
+
+/* Parameter grading block */
+.params {
+  margin-top: 6px;
+  border-radius: 8px;
+  background: #eef1f8;
+  padding: 8px 10px;
+  font-size: 0.82rem;
+}
+
+.params-title {
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.param-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 2px 0;
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+
+.param-row:last-child {
+  border-bottom: none;
+}
+
+.param-label {
+  flex: 1;
+  margin-right: 8px;
+  color: #444;
+}
+
+.param-value {
+  font-weight: 600;
+  min-width: 24px;
+  text-align: center;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: #d3defc;
+}
+
+/* Total score styling */
+.param-row.total-row .param-label {
+  font-weight: 700;
+}
+.param-row.total-row .param-value {
+  font-size: 0.9rem;
+  padding: 3px 10px;
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+  <h1>Scrollable Morphological Design Gallery</h1>
+  <p class="sub">
+    Hover over each image to view its morphological category and main climbing mechanism.
+    The larger preview, description, and parameter grading will appear on the right.
+  </p>
+
+  <div class="layout">
+    <!-- LEFT: GALLERY -->
+    <div class="gallery-window">
+      <div class="gallery">
+
+        <!-- Card 1 – Excel Design No.5 -->
+        <div class="card"
+             data-title="Bipedal Leg Robot (RM Example)"
+             data-desc="Bipedal leg design with high agility and good open-source references. It offers fast ground movement and quick directional changes while still providing step-climbing capability."
+             data-meta="Non-holonomic · 1 leg has two DOF · Fast reaction for direction change"
+             data-flat="5"
+             data-step="4"
+             data-stability="3"
+             data-maneuver="5"
+             data-gimbal="5"
+             data-spin="5"
+             data-terrain="3"
+             data-reliability="4"
+             data-power="5"
+             data-structure="3"
+             data-maintain="4"
+             data-weight="4"
+             data-mechcomplex="3"
+             data-controldiff="2"
+             data-designdiff="2"
+             data-total="154">
+          <img src="images/RM 3.png" alt="Design 1" />
+          <div class="overlay">
+            <strong>Bipedal Leg</strong>
+            Fast reaction · Good open source
+          </div>
+        </div>
+
+        <!-- Card 2 – Excel Design No.10 -->
+        <div class="card"
+             data-title="Ascento V2 Wheel-Leg Robot"
+             data-desc="Ascento V2 is a wheel-leg hybrid robot capable of both high-speed rolling and active jumping. It illustrates how dynamic leg actuation can overcome steps and gaps."
+             data-meta="Locomotion: Wheel-Leg · Strategy: Jump / Lift"
+             data-flat="5"
+             data-step="4"
+             data-stability="3"
+             data-maneuver="2"
+             data-gimbal="4"
+             data-spin="4"
+             data-terrain="4"
+             data-reliability="4"
+             data-power="4"
+             data-structure="4"
+             data-maintain="4"
+             data-weight="3"
+             data-mechcomplex="3"
+             data-controldiff="2"
+             data-designdiff="2"
+             data-total="140">
+          <img src="images/Ascento V2.jpg" alt="Design 2" />
+          <div class="overlay">
+            <strong>Wheel-Leg</strong>
+            Locomotion: Wheel-Leg<br>Strategy: Lift
+          </div>
+        </div>
+
+        <!-- Card 3 – Excel Design No.1 -->
+        <div class="card"
+             data-title="RM Linkage Climber"
+             data-desc="RoboMaster-inspired linkage design where the front module lifts and pushes the chassis upward to climb discrete steps close to 200 mm."
+             data-meta="Locomotion: Wheel + Linkage · Step: ~200mm · Mechanism: Push-up motion"
+             data-flat="5"
+             data-step="5"
+             data-stability="4"
+             data-maneuver="4"
+             data-gimbal="2"
+             data-spin="4"
+             data-terrain="5"
+             data-reliability="3"
+             data-power="5"
+             data-structure="4"
+             data-maintain="3"
+             data-weight="3"
+             data-mechcomplex="2"
+             data-controldiff="4"
+             data-designdiff="4"
+             data-total="142">
+          <img src="images/RM 2.png" alt="Design 3" />
+          <div class="overlay">
+            <strong>Linkage Climber</strong>
+            Push-up motion<br>Step: 200mm
+          </div>
+        </div>
+
+        <!-- Card 4 – Excel Design No.2 -->
+        <div class="card"
+             data-title="Track Design 1"
+             data-desc="Continuous track design with an elevated front profile to improve step approach and reduce impact at the track leading edge."
+             data-meta="Locomotion: Track · Geometry: Raised front"
+             data-flat="4"
+             data-step="1"
+             data-stability="3"
+             data-maneuver="4"
+             data-gimbal="4"
+             data-spin="4"
+             data-terrain="2"
+             data-reliability="4"
+             data-power="3"
+             data-structure="4"
+             data-maintain="4"
+             data-weight="2"
+             data-mechcomplex="4"
+             data-controldiff="3"
+             data-designdiff="3"
+             data-total="134">
+          <img src="images/Track Design 1.png" alt="Design 4" />
+          <div class="overlay">
+            <strong>Track Concept</strong>
+            Raised nose<br>Improved step entry
+          </div>
+        </div>
+
+        <!-- Card 5 – Excel Design No.3 -->
+        <div class="card"
+             data-title="Track Design 2"
+             data-desc="Variation of a tracked chassis focusing on a longer contact patch for improved grip and stability during climbing."
+             data-meta="Locomotion: Track · Long footprint · High stability"
+             data-flat="4"
+             data-step="1"
+             data-stability="3"
+             data-maneuver="4"
+             data-gimbal="4"
+             data-spin="4"
+             data-terrain="2"
+             data-reliability="4"
+             data-power="3"
+             data-structure="4"
+             data-maintain="4"
+             data-weight="2"
+             data-mechcomplex="4"
+             data-controldiff="3"
+             data-designdiff="3"
+             data-total="134">
+          <img src="images/Track Design 2.png" alt="Design 5" />
+          <div class="overlay">
+            <strong>Track Concept</strong>
+            Long footprint<br>High stability
+          </div>
+        </div>
+
+        <!-- Card 6 – Excel Design No.4 -->
+        <div class="card"
+             data-title="Track Design 4"
+             data-desc="More aggressive track design with an angled front and segmented support, suited for repeated step engagement."
+             data-meta="Locomotion: Track · Angled front · Segmented support"
+             data-flat="2"
+             data-step="1"
+             data-stability="4"
+             data-maneuver="2"
+             data-gimbal="2"
+             data-spin="2"
+             data-terrain="4"
+             data-reliability="4"
+             data-power="1"
+             data-structure="4"
+             data-maintain="3"
+             data-weight="2"
+             data-mechcomplex="2"
+             data-controldiff="4"
+             data-designdiff="3"
+             data-total="108">
+          <img src="images/Track Design 4.png" alt="Design 6" />
+          <div class="overlay">
+            <strong>Track Concept</strong>
+            Angled front<br>Segmented support
+          </div>
+        </div>
+
+        <!-- Card 7 – Excel Design No.7 -->
+        <div class="card"
+             data-title="Planetary Wheel Variant 4"
+             data-desc="Planetary wheel mechanism where multiple wheels are arranged around a central hub, allowing step-by-step rotation over obstacles."
+             data-meta="Locomotion: Planetary wheel · High clearance"
+             data-flat="4"
+             data-step="3"
+             data-stability="4"
+             data-maneuver="2"
+             data-gimbal="4"
+             data-spin="2"
+             data-terrain="4"
+             data-reliability="4"
+             data-power="3"
+             data-structure="4"
+             data-maintain="4"
+             data-weight="2"
+             data-mechcomplex="4"
+             data-controldiff="4"
+             data-designdiff="4"
+             data-total="144">
+          <img src="images/plantary wheel 4.png" alt="Design 7" />
+          <div class="overlay">
+            <strong>Planetary Wheel</strong>
+            Rotating lobes<br>High clearance
+          </div>
+        </div>
+
+        <!-- Card 8 – Excel Design No.8 -->
+        <div class="card"
+             data-title="Wheel Design 1"
+             data-desc="Large-diameter wheel design for simple step climbing using radius and torque, without additional linkages."
+             data-meta="Locomotion: Wheel · Large radius · Low complexity"
+             data-flat="4"
+             data-step="2"
+             data-stability="4"
+             data-maneuver="2"
+             data-gimbal="4"
+             data-spin="1"
+             data-terrain="1"
+             data-reliability="4"
+             data-power="2"
+             data-structure="4"
+             data-maintain="4"
+             data-weight="2"
+             data-mechcomplex="4"
+             data-controldiff="4"
+             data-designdiff="4"
+             data-total="130">
+          <img src="images/plantary wheel 3.png" alt="Design 8" />
+          <div class="overlay">
+            <strong>Wheel Design</strong>
+            Large radius<br>Simple concept
+          </div>
+        </div>
+
+        <!-- Card 9 – Excel Design No.9 -->
+        <div class="card"
+             data-title="Planetary Wheel Variant 3"
+             data-desc="Planetary wheel configuration illustrating different lobe shapes and clearances for negotiating vertical edges."
+             data-meta="Locomotion: Planetary wheel · Custom lobes"
+             data-flat="4"
+             data-step="3"
+             data-stability="3"
+             data-maneuver="5"
+             data-gimbal="4"
+             data-spin="4"
+             data-terrain="2"
+             data-reliability="2"
+             data-power="4"
+             data-structure="2"
+             data-maintain="3"
+             data-weight="4"
+             data-mechcomplex="3"
+             data-controldiff="4"
+             data-designdiff="3"
+             data-total="137">
+          <img src="images/Sepcial 2.png" alt="Design 9" />
+          <div class="overlay">
+            <strong>Planetary Wheel</strong>
+            Custom lobes<br>Edge climbing
+          </div>
+        </div>
+
+        <!-- Card 10 – Excel Design No.11 -->
+        <div class="card"
+             data-title="Special Concept 2"
+             data-desc="Special concept chassis using unconventional geometry to approach steps at controlled angles, likely combining wheel support and auxiliary arms."
+             data-meta="Locomotion: Hybrid · Multi-link step approach"
+             data-flat="4"
+             data-step="2"
+             data-stability="2"
+             data-maneuver="5"
+             data-gimbal="5"
+             data-spin="5"
+             data-terrain="1"
+             data-reliability="4"
+             data-power="4"
+             data-structure="4"
+             data-maintain="2"
+             data-weight="2"
+             data-mechcomplex="3"
+             data-controldiff="5"
+             data-designdiff="4"
+             data-total="144">
+          <img src="images/Special 10.png" alt="Design 10" />
+          <div class="overlay">
+            <strong>Special Concept</strong>
+            Hybrid geometry<br>Step approach
+          </div>
+        </div>
+
+        <!-- Card 11 – Excel Design No.12 -->
+        <div class="card"
+             data-title="Special Concept 10"
+             data-desc="Compact special mechanism exploring alternative ways of lifting the front body to negotiate vertical obstacles."
+             data-meta="Locomotion: Wheel · Front lift assist"
+             data-flat="2"
+             data-step="1"
+             data-stability="3"
+             data-maneuver="3"
+             data-gimbal="4"
+             data-spin="3"
+             data-terrain="2"
+             data-reliability="1"
+             data-power="2"
+             data-structure="1"
+             data-maintain="1"
+             data-weight="2"
+             data-mechcomplex="1"
+             data-controldiff="4"
+             data-designdiff="3"
+             data-total="92">
+          <img src="images/Special 8.png" alt="Design 11" />
+          <div class="overlay">
+            <strong>Special 10</strong>
+            Front lift<br>Compact layout
+          </div>
+        </div>
+
+        <!-- Card 12 – Excel Design No.13 -->
+        <div class="card"
+             data-title="Special Concept 8"
+             data-desc="Dual-joint mechanism capable of changing the effective wheelbase and centre-of-mass position during step negotiation."
+             data-meta="Locomotion: Wheel + linkage · Dual joint"
+             data-flat="5"
+             data-step="3"
+             data-stability="4"
+             data-maneuver="3"
+             data-gimbal="4"
+             data-spin="2"
+             data-terrain="4"
+             data-reliability="4"
+             data-power="2"
+             data-structure="4"
+             data-maintain="4"
+             data-weight="2"
+             data-mechcomplex="4"
+             data-controldiff="4"
+             data-designdiff="4"
+             data-total="147">
+          <img src="images/Special 3.png" alt="Design 12" />
+          <div class="overlay">
+            <strong>Special 8</strong>
+            Dual joints<br>COM adjustment
+          </div>
+        </div>
+
+        <!-- Card 13 – Excel Design No.14 -->
+        <div class="card"
+             data-title="Special Concept 3"
+             data-desc="Compact hybrid concept combining wheels and lifting elements, intended to minimise footprint while maintaining climbing capability."
+             data-meta="Locomotion: Hybrid · Compact · Confined spaces"
+             data-flat="5"
+             data-step="4"
+             data-stability="3"
+             data-maneuver="5"
+             data-gimbal="5"
+             data-spin="5"
+             data-terrain="3"
+             data-reliability="4"
+             data-power="3"
+             data-structure="3"
+             data-maintain="4"
+             data-weight="3"
+             data-mechcomplex="3"
+             data-controldiff="1"
+             data-designdiff="2"
+             data-total="144">
+          <img src="" alt="Design 13" />
+          <div class="overlay">
+            <strong>Special 3</strong>
+            Compact hybrid<br>Confined spaces
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- RIGHT: PREVIEW PANEL -->
+    <div class="preview-panel">
+      <div class="preview-image-wrapper">
+        <img id="previewImg" src="" alt="Preview">
+      </div>
+      <h2 id="previewTitle" class="preview-title">Hover over a design to preview</h2>
+      <p id="previewText" class="preview-text">
+        Move your cursor over any image in the gallery to view a larger version
+        of the design here, along with a short description and its key morphological
+        attributes.
+      </p>
+      <p id="previewMeta" class="preview-meta">
+        Locomotion type, step capability and mechanism details will be shown here.
+      </p>
+
+      <div id="previewParams" class="params">
+        <div class="params-title">Parameter Grading</div>
+        <!-- parameter rows injected via JS -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const previewImg = document.getElementById("previewImg");
+const previewTitle = document.getElementById("previewTitle");
+const previewText = document.getElementById("previewText");
+const previewMeta = document.getElementById("previewMeta");
+const previewParams = document.getElementById("previewParams");
+const cards = document.querySelectorAll(".card");
+
+// mapping dataset keys -> labels
+const paramLabels = {
+  flat: "Flat ground speed",
+  step: "Step climbing speed",
+  stability: "Stability when climbing",
+  maneuver: "Maneuverability (holonomic constraint)",
+  gimbal: "Gimbal stability",
+  spin: "Spin mode efficiency",
+  terrain: "All terrain capability",
+  reliability: "Overall reliability",
+  power: "Power consumption (lower score = more consumption)",
+  structure: "Structure robustness",
+  maintain: "Maintainability",
+  weight: "Weight",
+  mechcomplex: "Mechanism complexity (lower = more complex)",
+  controldiff: "Control difficulty (lower = harder)",
+  designdiff: "Design difficulty",
+  total: "Total score"
+};
+
+// map 1–5 to colours (red→green)
+function getScoreColor(value) {
+  const n = parseInt(value, 10);
+  if (isNaN(n) || n < 1 || n > 5) {
+    return { bg: "#d3defc", fg: "#111" }; // default for totals etc.
+  }
+  switch (n) {
+    case 1: return { bg: "#f97373", fg: "#fff" };  // red
+    case 2: return { bg: "#fb923c", fg: "#fff" };  // orange
+    case 3: return { bg: "#facc15", fg: "#111" };  // yellow
+    case 4: return { bg: "#4ade80", fg: "#111" };  // light green
+    case 5: return { bg: "#22c55e", fg: "#fff" };  // green
+    default: return { bg: "#d3defc", fg: "#111" };
+  }
+}
+
+function updatePreview(card) {
+  const img = card.querySelector("img");
+  const title = card.dataset.title || "Design Preview";
+  const desc = card.dataset.desc || "No description available.";
+  const meta = card.dataset.meta || "";
+
+  previewImg.src = img.src;
+  previewTitle.textContent = title;
+  previewText.textContent = desc;
+  previewMeta.textContent = meta;
+
+  // reset params
+  previewParams.innerHTML = '<div class="params-title">Parameter Grading</div>';
+
+  let hasAnyParam = false;
+
+  // build parameter rows (keep 'total' as last)
+  const keysOrder = Object.keys(paramLabels);
+
+  keysOrder.forEach(key => {
+    const value = card.dataset[key];
+    if (value !== undefined) {
+      hasAnyParam = true;
+
+      const row = document.createElement("div");
+      row.className = "param-row";
+      if (key === "total") row.classList.add("total-row");
+
+      const labelSpan = document.createElement("span");
+      labelSpan.className = "param-label";
+      labelSpan.textContent = paramLabels[key];
+
+      const valueSpan = document.createElement("span");
+      valueSpan.className = "param-value";
+      valueSpan.textContent = value;
+
+      // colour code 1–5 scores (total will stay neutral)
+      const colors = getScoreColor(value);
+      valueSpan.style.backgroundColor = colors.bg;
+      valueSpan.style.color = colors.fg;
+
+      row.appendChild(labelSpan);
+      row.appendChild(valueSpan);
+      previewParams.appendChild(row);
+    }
+  });
+
+  if (!hasAnyParam) {
+    const row = document.createElement("div");
+    row.className = "param-row";
+    const labelSpan = document.createElement("span");
+    labelSpan.className = "param-label";
+    labelSpan.textContent = "No parameter grading recorded for this design yet.";
+    row.appendChild(labelSpan);
+    previewParams.appendChild(row);
+  }
+}
+
+// default preview = first card
+if (cards.length > 0) {
+  updatePreview(cards[0]);
+}
+
+// update preview when hovering any card
+cards.forEach(card => {
+  card.addEventListener("mouseenter", () => updatePreview(card));
+});
+</script>
+</body>
+</html>
