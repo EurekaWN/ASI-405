@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Concept Comparison – Design Analysis</title>
+  <style>
+    body {
+      font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: #f7f8fa;
+      margin: 0;
+      color: #111827;
+    }
+    header {
+      background: #0f172a;
+      color: white;
+      padding: 1.2rem 2rem;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    }
+    header h1 {
+      margin: 0;
+      font-size: 1.6rem;
+      letter-spacing: 0.5px;
+    }
+
+    /* Section layout */
+    section.concepts {
+      max-width: 1100px;
+      margin: 1.5rem auto 3rem;
+      padding: 0 1rem;
+    }
+    section.concepts h2 {
+      text-align: center;
+      font-size: 1.5rem;
+      margin: 0.5rem 0 1rem;
+    }
+    .controls {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 1rem;
+    }
+    .controls input {
+      padding: .55rem .7rem;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      width: 280px;
+    }
+
+    /* Card grid */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+    }
+    .card {
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 14px;
+      box-shadow: 0 3px 10px rgba(0,0,0,.05);
+      overflow: hidden;
+      transition: transform .15s ease, box-shadow .15s ease;
+    }
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(0,0,0,.08);
+    }
+    .card img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+      background: #ccc;
+      display: block;
+    }
+    .card-body {
+      padding: .9rem 1rem 1.1rem;
+    }
+    .card-body h3 {
+      margin: 0 0 .5rem;
+      font-size: 1.15rem;
+      color: #111827;
+    }
+    .kv {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      gap: .4rem;
+    }
+    .kv li {
+      background: #f8f9fb;
+      border: 1px solid #eef0f4;
+      border-radius: 10px;
+      padding: .55rem .6rem;
+      font-size: .95rem;
+    }
+    details { margin-top: .5rem; }
+    details summary {
+      cursor: pointer;
+      font-weight: 600;
+      color: #2563eb;
+    }
+
+    /* Dark mode support */
+    @media (prefers-color-scheme: dark) {
+      body { background: #0b1020; color: #e8edf7; }
+      header { background: #0b1125; color: #f9fafb; }
+      .card { background: #0f172a; border-color: #1f2a44; }
+      .kv li { background: #111b32; border-color: #1f2a44; color: #e8edf7; }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>Design Analysis: Comparison of Concept Variants</h1>
+  </header>
+
+  <section class="concepts">
+    <h2>Existing Design Concepts</h2>
+
+    <div class="controls">
+      <input id="searchConcepts" type="search" placeholder="Filter by feature (e.g. jump, stability, weight)">
+    </div>
+
+    <div class="card-grid">
+
+      <!-- Card 1 -->
+      <article class="card" data-tags="big wheel terrain pass fast climbing mechanical complexity control stability">
+        <img src="images/concept1.jpg" alt="Big Wheel robot design">
+        <div class="card-body">
+          <h3>Big Wheel</h3>
+          <ul class="kv">
+            <li><strong>Advantage:</strong> Big wheel, high terrain-pass capability; fast step climbing</li>
+            <li><strong>Disadvantage:</strong> Mechanical complexity; control difficulty; <b>bad gimbal stability</b></li>
+          </ul>
+          <details>
+            <summary>More Info</summary>
+            <p>Performs best on uneven terrain but requires complex balancing and control tuning.</p>
+          </details>
+        </div>
+      </article>
+
+      <!-- Card 2 -->
+      <article class="card" data-tags="jump climb recovery linkage small wheel">
+        <img src="images/concept2.jpg" alt="Wheel-leg linkage concept">
+        <div class="card-body">
+          <h3>Wheel-Leg / Linkage</h3>
+          <ul class="kv">
+            <li><strong>Advantage:</strong> Able to jump, climb steps efficiently; can self recover</li>
+            <li><strong>Disadvantage:</strong> <b>Lower terrain-pass capability</b> due to smaller wheel size</li>
+          </ul>
+          <details>
+            <summary>More Info</summary>
+            <p>Provides additional degree of freedom for jumping but sacrifices rolling efficiency.</p>
+          </details>
+        </div>
+      </article>
+
+      <!-- Card 3 -->
+      <article class="card" data-tags="self balancing direct torque weight constraint big wheel">
+        <img src="images/concept3.jpg" alt="Big wheel self-balancing concept">
+        <div class="card-body">
+          <h3>Big Wheel + Self-Balancing</h3>
+          <ul class="kv">
+            <li><strong>Advantage:</strong> Big wheel and self-balancing design</li>
+            <li><strong>Disadvantage:</strong> Joint motor <b>direct torque</b>; not ideal for <b>weight constraint</b> (30–40 kg)</li>
+          </ul>
+          <details>
+            <summary>More Info</summary>
+            <p>Improves stability and adaptability but introduces heavy actuators unsuitable for lightweight robots.</p>
+          </details>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <script>
+    // Simple search filter
+    const input = document.getElementById('searchConcepts');
+    input?.addEventListener('input', () => {
+      const q = input.value.trim().toLowerCase();
+      document.querySelectorAll('.concepts .card').forEach(card => {
+        const hay = (card.dataset.tags || card.innerText).toLowerCase();
+        card.style.display = hay.includes(q) ? '' : 'none';
+      });
+    });
+  </script>
+</body>
+</html>
