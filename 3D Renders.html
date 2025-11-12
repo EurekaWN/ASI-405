@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CAD Model Viewer</title>
+  <script type="module"
+    src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js">
+  </script>
+  <style>
+    body { background:#ffffff; font-family:sans-serif; text-align:center; margin:0; }
+    header { background:#0f172a; color:rgb(240, 23, 23); padding:1rem; }
+    model-viewer {
+      width: 100%;
+      height: 600px;
+      background: #291515;
+      border:none;
+    }
+  </style>
+</head>
+
+<body>
+  <header><h1>3D CAD Model Viewer</h1></header>
+
+  <!-- place your .glb model in "models/" -->
+  <model-viewer
+    src="3D Render/Bipedal Wheelchair 3D Prototype Overall Assembly.glb"
+    alt="3D model of the robot"
+    camera-controls
+    auto-rotate
+    rotation-per-second="30deg"
+    exposure="1"
+    shadow-intensity="1"
+    orientation="0deg 90deg 0deg"
+    scale="0.001 0.001 0.001">
+  </model-viewer>
+</body>
+</html>
