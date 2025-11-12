@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Prism.js for code highlighting -->
+<link href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-matlab.min.js"></script>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Omniwheel vs 2-Wheel Simulation</title>
+
+  <!-- Basic styling for clean layout -->
+  <style>
+    body {
+      font-family: "Segoe UI", Arial, sans-serif;
+      background-color: #fafafa;
+      color: #222;
+      margin: 0;
+      padding: 0 1rem 2rem;
+      line-height: 1.6;
+    }
+
+    header {
+      text-align: center;
+      padding: 1.5rem 0 0.5rem;
+    }
+
+    h1 {
+      margin-bottom: 0.2rem;
+      font-size: 1.8rem;
+    }
+
+    .sim-demo {
+      max-width: 900px;
+      margin: 1rem auto;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+      padding: 1rem 1.5rem 2rem;
+    }
+
+    .video-wrap {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16/9;
+      margin: 1rem 0;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .video-wrap video {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    details > summary {
+      cursor: pointer;
+      font-weight: 600;
+      padding: .5rem .7rem;
+      border-radius: 8px;
+      background: #f2f3f5;
+      transition: background 0.2s;
+    }
+
+    details[open] > summary {
+      background: #e8e8ea;
+      border-bottom-left-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+
+    pre {
+      margin: 0;
+      padding: 0.8rem;
+      overflow: auto;
+      background: #0f172a;
+      color: #e5e7eb;
+      border-bottom-left-radius: 8px;
+      border-bottom-right-radius: 8px;
+      font-family: Consolas, monospace;
+      font-size: 0.9rem;
+    }
+
+    a.download {
+      display: inline-block;
+      margin-top: 0.5rem;
+      color: #0058b0;
+      text-decoration: none;
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>Omniwheel vs 2-Wheel Simulation</h1>
+    <p>Comparison of holonomic and non-holonomic motion behavior</p>
+  </header>
+
+  <section class="sim-demo">
+    <h2>Simulation Video</h2>
+    <p>This video demonstrates the motion difference between an omniwheel robot and a two-wheel differential robot when following a zig-zag path.</p>
+
+    <!-- Responsive video -->
+    <div class="video-wrap">
+      <video autoplay muted loop playsinline>
+        <source src="videos/zigzag_sim.mp4" type="video/mp4" />
+      </video>
+    </div>
+
+    <!-- Collapsible MATLAB code -->
+    <details>
+      <summary>Show MATLAB Code</summary>
+      <pre><code class="language-matlab">
+% MATLAB Zig-Zag Simulation (Omni vs 2-Wheel)
+% Full script saved as zigzag_sim.m
+% Run to generate zigzag_sim.mp4 video
+
+% clc; clear; close all;
+
+%% Simulation parameters
+dt = 0.05;      
+T = 40;         
+N = T/dt;
+
+%% Initial poses [x, y, theta]
+pose_omni = [0; 0; 0];     
+pose_2w   = [0; 0; 0];    
+
+%% Trajectories
+traj_omni = zeros(N,3);
+traj_2w   = zeros(N,3);
+
+%% Speeds
+v_omni = 0.5;       
+v2 = 0.5;            
+omega2_max = 1.0;   % max rotation rate for 2-wheel
+
+%% Setup figure
+figure('Position',[100 100 800 400]); 
+hold on; axis equal;
+xlabel('X (m)'); ylabel('Y (m)'); grid on;
+xlim([-1 10]); ylim([-3 3]);
+
+% Plot handles
+h_omni = plot(nan,nan,'b','LineWidth',2);
+h_2w   = plot(nan,nan,'r','LineWidth',2);
+traj_plot_omni = plot(nan,nan,'--b','LineWidth',1.5);
+traj_plot_2w   = plot(nan,nan,'--r','LineWidth',1.5);
+
+%% Define waypoints for zig-zag (straight-line segments)
+waypoints = [0 0;
+             3 0;
+             3 2;
+             6 2;
+             6 -1.5;
+             9 -1.5;
+             9 1;
+             10 1]; % [x, y]
+
+segment_index = 1;
+current_heading = atan2(waypoints(2,2)-waypoints(1,2), waypoints(2,1)-waypoints(1,1));
+
+%% === Video Recording Setup ===
+v = VideoWriter('zigzag_sim.mp4','MPEG-4');  % Output video
+v.FrameRate = 60;                            % Frames per second
+open(v);
+
+%% Simulation loop
+for i = 1:N
+    %% Omniwheel robot: straight-line motion along current segment
+    dx = waypoints(segment_index+1,1) - pose_omni(1);
+    dy = waypoints(segment_index+1,2) - pose_omni(2);
+    dist = sqrt(dx^2 + dy^2);
+    
+    % Check if reached end of current segment
+    if dist < v_omni*dt && segment_index < size(waypoints,1)-1
+        segment_index = segment_index + 1;
+        current_heading = atan2(waypoints(segment_index+1,2)-waypoints(segment_index,2), ...
+                                waypoints(segment_index+1,1)-waypoints(segment_index,1));
+        dx = waypoints(segment_index+1,1) - pose_omni(1);
+        dy = waypoints(segment_index+1,2) - pose_omni(2);
+    end
+    
+    vx_omni = v_omni * cos(current_heading);
+    vy_omni = v_omni * sin(current_heading);
+    
+    % Update omniwheel pose
+    pose_omni(1) = pose_omni(1) + vx_omni*dt;
+    pose_omni(2) = pose_omni(2) + vy_omni*dt;
+    pose_omni(3) = current_heading;
+    traj_omni(i,:) = pose_omni';
+    
+    %% 2-wheel robot: move toward omniwheel (non-holonomic)
+    desired_theta = atan2(pose_omni(2) - pose_2w(2), pose_omni(1) - pose_2w(1));
+    theta_err = atan2(sin(desired_theta - pose_2w(3)), cos(desired_theta - pose_2w(3)));
+    omega2 = max(min(theta_err, omega2_max), -omega2_max);  % limit rotation
+    
+    % Forward motion along heading
+    vx2 = v2 * cos(pose_2w(3));
+    vy2 = v2 * sin(pose_2w(3));
+    
+    % Update 2-wheel pose (real non-holonomic motion constraint)
+    pose_2w(1) = pose_2w(1) + vx2*dt;
+    pose_2w(2) = pose_2w(2) + vy2*dt;
+    pose_2w(3) = pose_2w(3) + omega2*dt;
+    traj_2w(i,:) = pose_2w';
+    
+    %% Update plots
+    set(h_omni,'XData',pose_omni(1),'YData',pose_omni(2));
+    set(h_2w,'XData',pose_2w(1),'YData',pose_2w(2));
+    set(traj_plot_omni,'XData',traj_omni(1:i,1),'YData',traj_omni(1:i,2));
+    set(traj_plot_2w,'XData',traj_2w(1:i,1),'YData',traj_2w(1:i,2));
+    
+    drawnow;
+
+    % === Capture Frame for Video ===
+    frame = getframe(gcf);
+    writeVideo(v, frame);
+end
+
+%% Finalize video
+close(v);
+
+title('Omniwheel vs 2-Wheel Balancing: Zig-Zag Sharp Turn Comparison');
+legend('Omniwheel','2-Wheel','Omni Traj','2W Traj');
+
+      </code></pre>
+      <a class="download" href="videos/zigzag_sim.m" download>Download MATLAB Script (.m)</a>
+    </details>
+  </section>
+</body>
+</html>
