@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Reaction Panel Demo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      margin: 0;
+      padding: 40px 260px 40px 40px; /* leave space for sidebar on the right */
+      background: #f3f4f6;
+      color: #111827;
+      line-height: 1.6;
+    }
+
+    h1 {
+      margin-top: 0;
+      color: #0f172a;
+    }
+
+    section {
+      background: #fff;
+      border-radius: 12px;
+      padding: 20px 20px 12px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 12px rgba(15,23,42,0.06);
+      position: relative;
+    }
+
+    section h2 {
+      margin-top: 0;
+      margin-bottom: 8px;
+      color: #111827;
+    }
+
+    .reaction-bar {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+      padding-top: 8px;
+      border-top: 1px solid #e5e7eb;
+      font-size: 0.9rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .reaction-label {
+      color: #6b7280;
+      margin-right: 4px;
+    }
+
+    .reaction-bar button {
+      border: none;
+      border-radius: 999px;
+      padding: 4px 10px;
+      background: #f3f4f6;
+      cursor: pointer;
+      font-size: 0.95rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: background 0.15s ease, transform 0.1s ease;
+    }
+
+    .reaction-bar button:hover {
+      background: #e5e7eb;
+      transform: translateY(-1px);
+    }
+
+    .reaction-bar button.reacted {
+      background: #d1fae5;
+    }
+
+    /* Floating reaction sidebar */
+    .reaction-sidebar {
+      position: fixed;
+      top: 50%;
+      right: 16px;
+      transform: translateY(-50%);
+      width: 220px;
+      background: #0b1120;
+      color: #e5e7eb;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(15,23,42,0.5);
+      padding: 14px 14px 10px;
+      z-index: 50;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .reaction-sidebar-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .reaction-sidebar-header h3 {
+      margin: 0;
+      font-size: 0.95rem;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .reaction-sidebar-header span {
+      font-size: 1.1rem;
+    }
+
+    .reaction-sidebar small {
+      color: #9ca3af;
+      font-size: 0.75rem;
+    }
+
+    .reaction-list {
+      list-style: none;
+      padding: 0;
+      margin: 6px 0 0;
+      max-height: 260px;
+      overflow-y: auto;
+      font-size: 0.82rem;
+    }
+
+    .reaction-list li {
+      border-radius: 10px;
+      padding: 6px 8px;
+      margin-bottom: 4px;
+      background: rgba(15,23,42,0.6);
+    }
+
+    .reaction-section-title {
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+
+    .reaction-section-emojis {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 2px;
+    }
+
+    .reaction-pill {
+      background: rgba(31,41,55,0.9);
+      border-radius: 999px;
+      padding: 2px 7px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .reaction-pill span.count {
+      color: #9ca3af;
+      font-size: 0.75rem;
+    }
+
+    .reaction-empty {
+      color: #9ca3af;
+      font-style: italic;
+    }
+
+    /* Mobile: move sidebar to bottom */
+    @media (max-width: 800px) {
+      body {
+        padding: 16px;
+      }
+      .reaction-sidebar {
+        position: fixed;
+        top: auto;
+        bottom: 0;
+        right: 0;
+        left: 0;
+        transform: none;
+        border-radius: 16px 16px 0 0;
+        width: auto;
+        margin: 0 8px 8px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>Fun Reaction Panel Demo</h1>
+  <p>Click on the emoji reactions below each section — your reactions will appear in the floating panel on the right.</p>
+
+  <!-- Example sections -->
+  <section data-section-id="math" data-section-title="Static Equilibrium Math">
+    <h2>Static Equilibrium Math</h2>
+    <p>This section explains the derivation of the mechanical advantage and static loading of the small leg linkage.</p>
+    <div class="reaction-bar">
+      <span class="reaction-label">React:</span>
+      <button data-emoji="👍">👍 <span>Nice</span></button>
+      <button data-emoji="🤔">🤔 <span>Confusing</span></button>
+      <button data-emoji="🤯">🤯 <span>Mind-blown</span></button>
+      <button data-emoji="❤️">❤️ <span>Love it</span></button>
+    </div>
+  </section>
+
+  <section data-section-id="matlab" data-section-title="MATLAB Sweep & Graphs">
+    <h2>MATLAB Sweep & Graphs</h2>
+    <p>Here we sweep different linkage combinations and visualize the supported body weight as a contour plot.</p>
+    <div class="reaction-bar">
+      <span class="reaction-label">React:</span>
+      <button data-emoji="👍">👍 <span>Useful</span></button>
+      <button data-emoji="📈">📈 <span>Nice graphs</span></button>
+      <button data-emoji="😵">😵 <span>Too dense</span></button>
+      <button data-emoji="🔥">🔥 <span>So cool</span></button>
+    </div>
+  </section>
+
+  <section data-section-id="design" data-section-title="Design Decisions">
+    <h2>Design Decisions</h2>
+    <p>Discussion of why the 115/75 (≈1.5) ratio was selected and its safety margin with respect to a 20 kg robot.</p>
+    <div class="reaction-bar">
+      <span class="reaction-label">React:</span>
+      <button data-emoji="✅">✅ <span>Clear</span></button>
+      <button data-emoji="🤝">🤝 <span>Agree</span></button>
+      <button data-emoji="⚖️">⚖️ <span>Good trade-off</span></button>
+      <button data-emoji="📝">📝 <span>Note this</span></button>
+    </div>
+  </section>
+
+  <!-- Floating sidebar -->
+  <aside class="reaction-sidebar">
+    <div class="reaction-sidebar-header">
+      <h3><span>✨</span> Reactions</h3>
+    </div>
+    <small>Click an emoji under any section to see it here.</small>
+    <ul class="reaction-list" id="reaction-list">
+      <li class="reaction-empty">No reactions yet – try clicking one below.</li>
+    </ul>
+  </aside>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const reactions = {}; // { sectionId: { title, counts: {emoji: count} } }
+      const listEl = document.getElementById('reaction-list');
+
+      function renderReactions() {
+        listEl.innerHTML = '';
+        const entries = Object.entries(reactions);
+
+        if (entries.length === 0) {
+          const li = document.createElement('li');
+          li.className = 'reaction-empty';
+          li.textContent = 'No reactions yet – try clicking one below.';
+          listEl.appendChild(li);
+          return;
+        }
+
+        entries.forEach(([sectionId, data]) => {
+          const li = document.createElement('li');
+
+          const titleEl = document.createElement('div');
+          titleEl.className = 'reaction-section-title';
+          titleEl.textContent = data.title;
+          li.appendChild(titleEl);
+
+          const emojiRow = document.createElement('div');
+          emojiRow.className = 'reaction-section-emojis';
+
+          Object.entries(data.counts).forEach(([emoji, count]) => {
+            const pill = document.createElement('div');
+            pill.className = 'reaction-pill';
+
+            const emojiSpan = document.createElement('span');
+            emojiSpan.textContent = emoji;
+
+            const countSpan = document.createElement('span');
+            countSpan.className = 'count';
+            countSpan.textContent = '× ' + count;
+
+            pill.appendChild(emojiSpan);
+            pill.appendChild(countSpan);
+            emojiRow.appendChild(pill);
+          });
+
+          li.appendChild(emojiRow);
+          listEl.appendChild(li);
+        });
+      }
+
+      // Attach click handlers to all reaction buttons
+      document.querySelectorAll('.reaction-bar button').forEach(button => {
+        button.addEventListener('click', () => {
+          const section = button.closest('section');
+          if (!section) return;
+
+          const sectionId = section.dataset.sectionId || section.id || 'section-' + Math.random();
+          const sectionTitle =
+            section.dataset.sectionTitle ||
+            (section.querySelector('h2, h3, h1')?.textContent.trim()) ||
+            'Untitled section';
+
+          const emoji = button.dataset.emoji || button.textContent.trim();
+
+          if (!reactions[sectionId]) {
+            reactions[sectionId] = { title: sectionTitle, counts: {} };
+          }
+          const counts = reactions[sectionId].counts;
+          counts[emoji] = (counts[emoji] || 0) + 1;
+
+          // Tiny feedback on button
+          button.classList.add('reacted');
+          setTimeout(() => button.classList.remove('reacted'), 300);
+
+          renderReactions();
+        });
+      });
+
+      // Initial state
+      renderReactions();
+    });
+  </script>
+</body>
+</html>
