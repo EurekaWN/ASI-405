@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mathematical Analysis – Static Equilibrium</title>
+  <style>
+    body {
+      font-family: system-ui, Arial, sans-serif;
+      background: #f3f5f8;
+      margin: 0;
+      padding: 40px;
+      color: #222;
+      line-height: 1.6;
+    }
+    .container {
+      background: #fff;
+      border-radius: 14px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 30px;
+    }
+    header {
+      text-align: center;
+      margin-bottom: 30px;
+      border-bottom: 2px solid #0f172a;
+      padding-bottom: 20px;
+    }
+    h1 {
+      margin: 0 0 10px 0;
+      color: #0f172a;
+    }
+    h3 {
+      color: #1e293b;
+      margin-top: 25px;
+    }
+    section {
+      margin-bottom: 30px;
+    }
+    p {
+      margin: 12px 0;
+    }
+    
+    /* Collapsible section styles */
+    .math-section {
+      margin-bottom: 20px;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      overflow: hidden;
+      background: #f9fafc;
+    }
+    
+    .math-header {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      color: white;
+      padding: 16px 20px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: background 0.2s ease;
+      user-select: none;
+    }
+    
+    .math-header:hover {
+      background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+    }
+    
+    .math-header h3 {
+      margin: 0;
+      font-size: 1.1rem;
+      color: white;
+    }
+    
+    .toggle-icon {
+      font-size: 1.2rem;
+      transition: transform 0.3s ease;
+      display: inline-block;
+    }
+    
+    .toggle-icon.open {
+      transform: rotate(180deg);
+    }
+    
+    .math-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease;
+      background: white;
+    }
+    
+    .math-content.open {
+      max-height: 2000px;
+      padding: 20px;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    .math-content.open {
+      animation: fadeIn 0.3s ease;
+    }
+    
+    .math-image-container {
+      width: 100%;
+      max-width: 800px;
+      margin: 0 auto 20px;
+      text-align: center;
+    }
+    
+    .math-image-container img {
+      width: 100%;
+      height: auto;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>📐 Mechanical Analysis</h1>
+      <p style="color: #555; margin: 10px 0 0 0;">Static Equilibrium & Force Calculations</p>
+    </header>
+
+    <section id="small-leg-linkage-math" class="math-section">
+      <div class="math-header" onclick="toggleMathSection(this)">
+        <h3>Sample Calculation – Mechanical Advantage from Small Leg Linkage</h3>
+        <span class="toggle-icon">▼</span>
+      </div>
+      <div class="math-content">
+      <div class="math-image-container">
+        <img src="images/linkage calculation.jpg" alt="Linkage Calculation Diagram" />
+      </div>
+
+        <p>Given geometry and loads:</p>
+$$\begin{aligned}
+\mathrm{Gravity\_force} &= 20 \cdot 9.81\ \mathrm{N} \\
+cd &= 115\ \mathrm{mm}, && ce = 75\ \mathrm{mm} \\
+ab &= 90\ \mathrm{mm}, && bc = ab, && ad = cd, \\
+ef &= 125\ \mathrm{mm}, && fg = ce, && cg = ef
+\end{aligned}$$
+
+<p>Fix the linkage with</p>
+$$\mathrm{Angle\_bad} = 90^\circ$$
+
+<p>Link length and angles:</p>
+$$bd = \sqrt{ab^{2} + ad^{2} - 2ab\,ad\cos(80^\circ)}\ \text{(Law of Cosines)}$$
+$$bd \approx 133.16\ \mathrm{mm}$$
+
+$$\sin(\mathrm{Angle\_bda}) =
+  \frac{ab}{bd}\,\sin(\mathrm{Angle\_bad})
+$$
+$$\mathrm{Angle\_bda} =
+  \arcsin\!\left(
+    \frac{ab}{bd}\,\sin(\mathrm{Angle\_bad})
+  \right)
+  \approx 42.52^\circ
+$$
+
+$$\mathrm{Angle\_adc} = \mathrm{Angle\_bda} \cdot 2
+   \approx 85.05^\circ$$
+
+<p>Moment and force at point \(c\):</p>
+$$T\_{\mathrm{small}} = 20000 \quad\text{(moment of point \(c\))}$$
+$$\frac{cd}{ce} = \frac{115}{75} \approx 1.53$$
+$$\mathrm{Force\_small} =
+    \frac{T\_{\mathrm{small}}}{ab}
+    \cos\!\bigl(90^\circ - \mathrm{Angle\_adc}\bigr)
+    \frac{cd}{ce}
+$$
+$$\mathrm{Force\_small} \approx 3.39 \times 10^{2}\ \mathrm{N}$$
+
+<p>Body weight carried by the linkage:</p>
+$$\mathrm{Force\_small} \cdot 0.069 + 20\ \text{(direct torque from big leg)} 
+= 
+  W\_{\mathrm{Body}}\times 
+  9.81
+  \cos\!\bigl(90^\circ - 51.45^\circ\bigr)
+  \cdot 0.14644
+$$
+$$W\_{\mathrm{Body}} =
+  \frac{\mathrm{Force\_small} \cdot 0.069 + 20}
+       {9.81
+        \cos\!\bigl(90^\circ - 51.45^\circ\bigr)
+        \cdot 0.14644}
+  \approx 38.7\ \mathrm{kg}
+$$
+
+        <!-- <p>Drive and wheel forces:</p>
+        $$\mathrm{Diameter} = 0.350$$
+        $$\mathrm{Torque\_Motor} = 3\ \mathrm{Nm}$$
+        $$\mathrm{Gear\_Ratio} = \frac{43}{13} = 3.3077$$
+        $$\mathrm{Torque\_Step\_up} =
+            \mathrm{Torque\_Motor}\cdot\mathrm{Gear\_Ratio}
+            = 9.9231\ \mathrm{Nm}
+        $$
+
+        $$\mathrm{Robot\_Weight} = 25\ \mathrm{kg}$$
+        $$\mathrm{Rolling\_Resistance} = 0.02$$
+
+        $$F\_{\mathrm{Wheel}} =
+            \frac{9.9231}{\dfrac{\mathrm{Diameter}}{2}}
+            = 56.7034
+        $$
+        $$F\_{\mathrm{forward}} = F\_{\mathrm{Wheel}} \cdot 2
+            = 113.4069
+        $$
+
+        $$Crr\_{\mathrm{Rubber\_on\_Ground}} = 0.02$$
+        $$\mathrm{Rolling\_Resistance} =
+            Crr\_{\mathrm{Rubber\_on\_Ground}}
+            \cdot \mathrm{Robot\_Weight}
+            \cdot 9.81
+            = 4.905 -->
+        <!-- $$ -->
+      </div>
+    </section>
+  </div>
+
+  <!-- MathJax for rendering LaTeX equations -->
+  <script
+    src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
+    id="MathJax-script"
+    async>
+  </script>
+
+  <script>
+    function toggleMathSection(header) {
+      const content = header.nextElementSibling;
+      const icon = header.querySelector('.toggle-icon');
+      
+      content.classList.toggle('open');
+      icon.classList.toggle('open');
+    }
+  </script>
+</body>
+</html>
