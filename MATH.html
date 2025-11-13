@@ -41,7 +41,7 @@
     p {
       margin: 12px 0;
     }
-    
+
     /* Collapsible section styles */
     .math-section {
       margin-bottom: 20px;
@@ -91,26 +91,61 @@
     }
     
     .math-content.open {
-      max-height: 2000px;
+      max-height: 3000px;
       padding: 20px;
     }
-    
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
+
+    /* Code block styling */
+    pre {
+      background: #0b1120;
+      color: #e5e7eb;
+      padding: 16px;
+      border-radius: 8px;
+      overflow-x: auto;
+      overflow-y: auto;
+      max-height: 300px;
+      font-size: 0.85rem;
+      white-space: pre;
+      box-sizing: border-box;
+      position: relative;
     }
-    
-    .math-content.open {
-      animation: fadeIn 0.3s ease;
+    pre code {
+      font-family: "Fira Code", "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
     }
-    
+
+    /* Copy button */
+    .copy-btn {
+      position: absolute;
+      top: 10px;
+      right: 12px;
+      background: #1f2937;
+      color: #e5e7eb;
+      border: none;
+      padding: 6px 12px;
+      font-size: 0.75rem;
+      border-radius: 5px;
+      cursor: pointer;
+      opacity: 0.75;
+      transition: 0.25s ease;
+    }
+
+    .copy-btn:hover {
+      opacity: 1;
+      background: #374151;
+    }
+
+    .copied {
+      background: #16a34a !important;
+      color: white !important;
+      opacity: 1 !important;
+    }
+
     .math-image-container {
       width: 100%;
       max-width: 800px;
       margin: 0 auto 20px;
       text-align: center;
     }
-    
     .math-image-container img {
       width: 100%;
       height: auto;
@@ -118,23 +153,28 @@
       box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
   </style>
+
+  <!-- Highlight.js theme -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
 </head>
 <body>
   <div class="container">
     <header>
       <h1>📐 Mechanical Analysis</h1>
-      <p style="color: #555; margin: 10px 0 0 0;">Static Equilibrium & Force Calculations</p>
+      <p style="color: #555; margin: 10px 0 0 0;">Static Equilibrium &amp; Force Calculations</p>
     </header>
 
+    <!-- FIRST CLICKABLE SECTION -->
     <section id="small-leg-linkage-math" class="math-section">
       <div class="math-header" onclick="toggleMathSection(this)">
         <h3>Sample Calculation – Mechanical Advantage from Small Leg Linkage</h3>
         <span class="toggle-icon">▼</span>
       </div>
       <div class="math-content">
-      <div class="math-image-container">
-        <img src="images/linkage calculation.jpg" alt="Linkage Calculation Diagram" />
-      </div>
+
+        <div class="math-image-container">
+          <img src="images/linkage calculation.jpg" alt="Linkage Calculation Diagram" />
+        </div>
 
         <p>Given geometry and loads:</p>
 $$\begin{aligned}
@@ -148,94 +188,233 @@ ef &= 125\ \mathrm{mm}, && fg = ce, && cg = ef
 $$\mathrm{Angle\_bad} = 90^\circ$$
 
 <p>Link length and angles:</p>
-$$bd = \sqrt{ab^{2} + ad^{2} - 2ab\,ad\cos(80^\circ)}\ \text{(Law of Cosines)}$$
+$$bd = \sqrt{ab^{2} + ad^{2} - 2ab\,ad\cos(80^\circ)}$$
 $$bd \approx 133.16\ \mathrm{mm}$$
 
-$$\sin(\mathrm{Angle\_bda}) =
-  \frac{ab}{bd}\,\sin(\mathrm{Angle\_bad})
 $$
-$$\mathrm{Angle\_bda} =
-  \arcsin\!\left(
-    \frac{ab}{bd}\,\sin(\mathrm{Angle\_bad})
-  \right)
-  \approx 42.52^\circ
+\sin(\mathrm{Angle\_bda}) =
+\frac{ab}{bd}\,\sin(\mathrm{Angle\_bad})
 $$
 
-$$\mathrm{Angle\_adc} = \mathrm{Angle\_bda} \cdot 2
-   \approx 85.05^\circ$$
-
-<p>Moment and force at point \(c\):</p>
-$$T\_{\mathrm{small}} = 20000 \quad\text{(moment of point \(c\))}$$
-$$\frac{cd}{ce} = \frac{115}{75} \approx 1.53$$
-$$\mathrm{Force\_small} =
-    \frac{T\_{\mathrm{small}}}{ab}
-    \cos\!\bigl(90^\circ - \mathrm{Angle\_adc}\bigr)
-    \frac{cd}{ce}
 $$
-$$\mathrm{Force\_small} \approx 3.39 \times 10^{2}\ \mathrm{N}$$
-
-<p>Body weight carried by the linkage:</p>
-$$\mathrm{Force\_small} \cdot 0.069 + 20\ \text{(direct torque from big leg)} 
-= 
-  W\_{\mathrm{Body}}\times 
-  9.81
-  \cos\!\bigl(90^\circ - 51.45^\circ\bigr)
-  \cdot 0.14644
-$$
-$$W\_{\mathrm{Body}} =
-  \frac{\mathrm{Force\_small} \cdot 0.069 + 20}
-       {9.81
-        \cos\!\bigl(90^\circ - 51.45^\circ\bigr)
-        \cdot 0.14644}
-  \approx 38.7\ \mathrm{kg}
+\mathrm{Angle\_bda} =
+\arcsin\left(\frac{ab}{bd}\sin(\mathrm{Angle\_bad})\right)
+\approx 42.52^\circ
 $$
 
-        <!-- <p>Drive and wheel forces:</p>
-        $$\mathrm{Diameter} = 0.350$$
-        $$\mathrm{Torque\_Motor} = 3\ \mathrm{Nm}$$
-        $$\mathrm{Gear\_Ratio} = \frac{43}{13} = 3.3077$$
-        $$\mathrm{Torque\_Step\_up} =
-            \mathrm{Torque\_Motor}\cdot\mathrm{Gear\_Ratio}
-            = 9.9231\ \mathrm{Nm}
-        $$
+$$
+\mathrm{Angle\_adc} = 2\mathrm{Angle\_bda}
+\approx 85.05^\circ
+$$
 
-        $$\mathrm{Robot\_Weight} = 25\ \mathrm{kg}$$
-        $$\mathrm{Rolling\_Resistance} = 0.02$$
+<p>Moment and force at point c:</p>
 
-        $$F\_{\mathrm{Wheel}} =
-            \frac{9.9231}{\dfrac{\mathrm{Diameter}}{2}}
-            = 56.7034
-        $$
-        $$F\_{\mathrm{forward}} = F\_{\mathrm{Wheel}} \cdot 2
-            = 113.4069
-        $$
+$$T_{\mathrm{small}} = 20000$$
+$$\frac{cd}{ce} = 1.53$$
 
-        $$Crr\_{\mathrm{Rubber\_on\_Ground}} = 0.02$$
-        $$\mathrm{Rolling\_Resistance} =
-            Crr\_{\mathrm{Rubber\_on\_Ground}}
-            \cdot \mathrm{Robot\_Weight}
-            \cdot 9.81
-            = 4.905 -->
-        <!-- $$ -->
+$$
+\mathrm{Force\_small} =
+\frac{T_{\mathrm{small}}}{ab}
+\cos(90^\circ - \mathrm{Angle\_{adc}})
+\frac{cd}{ce}
+$$
+
+$$\mathrm{Force\_small} \approx 3.39 \times 10^2 \ \mathrm{N}$$
+
+<p>Body weight carried:</p>
+
+$$
+\mathrm{Force\_small}\cdot 0.069 + 20 =
+W_{\mathrm{Body}}\cdot
+9.81 \cos(90^\circ - 51.45^\circ) \cdot 0.14644
+$$
+
+$$
+W_{\mathrm{Body}} \approx 38.7\ \mathrm{kg}
+$$
+
+      </div>
+    </section>
+
+    <!-- SECOND CLICKABLE SECTION -->
+    <section id="matlab-graph" class="math-section">
+      <div class="math-header" onclick="toggleMathSection(this)">
+        <h3>Matlab Code + Colour Dense Graph</h3>
+        <span class="toggle-icon">▼</span>
+      </div>
+      <div class="math-content">
+
+        <p><strong>MATLAB code used for parametric sweep of cd and ce:</strong></p>
+
+        <pre>
+<button class="copy-btn">Copy</button>
+<code class="language-matlab">
+% --- Param
+ab = 90;
+ef = 125; 
+Angle_bad = 90;        % degrees
+T_small = 20000;
+
+cd_v = 80:10:150;      % sweep cd
+ce_v = 30:10:100;      % sweep ce
+
+% Preallocate
+W_Body_results = zeros(numel(cd_v), numel(ce_v));
+
+% --- Sweep all combinations ---
+for i = 1:numel(cd_v)
+    for j = 1:numel(ce_v)
+        cd = cd_v(i);
+        ce = ce_v(j);
+
+        ad = cd;    
+        fg = ce;    
+        bc = ab;    
+        cg = ef;    
+
+        bd = sqrt( ab^2 + ad^2 - 2*ab*ad*cosd(80) );  
+        Angle_bda = asind( ab / (bd/sind(Angle_bad)) );
+        Angle_adc = 2*Angle_bda;
+
+        Force_small = T_small/ab * cosd(90 - Angle_adc) * (cd/ce);
+        W_Body = (Force_small*0.069 + 20) / (9.81*cosd(90 - 51.45)*0.14644);
+
+        W_Body_results(i,j) = W_Body;
+
+    end
+end
+
+figure; hold on; grid on;
+
+for j = 1:numel(ce_v)
+    plot(cd_v, W_Body_results(:,j), '-o', 'DisplayName', sprintf('ce = %g', ce_v(j)));
+end
+
+xlabel('cd length');
+ylabel('Weight');
+title('Weight vs cd for each ce');
+legend('Location','bestoutside');
+
+% --- 2) Surface & contour over (cd, ce) space ---
+[CD, CE] = meshgrid(cd_v, ce_v);            
+Z = W_Body_results.';                        
+
+figure;
+surf(CD, CE, Z); grid on; xlabel('cd'); ylabel('ce'); zlabel('Weight');
+title('Weight surface over (cd, ce)'); shading interp; colorbar;
+
+figure;
+contourf(CD, CE, Z, 20); colorbar; grid on;
+xlabel('cd'); ylabel('ce'); title('Weight contour over (cd, ce)');
+</code>
+</pre>
+
+        <p><strong>Interactive weight contour (hover for values):</strong></p>
+        <div id="weight-surface-plot" style="width: 100%; height: 450px;"></div>
       </div>
     </section>
   </div>
 
-  <!-- MathJax for rendering LaTeX equations -->
-  <script
-    src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
-    id="MathJax-script"
-    async>
-  </script>
+  <!-- MathJax -->
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+
+  <!-- Highlight.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/matlab.min.js"></script>
+
+  <!-- Plotly -->
+  <script src="https://cdn.plot.ly/plotly-2.30.0.min.js"></script>
 
   <script>
     function toggleMathSection(header) {
       const content = header.nextElementSibling;
-      const icon = header.querySelector('.toggle-icon');
+      const icon = header.querySelector(".toggle-icon");
       
-      content.classList.toggle('open');
-      icon.classList.toggle('open');
+      content.classList.toggle("open");
+      icon.classList.toggle("open");
     }
+
+    // Initialise highlight.js
+    document.addEventListener("DOMContentLoaded", () => {
+      hljs.highlightAll();
+    });
+
+    // COPY CODE BUTTON LOGIC
+    document.addEventListener("click", function (e) {
+      if (e.target.classList.contains("copy-btn")) {
+
+        const codeBlock = e.target.nextElementSibling; 
+        const text = codeBlock.innerText;
+
+        navigator.clipboard.writeText(text).then(() => {
+          e.target.innerText = "Copied!";
+          e.target.classList.add("copied");
+
+          setTimeout(() => {
+            e.target.innerText = "Copy";
+            e.target.classList.remove("copied");
+          }, 1500);
+        });
+      }
+    });
+
+    // Degree-radian helper
+    function deg2rad(d) { return d * Math.PI / 180; }
+
+    // Compute contour grid
+    function computeWeightGrid() {
+      const ab = 90, Angle_bad = 90, T_small = 20000;
+      const cdValues = [80, 90, 100, 110, 120, 130, 140, 150];
+      const ceValues = [30, 40, 50, 60, 70, 80, 90, 100];
+      const z = [];
+
+      for (let j = 0; j < ceValues.length; j++) {
+        const row = [];
+        for (let i = 0; i < cdValues.length; i++) {
+          const cd = cdValues[i], ce = ceValues[j];
+
+          const bd = Math.sqrt(ab*ab + cd*cd - 2*ab*cd*Math.cos(deg2rad(80)));
+          const Angle_bda = Math.asin((ab/bd)*Math.sin(deg2rad(Angle_bad))) * 180/Math.PI;
+          const Angle_adc = 2 * Angle_bda;
+
+          const Force_small = (T_small/ab) *
+            Math.cos(deg2rad(90 - Angle_adc)) *
+            (cd/ce);
+
+          const W_Body =
+            (Force_small * 0.069 + 20) /
+            (9.81 * Math.cos(deg2rad(90 - 51.45)) * 0.14644);
+
+          row.push(W_Body);
+        }
+        z.push(row);
+      }
+
+      return { cdValues, ceValues, z };
+    }
+
+    // Plotly graph
+    document.addEventListener("DOMContentLoaded", () => {
+      const plotDiv = document.getElementById("weight-surface-plot");
+
+      const { cdValues, ceValues, z } = computeWeightGrid();
+
+      Plotly.newPlot(plotDiv, [{
+        x: cdValues,
+        y: ceValues,
+        z: z,
+        type: "contour",
+        colorscale: "Viridis",
+        hovertemplate:
+          "cd = %{x} mm<br>" +
+          "ce = %{y} mm<br>" +
+          "W_Body = %{z:.2f} kg<extra></extra>"
+      }], {
+        title: "Body Weight Supported vs cd, ce",
+        xaxis: { title: "cd length (mm)" },
+        yaxis: { title: "ce length (mm)" }
+      }, { responsive: true });
+    });
   </script>
 </body>
 </html>
