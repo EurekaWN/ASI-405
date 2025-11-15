@@ -27,21 +27,100 @@
   <details class="expand-box">
     <summary><strong>Click to expand: Key design specifications</strong></summary>
 
-    <ul>
-      <li>Robot type: <strong>Standard robot chassis</strong> (primary combat platform).</li>
-      <li>Compliant with all current <strong>RMUC mechanical, electrical, and safety rules</strong>.</li>
-      <li>Maximum dimensions: within <strong>600 × 600 × 500 mm</strong> initial, expandable to
-          <strong>800 × 800 × 800 mm</strong>.</li>
-      <li>Total mass target: approximately <strong>20–25 kg</strong> (excluding referee system).</li>
-      <li>Power system: ≤ <strong>300 Wh</strong> pack energy, ≤ <strong>30 V</strong> bus voltage,
-          ≤ <strong>2200 J</strong> supercapacitor energy.</li>
-      <li>Mobility target: high-speed movement on flat terrain with efficient
-          <strong>200 mm step-climbing capability</strong>.</li>
-      <li>Compatibility with existing <strong>gimbal, referee system, armour modules,
-          and sensors</strong> used by the Calibur team.</li>
-    </ul>
+    <table style="width:100%; border-collapse:collapse; font-size:12pt;">
+      <tr>
+        <th style="border:1px solid #000; background:#fff2cc;">Specification (For Standard Robot)</th>
+        <th style="border:1px solid #000; background:#fff2cc;">Value</th>
+        <th style="border:1px solid #000; background:#fff2cc;">Remarks</th>
+      </tr>
 
-    <p><em>Table X: Formal Design Specification can be inserted here as a rendered table.</em></p>
+      <!-- Initial Size -->
+      <tr>
+        <td style="border:1px solid #000; padding:8px;">Initial Size (L × W × H)</td>
+        <td style="border:1px solid #000; padding:8px;">600 × 600 × 500 mm</td>
+        <td style="border:1px solid #000; padding:8px;"></td>
+      </tr>
+
+      <!-- Expansion Size -->
+      <tr>
+        <td style="border:1px solid #000; padding:8px;">Expansion Size (L × W × H)</td>
+        <td style="border:1px solid #000; padding:8px;">800 × 800 × 800 mm</td>
+        <td style="border:1px solid #000; padding:8px;"></td>
+      </tr>
+
+      <!-- Weight -->
+      <tr>
+        <td style="border:1px solid #000; padding:8px;">Weight</td>
+        <td style="border:1px solid #000; padding:8px;">
+          25 kg<br>
+          <strong>Target: Less than 20 kg</strong>
+        </td>
+        <td style="border:1px solid #000; padding:8px;">
+          Excluding Referee System<br>
+          Include battery weight<br>
+          Current Calibur Standard: 18 kg
+        </td>
+      </tr>
+
+      <!-- Speed -->
+      <tr>
+        <td style="border:1px solid #000; padding:8px;">Speed</td>
+        <td style="border:1px solid #000; padding:8px;">
+          <strong>Target: 80% of original speed</strong><br><br>
+          <strong>1.8 m/s</strong><br>
+          (Target for now before actual simulation)
+        </td>
+        <td style="border:1px solid #000; padding:8px;">
+          Current NUS Standard:<br>
+          1v1 Speed: 1.5–2 m/s<br>
+          3v3 Level 1 Speed: 0.4–0.5 m/s
+        </td>
+      </tr>
+
+      <!-- Step Climbing Speed -->
+      <tr>
+        <td style="border:1px solid #000; padding:8px;">Step Climbing Speed</td>
+        <td style="border:1px solid #000; padding:8px;">
+          4s (road), 4s (Central Island)<br>
+          <strong>Target Speed: within 2 seconds</strong>
+        </td>
+        <td style="border:1px solid #000; padding:8px;">
+          Mainly focusing on Central Island
+        </td>
+      </tr>
+
+      <!-- Power -->
+      <tr>
+        <td style="border:1px solid #000; padding:8px;">Power</td>
+        <td style="border:1px solid #000; padding:8px;">
+          Max Capacity: 300 Wh<br>
+          Max Voltage: 30 V
+        </td>
+        <td style="border:1px solid #000; padding:8px;"></td>
+      </tr>
+
+      <!-- Supercapacitor -->
+      <tr>
+        <td style="border:1px solid #000; padding:8px;">Supercapacitor</td>
+        <td style="border:1px solid #000; padding:8px;">
+          <strong>Allowed (≤2000 J nominal, ≤2200 J measured)</strong>
+        </td>
+        <td style="border:1px solid #000; padding:8px;"></td>
+      </tr>
+
+      <!-- Others -->
+      <tr>
+        <td style="border:1px solid #000; padding:8px;">Others</td>
+        <td style="border:1px solid #000; padding:8px;">
+          Armor Type: 4 × Small Armor Modules<br>
+          UWB Positioning: Required<br>
+          Energy Charging Device (gimbal)
+        </td>
+        <td style="border:1px solid #000; padding:8px;"></td>
+      </tr>
+
+    </table>
+
   </details>
 
 
@@ -59,32 +138,10 @@
     adaptability.
   </p>
 
-  <details class="expand-box">
-    <summary><strong>Click to expand: Summary of reviewed design families</strong></summary>
-
-    <ul>
-      <li><strong>Tracked robots</strong> – excellent terrain contact and stability, but higher
-          mechanical complexity, higher internal losses, and potential speed penalties.</li>
-      <li><strong>Legged robots</strong> – high adaptability and obstacle negotiation, but require
-          sophisticated control and often sacrifice top speed and robustness.</li>
-      <li><strong>Wheel-leg hybrids</strong> – combine rolling efficiency with active step-climbing
-          through leg motion, offering a promising balance for RoboMaster applications.</li>
-      <li><strong>Planetary and transformable wheels</strong> – mechanically clever and capable of
-          large effective radii, but often complex to design and maintain.</li>
-    </ul>
-
-    <p>
-      Insights from these designs directly inform which concepts are shortlisted
-      for further analysis in the morphological chart and subsequent design
-      sense-making steps.
-    </p>
-  </details>
-
-
   <!-- ========================================================= -->
-  <!-- 4.3 MORPHOLOGICAL CHART -->
+  <!-- 4.2.1 MORPHOLOGICAL CHART -->
   <!-- ========================================================= -->
-  <h3 class="subsection-title" id="sec-4-3">4.3 Morphological Chart</h3>
+  <h3 class="subsubsection-title" id="sec-4-2-1">4.2.1 Morphological Chart</h3>
 
   <p>
     To systematically explore the design space, a morphological chart is used
@@ -99,197 +156,1321 @@
     The interactive morphological gallery embedded in this report allows each
     concept to be visualised and compared dynamically. Hovering over a design
     reveals its parameter scores and a short description, making the trade-offs
-    between concepts more intuitive.
+    between concepts more intuitive. <strong>W</strong> denotes the weighting
+    of each parameter based on its importance.
   </p>
 
-  <!-- If you want, you can include your morphological chart HTML here, e.g.: -->
-  <!-- <div include-html="Morphological Chart.html"></div> -->
+  <!-- ==== INLINE INTERACTIVE MORPHOLOGICAL GALLERY ==== -->
+  <div class="morph-container">
+    <div class="layout morph-layout">
+      <!-- LEFT: GALLERY -->
+      <div class="gallery-window">
+        <div class="gallery">
+
+          <!-- Card 1 – Excel Design No.5 -->
+          <div class="card"
+               data-title="Bipedal Leg Robot (Best performing Robomaster robot 2025)"
+               data-desc="Bipedal leg design with high agility. The main feature is it can jump up steps efficiently"
+               data-meta="Non-holonomic"
+               data-flat="5"
+               data-step="4"
+               data-stability="3"
+               data-maneuver="5"
+               data-gimbal="5"
+               data-spin="5"
+               data-terrain="3"
+               data-reliability="4"
+               data-power="5"
+               data-structure="3"
+               data-maintain="4"
+               data-weight="4"
+               data-mechcomplex="3"
+               data-controldiff="2"
+               data-designdiff="2"
+               data-total="154">
+
+            <div class="ribbon">Choosen Design</div>
+            <img src="../images/RM 3.png" alt="Design 1" />
+            <div class="overlay">
+              <strong>Bipedal Leg</strong>
+              Fast reaction · Good open source
+            </div>
+          </div>
+
+          <!-- Card 2 – Excel Design No.10 -->
+          <div class="card"
+               data-title="Ascento V2 Wheel-Leg Robot"
+               data-desc="Ascento V2 is a wheel-leg hybrid robot capable of both high-speed rolling and active jumping. It illustrates how dynamic leg actuation can overcome steps and gaps."
+               data-meta="Non-holonomic · Strategy: Jump / Lift"
+               data-flat="5"
+               data-step="4"
+               data-stability="3"
+               data-maneuver="2"
+               data-gimbal="4"
+               data-spin="4"
+               data-terrain="4"
+               data-reliability="4"
+               data-power="4"
+               data-structure="4"
+               data-maintain="4"
+               data-weight="3"
+               data-mechcomplex="3"
+               data-controldiff="2"
+               data-designdiff="2"
+               data-total="140">
+            <div class="ribbon">Choosen Design</div>
+            <img src="../images/Ascento V2.jpg" alt="Design 2" />
+            <div class="overlay">
+              <strong>Wheel-Leg</strong>
+              Locomotion: Wheel-Leg<br>Strategy: Lift
+            </div>
+          </div>
+
+          <!-- Card 3 – Excel Design No.1 -->
+          <div class="card"
+               data-title="RM Linkage Climber"
+               data-desc="RoboMaster Circle Leg Wheel, hard to control but high terrain pass capability"
+               data-meta="Double Motor Wheel"
+               data-flat="5"
+               data-step="5"
+               data-stability="4"
+               data-maneuver="4"
+               data-gimbal="2"
+               data-spin="4"
+               data-terrain="5"
+               data-reliability="3"
+               data-power="5"
+               data-structure="4"
+               data-maintain="3"
+               data-weight="3"
+               data-mechcomplex="2"
+               data-controldiff="4"
+               data-designdiff="4"
+               data-total="142">
+            <div class="ribbon">Choosen Design</div>
+            <img src="../images/RM 2.png" alt="Design 3" />
+            <div class="overlay">
+              <strong>Linkage Climber</strong>
+              Push-up motion<br>Step: 200mm
+            </div>
+          </div>
+
+          <!-- Card 4 – Excel Design No.2 -->
+          <div class="card"
+               data-title="Track Design 1"
+               data-desc="Deployable Track at the front only to assist Climbing"
+               data-meta="Locomotion: Track · Geometry: Raised front track"
+               data-flat="4"
+               data-step="1"
+               data-stability="3"
+               data-maneuver="4"
+               data-gimbal="4"
+               data-spin="4"
+               data-terrain="2"
+               data-reliability="4"
+               data-power="3"
+               data-structure="4"
+               data-maintain="4"
+               data-weight="2"
+               data-mechcomplex="4"
+               data-controldiff="3"
+               data-designdiff="3"
+               data-total="134">
+            <img src="../images/Track Design 1.png" alt="Design 4" />
+            <div class="overlay">
+              <strong>Track Concept</strong>
+              Raised nose<br>Improved step entry
+            </div>
+          </div>
+
+          <!-- Card 5 – Excel Design No.3 -->
+          <div class="card"
+               data-title="Track Design 2"
+               data-desc="Variation of a tracked chassis focusing on a longer contact patch at front and back for improved grip and stability during climbing."
+               data-meta="Locomotion: Track · front and back deployable · Higher stability"
+               data-flat="4"
+               data-step="1"
+               data-stability="3"
+               data-maneuver="4"
+               data-gimbal="4"
+               data-spin="4"
+               data-terrain="2"
+               data-reliability="4"
+               data-power="3"
+               data-structure="4"
+               data-maintain="4"
+               data-weight="2"
+               data-mechcomplex="4"
+               data-controldiff="3"
+               data-designdiff="3"
+               data-total="134">
+            <img src="../images/Track Design 2.png" alt="Design 5" />
+            <div class="overlay">
+              <strong>Track Concept</strong>
+              Long footprint<br>High stability
+            </div>
+          </div>
+
+          <!-- Card 6 – Excel Design No.4 -->
+          <div class="card"
+               data-title="Track Design 3"
+               data-desc="More aggressive transformable track design, suited for repeated step engagement."
+               data-meta="Locomotion: Track · Able to scale more complex terrain"
+               data-flat="2"
+               data-step="1"
+               data-stability="4"
+               data-maneuver="2"
+               data-gimbal="2"
+               data-spin="2"
+               data-terrain="4"
+               data-reliability="4"
+               data-power="1"
+               data-structure="4"
+               data-maintain="3"
+               data-weight="2"
+               data-mechcomplex="2"
+               data-controldiff="4"
+               data-designdiff="3"
+               data-total="108">
+            <div class="ribbon">Explored Design</div>
+            <img src="../images/Track Design 4.png" alt="Design 6" />
+            <div class="overlay">
+              <strong>Track Concept</strong>
+              Angled front<br>Segmented support
+            </div>
+          </div>
+
+          <!-- Card 7 – Excel Design No.7 -->
+          <div class="card"
+               data-title="Planetary Wheel Variant 1"
+               data-desc="Planetary wheel mechanism where a set of wheels are arranged around a hub, allowing step-by-step rotation over obstacles."
+               data-meta="Locomotion: Planetary wheel"
+               data-flat="4"
+               data-step="3"
+               data-stability="4"
+               data-maneuver="2"
+               data-gimbal="4"
+               data-spin="2"
+               data-terrain="4"
+               data-reliability="4"
+               data-power="3"
+               data-structure="4"
+               data-maintain="4"
+               data-weight="2"
+               data-mechcomplex="4"
+               data-controldiff="4"
+               data-designdiff="4"
+               data-total="144">
+            <img src="../images/plantary wheel 4.png" alt="Design 7" />
+            <div class="overlay">
+              <strong>Planetary Wheel</strong>
+              Rotating lobes<br>High clearance
+            </div>
+          </div>
+
+          <!-- Card 8 – Excel Design No.8 -->
+          <div class="card"
+               data-title="Multi Wheel Design 1"
+               data-desc="Wheel design for simple step climbing using rotational wheels around a common axle."
+               data-meta="Locomotion: Wheel"
+               data-flat="4"
+               data-step="2"
+               data-stability="4"
+               data-maneuver="2"
+               data-gimbal="4"
+               data-spin="1"
+               data-terrain="1"
+               data-reliability="4"
+               data-power="2"
+               data-structure="4"
+               data-maintain="4"
+               data-weight="2"
+               data-mechcomplex="4"
+               data-controldiff="4"
+               data-designdiff="4"
+               data-total="130">
+            <img src="../images/plantary wheel 3.png" alt="Design 8" />
+            <div class="overlay">
+              <strong>Wheel Design</strong>
+              Large radius<br>Simple concept
+            </div>
+          </div>
+
+          <!-- Card 9 – Excel Design No.9 -->
+          <div class="card"
+               data-title="Transformable wheel"
+               data-desc="Wheel expands to increase its effective climbing radius."
+               data-meta="Locomotion: Transformable wheel"
+               data-flat="4"
+               data-step="3"
+               data-stability="3"
+               data-maneuver="5"
+               data-gimbal="4"
+               data-spin="4"
+               data-terrain="2"
+               data-reliability="2"
+               data-power="4"
+               data-structure="2"
+               data-maintain="3"
+               data-weight="4"
+               data-mechcomplex="3"
+               data-controldiff="4"
+               data-designdiff="3"
+               data-total="137">
+            <img src="../images/Sepcial 2.png" alt="Design 9" />
+            <div class="overlay">
+              <strong>Planetary Wheel</strong>
+              Custom lobes<br>Edge climbing
+            </div>
+          </div>
+
+          <!-- Card 10 – Excel Design No.11 -->
+          <div class="card"
+               data-title="Track Under the Robot"
+               data-desc="Special concept chassis using unconventional track attachment under the chassis to assist climbing."
+               data-meta="Locomotion: hybrid with track assistance"
+               data-flat="4"
+               data-step="2"
+               data-stability="2"
+               data-maneuver="5"
+               data-gimbal="5"
+               data-spin="5"
+               data-terrain="1"
+               data-reliability="4"
+               data-power="4"
+               data-structure="4"
+               data-maintain="2"
+               data-weight="2"
+               data-mechcomplex="3"
+               data-controldiff="5"
+               data-designdiff="4"
+               data-total="144">
+            <img src="../images/Special 10.png" alt="Design 10" />
+            <div class="overlay">
+              <strong>Special Concept</strong>
+              Hybrid geometry<br>Step approach
+            </div>
+          </div>
+
+          <!-- Card 11 – Excel Design No.12 -->
+          <div class="card"
+               data-title="Track with Mecanum Wheel"
+               data-desc="Track with attached Mecanum rollers."
+               data-meta="Locomotion: Track + Mecanum rollers"
+               data-flat="2"
+               data-step="1"
+               data-stability="3"
+               data-maneuver="3"
+               data-gimbal="4"
+               data-spin="3"
+               data-terrain="2"
+               data-reliability="1"
+               data-power="2"
+               data-structure="1"
+               data-maintain="1"
+               data-weight="2"
+               data-mechcomplex="1"
+               data-controldiff="4"
+               data-designdiff="3"
+               data-total="92">
+            <img src="../images/Special 8.png" alt="Design 11" />
+            <div class="overlay">
+              <strong>Special 10</strong>
+              Front lift<br>Compact layout
+            </div>
+          </div>
+
+          <!-- Card 12 – Excel Design No.13 -->
+          <div class="card"
+               data-title="Special Wheel Concept"
+               data-desc="Dual-joint wheel mechanism capable of changing the effective wheelbase during step climbing."
+               data-meta="Locomotion: Wheel + Dual joint"
+               data-flat="5"
+               data-step="3"
+               data-stability="4"
+               data-maneuver="3"
+               data-gimbal="4"
+               data-spin="2"
+               data-terrain="4"
+               data-reliability="4"
+               data-power="2"
+               data-structure="4"
+               data-maintain="4"
+               data-weight="2"
+               data-mechcomplex="4"
+               data-controldiff="4"
+               data-designdiff="4"
+               data-total="147">
+            <img src="../images/Special 3.png" alt="Design 12" />
+            <div class="overlay">
+              <strong>Special 8</strong>
+              Dual joints<br>COM adjustment
+            </div>
+          </div>
+
+          <!-- Card 13 – Excel Design No.14 -->
+          <div class="card"
+               data-title="Ball Robot"
+               data-desc="Robot body is fitted within a massive rotating ball balanced by rolling/Gyro."
+               data-meta="Single Wheel balancing"
+               data-flat="3"
+               data-step="4"
+               data-stability="3"
+               data-maneuver="2"
+               data-gimbal="2"
+               data-spin="2"
+               data-terrain="3"
+               data-reliability="3"
+               data-power="2"
+               data-structure="5"
+               data-maintain="3"
+               data-weight="2"
+               data-mechcomplex="3"
+               data-controldiff="1"
+               data-designdiff="2"
+               data-total="120">
+            <img src="../images/ball robot.jpg" alt="Design 13" />
+            <div class="overlay">
+              <strong>Special 3</strong>
+              Compact hybrid<br>Confined spaces
+            </div>
+          </div>
+
+          <!-- Card 14 – Excel Design No.14 (existing continuation) -->
+          <div class="card"
+               data-title="Wheel Leg with Wheel at the Joint"
+               data-desc="Wheel leg able to transform into a 4 wheel robot."
+               data-meta="Non-holonomic"
+               data-flat="5"
+               data-step="4"
+               data-stability="3"
+               data-maneuver="5"
+               data-gimbal="5"
+               data-spin="5"
+               data-terrain="3"
+               data-reliability="4"
+               data-power="3"
+               data-structure="3"
+               data-maintain="4"
+               data-weight="3"
+               data-mechcomplex="3"
+               data-controldiff="1"
+               data-designdiff="2"
+               data-total="144">
+            <img src="../images/Design14.jpg" alt="Design 14" />
+            <div class="overlay">
+              <strong>Dual-DOF Leg</strong>
+              Translation + Rotation<br>Non-holonomic
+            </div>
+          </div>
+
+          <!-- Card 15 – Excel Design No.15 -->
+          <div class="card"
+               data-title="Robot Wheel Leg Dog"
+               data-desc="A four-wheel robot dog capable of adaptive stair climbing using active suspension geometry. Demonstrates good adaptability and traction."
+               data-meta="Locomotion: 4 wheel leg, Non-holonomic"
+               data-flat="5"
+               data-step="3"
+               data-stability="4"
+               data-maneuver="3"
+               data-gimbal="5"
+               data-spin="3"
+               data-terrain="5"
+               data-reliability="4"
+               data-power="1"
+               data-structure="3"
+               data-maintain="4"
+               data-weight="2"
+               data-mechcomplex="4"
+               data-controldiff="2"
+               data-designdiff="2"
+               data-total="134">
+            <img src="../images/Design15.jpg" alt="Design 15" />
+            <div class="overlay">
+              <strong>Four-Wheel Stair Climber</strong>
+              Active suspension<br>Stair-climbing test
+            </div>
+          </div>
+
+          <!-- Card 16 – Excel Design No.16 -->
+          <div class="card"
+               data-title="Inverted Wheel-Leg Robot Dog"
+               data-desc="A four-legged hybrid robot with powered wheels on each leg, designed for both flat motion and step negotiation."
+               data-meta="Locomotion: Wheel-Leg Hybrid · 4-legged crawler"
+               data-flat="5"
+               data-step="3"
+               data-stability="4"
+               data-maneuver="4"
+               data-gimbal="5"
+               data-spin="4"
+               data-terrain="5"
+               data-reliability="3"
+               data-power="1"
+               data-structure="2"
+               data-maintain="4"
+               data-weight="1"
+               data-mechcomplex="3"
+               data-controldiff="1"
+               data-designdiff="2"
+               data-total="128">
+            <img src="../images/Design16.jpg" alt="Design 16" />
+            <div class="overlay">
+              <strong>Hybrid Leg-Wheel</strong>
+              Six-legged crawler<br>Hybrid design
+            </div>
+          </div>
+
+          <!-- Card 17 – Excel Design No.17 -->
+          <div class="card"
+               data-title="Bipedal Balancing Robot"
+               data-desc="Self-balancing bipedal design using two large wheels. Combines stability control and step climbing with pendulum-like leg motion."
+               data-meta="Locomotion: Bipedal · Self-balancing"
+               data-flat="5"
+               data-step="4"
+               data-stability="3"
+               data-maneuver="2"
+               data-gimbal="4"
+               data-spin="4"
+               data-terrain="4"
+               data-reliability="4"
+               data-power="4"
+               data-structure="4"
+               data-maintain="3"
+               data-weight="3"
+               data-mechcomplex="2"
+               data-controldiff="2"
+               data-designdiff="2"
+               data-total="140">
+            <img src="../images/Design17.jpg" alt="Design 17" />
+            <div class="overlay">
+              <strong>Bipedal Balancing</strong>
+              Self-balancing<br>Wheel-based biped
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- RIGHT: PREVIEW PANEL -->
+      <div class="preview-panel">
+        <div class="preview-image-wrapper">
+          <img id="previewImg" src="" alt="Preview">
+        </div>
+        <h4 id="previewTitle" class="preview-title">Hover over a design to preview</h4>
+        <p id="previewText" class="preview-text">
+          Move your cursor over any image in the gallery to view a larger version
+          of the design here, along with a short description and its key morphological
+          attributes.
+        </p>
+        <p id="previewMeta" class="preview-meta">
+          Locomotion type, step capability and mechanism details will be shown here.
+        </p>
+
+        <div id="previewParams" class="params">
+          <div class="params-title">Parameter Grading</div>
+          <div class="params-legend">
+            Scores are multiplied by the weighting factor <strong>w</strong> for ranking.
+          </div>
+          <!-- parameter rows injected via JS -->
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- ==== END MORPHOLOGICAL GALLERY ==== -->
 
 
   <!-- ========================================================= -->
   <!-- 4.4 DESIGN SENSE MAKING – CONTINUOUS TRACK -->
   <!-- ========================================================= -->
-  <h3 class="subsection-title" id="sec-4-4">4.4 Design Sense Making – Continuous Track</h3>
+  <h3 class="subsection-title" id="sec-4-3">4.3 Design Sense Making – Continuous Track</h3>
 
-  <p>
-    Continuous tracks are a natural candidate for all-terrain RoboMaster
-    robots because of their large contact area and ability to maintain traction
-    over uneven ground. In this project, a tracked configuration was analysed
-    in detail to evaluate whether it could meet the required 200 mm step
-    performance while staying within speed, power, and weight constraints.
-  </p>
-
-  <p>
-    The analysis included rolling resistance, internal track losses, and
-    available motor torque, which together determine the achievable robot
-    speed and climbing capability.
+ <img src="images/continuous track.png" alt="Prototype Photo" style="width: 50%; display:block; margin:auto;">
+  <p style="text-align:center; margin-top:6px;">
+    <strong>Figure X:</strong> Explanation put here.
   </p>
 
   <!-- 4.4.1 Continuous Track Speed Calculation -->
-  <h4 class="subsubsection-title" id="sec-4-4-1">4.4.1 Continuous Track Speed Calculation</h4>
 
-  <details class="expand-box">
-    <summary><strong>Click to expand: Track speed and power calculations</strong></summary>
 
-    <p>
-      This subsection documents the estimation of the track-driven robot speed
-      based on motor characteristics, gear ratios, and rolling resistance
-      coefficients. The key steps include:
-    </p>
+<p>
+  Tracked locomotion systems are widely used in military and agricultural platforms
+  because of their excellent terrain adaptability and traction, and their ability to
+  climb obstacles exceeding twice the roller diameter (Wong, 2001; Liang et al., 2023).
+  However, their higher internal resistance and lower speed generally make them less
+  efficient than wheeled systems (Wong &amp; Huang, 2006; Chołodowski &amp; Dudziński, 2021).
+  Since translational speed is critical in the RoboMaster competition, a preliminary
+  power&ndash;speed analysis is carried out to evaluate whether a tracked configuration
+  is feasible.
+</p>
 
-    <ul>
-      <li>Estimating <strong>rolling resistance (C<sub>roll</sub>)</strong> and internal losses in the
-          undercarriage.</li>
-      <li>Computing maximum tractive effort from motor torque and sprocket radius.</li>
-      <li>Relating available thrust to steady-state speed on flat ground.</li>
-      <li>Checking whether the resulting speed and acceleration meet competition needs.</li>
-    </ul>
+<details class="expand-box">
+  <summary><strong>Click to expand: Explanation of calculation and coefficient selection</strong></summary>
 
-    <p>
-      The results show that, although a tracked design offers strong terrain
-      capability, the penalty in internal losses and mechanical complexity makes
-      it less attractive compared to lighter wheel-leg and linkage-based
-      solutions for this specific RoboMaster task.
-    </p>
-  </details>
+  <h5 class="subsubsubsection-title">Steady-state power balance</h5>
 
+  <p>
+    The robot is designed with a mass of <strong>20&nbsp;kg</strong> and an available
+    mechanical power of <strong>85&nbsp;W</strong>. The steady-state speed on flat
+    ground is estimated by balancing drive power and resistive losses. Because it is
+    difficult to resolve the exact directions of the internal friction forces and
+    rolling resistance forces, a <strong>steady-state conservation of energy</strong>
+    approach is used:
+  </p>
+
+  <p style="margin-left:1.5em;">
+    Motor output power = Kinetic power of linear motion + Power losses
+    <br>
+    Motor input &times; motor efficiency = 
+    <span style="white-space:nowrap;">&frac12;m v<sup>2</sup></span> + 
+    (rolling resistance + internal track friction + slip + &hellip;) &times; v
+    <br>
+    Power input: <em>P</em><sub>in</sub> = &tau; &times; &omega;
+  </p>
+
+  <p>
+    Frictional force losses are expressed via resistance coefficients multiplied by
+    the vehicle weight:
+  </p>
+
+  <p style="margin-left:1.5em;">
+    <em>F</em><sub>roll</sub> = C<sub>r</sub> &times; m g,
+    &nbsp;&nbsp;
+    <em>F</em><sub>int</sub> = C<sub>int</sub> &times; m g
+  </p>
+
+  <ul>
+    <li>
+      <strong>Rolling resistance coefficient, C<sub>r</sub> = 0.03.</strong><br>
+      Tracked systems typically have more than twice the rolling resistance of pneumatic
+      tyres. For reference, pneumatic wheelchair tyres on hard surfaces show
+      C<sub>r</sub> &approx; 0.01 at nominal pressure (Łukasz, 2018).
+    </li>
+    <li>
+      <strong>Internal motion resistance coefficient, C<sub>int</sub> = 0.12 (design value).</strong><br>
+      Internal motion resistance on hard ground is dominated by track bending losses
+      around rollers/idlers, tension/guide and bearing losses, and additional friction
+      at the track&ndash;wheel interface:
+      <br>
+      C<sub>int</sub> = C<sub>bend</sub> + C<sub>tens</sub> + C<sub>bear</sub>,
+      &nbsp;&nbsp;
+      <em>F</em><sub>int</sub> = C<sub>int</sub> &times; m g.
+    </li>
+  </ul>
+
+  <h5 class="subsubsubsection-title">Scaling of internal losses</h5>
+
+  <p>
+    To estimate C<sub>int</sub> for a 20&nbsp;kg robot, a combination of
+    <strong>dimensional similitude</strong> and <strong>empirical data</strong> is used:
+  </p>
+
+  <ol>
+    <li>
+      <strong>Reference prototype.</strong><br>
+      A 2.0&nbsp;t rubber-track prototype is taken as a clean baseline with
+      measured internal resistance
+      C<sub>int,h</sub> &approx; 0.09 (midpoint of 0.08&ndash;0.10) (SpringerLink).
+    </li>
+
+    <li>
+      <strong>Bending-loss similitude.</strong><br>
+      For a rubber belt, bending losses per unit distance scale with flexural rigidity
+      <em>EI</em> and curvature 1/R:
+      <br>
+      C<sub>bend</sub> &prop; (E &times; B &times; t<sup>3</sup>) / (R<sup>2</sup> &times; m g)
+      <br>
+      Assuming geometrically similar construction where 
+      E, B, t and R scale with the characteristic length L, and m &prop; L<sup>3</sup>:
+      <br>
+      C<sub>bend</sub> &prop; L<sup>4</sup> / (L<sup>2</sup> &times; L<sup>3</sup>) = 1 / L.
+      <br>
+      Downscaling by s = L<sub>r</sub> / L<sub>h</sub> gives
+      C<sub>bend,r</sub> &approx; C<sub>bend,h</sub> &times; (1 / s).  
+      With s &approx; (m<sub>r</sub> / m<sub>h</sub>)<sup>1/3</sup> =
+      (20 / 2000)<sup>1/3</sup> &approx; 0.215, the pure similitude factor is
+      &approx; 4.65. This would naively push a bending-dominated coefficient
+      from 0.09 to ~0.42, which is treated as a conservative upper bound.
+    </li>
+
+    <li>
+      <strong>Empirical trend for smaller systems.</strong><br>
+      The same Springer data show 0.14&ndash;0.28 for a 720&nbsp;kg articulated platform
+      and 0.15&ndash;0.21 for a 1.7&nbsp;t rubber-belt prototype, both higher than heavy
+      tanks (0.025&ndash;0.065). This confirms that internal losses increase as machines
+      get smaller and more compact. Independent small-robot studies further report total
+      rolling loss coefficients on hard surfaces exceeding 0.20 (MDPI), indicating that
+      a C<sub>int</sub> in the 0.10&ndash;0.18 range is realistic for a 20&nbsp;kg tracked
+      robot.
+    </li>
+  </ol>
+
+  <h5 class="subsubsubsection-title">Final coefficients used in design</h5>
+
+  <ul>
+    <li>
+      <strong>Internal resistance:</strong>
+      C<sub>int</sub> = 0.2 (conservative) with a sanity range of 0.10&ndash;0.18,
+      justified by the 1.7&ndash;2.0&nbsp;t prototypes, the 720&nbsp;kg platform and
+      the down-scaling arguments (SpringerLink).
+    </li>
+    <li>
+      <strong>Rolling/interface resistance on hard floor:</strong>
+      C<sub>roll</sub> = 0.03 (main case), with a range of 0.03&ndash;0.12 based on
+      small-robot measurements on smooth floors (MDPI).
+    </li>
+  </ul>
+
+  <p>
+    These coefficients are then substituted into the steady-state power equation to
+    obtain the estimated maximum flat-ground speed for the tracked configuration and
+    to assess whether it satisfies the RoboMaster competition speed requirements.
+  </p>
+  <pre class="code-block"><code class="language-matlab">
+%This script is used to calculate the speed reduction after transforming
+%from 4 wheeled robot to transformative track locomotive system robot 
+
+%Power Input ------------------------------------------
+Motor_rated_RPM = 469; 
+Motor_rated_rad = Motor_rated_RPM * (2*pi/60);
+Max_allowable_chassis_power = 100; %w 
+Motor_transmission_losses_coefficient = 0.15; 
+Pin_all_motor = Max_allowable_chassis_power * (1 - Motor_transmission_losses_coefficient);
+%supercap_J = 2000;
+%----------------------------------------------------------
+
+% Vehicle Specification
+W = 20 * 9.81; %N
+
+%Losses 
+
+%Rolling Losses 
+C_rolling = 0.03; %(maximum safe estimation) (2 times normal tyre rolling resistence) 
+F_rolling = C_rolling * W; %N
+
+%Internal Friction
+C_internal = 0.20;
+F_internal = C_internal * W; 
+
+%Slip Losses - Track-ground loss
+syms v a b
+
+%Pin_all_motor = (1/2*15)v^2  + (F_rolling+F_internal) * v 
+
+a = 1/2*15;
+b = F_rolling + F_internal;
+c = - Pin_all_motor; 
+
+coeffs = [a b c]; 
+v = roots(coeffs);
+
+disp(v);
+  </code></pre>
+
+</details>
+
+<p>The final result is the track will have a speed of 1.5m/s with the same motor setting, 
+  which is only 2/3 of the wheeled configuration's speed. 
+  Therefore this configuration is rejected</p>
 
   <!-- ========================================================= -->
   <!-- 4.5 WHEEL-LEG HOLONOMIC ANALYSIS -->
   <!-- ========================================================= -->
-  <h3 class="subsection-title" id="sec-4-5">4.5 Wheel Leg Holonomic Analysis</h3>
+  <h3 class="subsection-title" id="sec-4-4">4.4 Wheel Leg Holonomic Analysis</h3>
+ <img src="images/wheelleg.jpg" alt="Prototype Photo" style="width: 50%; display:block; margin:auto;">
+<p style="text-align:center; margin-top:6px;">
+  <strong>Figure X:</strong> Explanation put here.
+</p>
 
   <p>
-    After evaluating the continuous track design, attention is shifted to
-    wheel-leg locomotion. This subsection analyses the kinematics and mobility
-    characteristics of wheel-leg concepts, including whether they behave as
-    holonomic or non-holonomic systems and how that affects battlefield
-    manoeuvrability.
+   After eliminating the tracked design, 
+   It is focused on analyzing the wheel-leg, 
+   linkage-leg, and big-wheel concepts, 
+   each of which demonstrates its own distinct 
+   functions and characteristics. 
+</p>
+
+<p>
+The wheel-leg design introduces an additional 
+degree of freedom, allowing vertical movement. 
+This enables the robot to “jump” or lift itself 
+over obstacles. It also functions as an enhanced 
+suspension system — the leg actuated by motor torque can 
+absorb or compensate for vibrations when moving over uneven 
+terrain.
+</p>
+  <p>
+However, the main limitation of the wheel-leg design is 
+that it is non-holonomic. 
+Research into holonomic systems is done to evaluate the 
+trade offs to use a non-holonomic system. 
+
   </p>
 
   <details class="expand-box">
     <summary><strong>Click to expand: Overview of wheel-leg mobility analysis</strong></summary>
-
     <p>
-      The analysis examines:
-    </p>
-    <ul>
-      <li>Feasible motion directions when the legs are in ground-contact phase.</li>
-      <li>Turning radius and pivoting behaviour during step-climbing.</li>
-      <li>Impact of leg geometry on stability and gimbal aiming performance.</li>
-    </ul>
+     
 
+    
+      Compared to the mecanum or omni-wheel configurations currently used by the team, 
+      non-holonomic systems lack the ability to move freely in any direction. 
+      In RoboMaster competitions, holonomic mobility offers a significant advantage during confrontations — 
+      it allows the robot to quickly strafe in multiple directions while maintaining the so-called “Beyblade mode”, 
+      where the chassis spins rapidly to evade projectiles.
+    
+
+      <p>
+  In contrast, a non-holonomic robot can only rotate on the spot and cannot perform agile lateral
+  maneuvers, limiting its responsiveness in fast-paced combat situations. Nonetheless, because the
+  wheel-leg design offers improved terrain adaptability, its motion performance is simulated to
+  determine whether this trade-off is acceptable for the intended application.
+</p>
+
+
+
+<img src="images/holonomic.jpg" alt="holonomic" style="width: 70%; display:block; margin:auto;">
+<p style="text-align:center; margin-top:6px;">
+  <strong>Figure X:</strong> INSERT EXPLANTION  
+
+ <p>
+  A holonomic constraint can be written in terms of position only (like 
+  <em>f(x<sub>M</sub>, y<sub>M</sub>, &theta;) = 0</em>), but here the constraint is in 
+  velocity form, involving <em>x&#775;</em>, <em>y&#775;</em>. It cannot be integrated into 
+  a pure positional constraint — that’s why it’s non-holonomic.
+</p>
+
+<p>
+  So even though the robot has 3 coordinates 
+  (<em>x<sub>M</sub>, y<sub>M</sub>, &theta;</em>), it only has 2 independent velocity 
+  inputs (usually the left and right wheel speeds). That means:
+</p>
+
+<p>
+  <strong>Degrees of freedom (3)</strong> − <strong>Constraints (1)</strong> = 
+  <strong>2</strong><br>
+ the robot is underactuated, and its motion must follow this velocity constraint.
+</p>
+
+
+
+<p>
+  The motion simulation in MATLAB adopts real physical constraints, such as the non-holonomic
+  kinematic equation of a differential-drive robot, which governs how the robot’s position
+  <em>(x, y)</em> and orientation <em>&theta;</em> evolve based on its forward velocity <em>v</em>
+  and angular velocity <em>&omega;</em>. In the code, this constraint is reflected in the following
+  section:
+</p>
+
+<pre class="code-block"><code class="language-matlab">
+vx2 = v2 * cos(pose_2w(3));
+vy2 = v2 * sin(pose_2w(3));
+pose_2w(1) = pose_2w(1) + vx2*dt;
+pose_2w(2) = pose_2w(2) + vy2*dt;
+pose_2w(3) = pose_2w(3) + omega2*dt;
+</code></pre>
+
+<p>
+  Here, <code>pose_2w(3)</code> represents the robot’s heading angle <em>&theta;</em>, while
+  <code>vx2</code> and <code>vy2</code> are the velocity components constrained to that heading
+  direction. This implementation ensures that the robot cannot move sideways (i.e., it obeys the
+  non-holonomic constraint) and must rotate (<code>omega2</code>) to change its direction of travel
+  — accurately modeling the real-world motion of a two-wheel differential-drive robot.
+</p>
+
+<p>
+  And below is the simulation result.
+</p>
+  <!-- 4.5.1 Simulation Demo – Omniwheel vs 2-Wheel -->
+  <h4 class="subsubsection-title" id="sec-4-4-1">
+    4.5.1 Omniwheel vs 2-Wheel Simulation
+  </h4>
+
+  
+
+  <section class="sim-demo">
+    <h4>Simulation Video: Holonomic vs Non-Holonomic Response</h4>
     <p>
-      These insights help filter out purely holonomic but mechanically fragile
-      designs in favour of robust non-holonomic variants that still provide
-      adequate manoeuvrability for RoboMaster gameplay.
+      The video below shows the omniwheel robot (holonomic) and the two-wheel
+      robot (non-holonomic) attempting to track the same zig-zag trajectory.
+      The omniwheel system can make sharp lateral corrections, whereas the
+      two-wheel robot exhibits slower, arcing turns due to its kinematic
+      constraint.
     </p>
+
+    <!-- Responsive video -->
+   <div class="video-wrap">
+    <video class="small-video" autoplay muted loop playsinline controls>
+        <source src="videos/zigzag_sim.mp4" type="video/mp4" />
+        Your browser does not support the video tag.
+    </video>
+</div>
+
+    <!-- Collapsible MATLAB code -->
+   
+      <summary>Show MATLAB Code (zigzag_sim.m)</summary>
+      <pre class="code-block"><code class="language-matlab">
+% MATLAB Zig-Zag Simulation (Omni vs 2-Wheel)
+% Full script saved as zigzag_sim.m
+% Run to generate zigzag_sim.mp4 video
+
+% clc; clear; close all;
+
+%% Simulation parameters
+dt = 0.05;      
+T = 40;         
+N = T/dt;
+
+%% Initial poses [x, y, theta]
+pose_omni = [0; 0; 0];     
+pose_2w   = [0; 0; 0];    
+
+%% Trajectories
+traj_omni = zeros(N,3);
+traj_2w   = zeros(N,3);
+
+%% Speeds
+v_omni = 0.5;       
+v2 = 0.5;            
+omega2_max = 1.0;   % max rotation rate for 2-wheel
+
+%% Setup figure
+figure('Position',[100 100 800 400]); 
+hold on; axis equal;
+xlabel('X (m)'); ylabel('Y (m)'); grid on;
+xlim([-1 10]); ylim([-3 3]);
+
+% Plot handles
+h_omni = plot(nan,nan,'b','LineWidth',2);
+h_2w   = plot(nan,nan,'r','LineWidth',2);
+traj_plot_omni = plot(nan,nan,'--b','LineWidth',1.5);
+traj_plot_2w   = plot(nan,nan,'--r','LineWidth',1.5);
+
+%% Define waypoints for zig-zag (straight-line segments)
+waypoints = [0 0;
+             3 0;
+             3 2;
+             6 2;
+             6 -1.5;
+             9 -1.5;
+             9 1;
+             10 1]; % [x, y]
+
+segment_index = 1;
+current_heading = atan2(waypoints(2,2)-waypoints(1,2), waypoints(2,1)-waypoints(1,1));
+
+%% === Video Recording Setup ===
+v = VideoWriter('zigzag_sim.mp4','MPEG-4');  % Output video
+v.FrameRate = 60;                            % Frames per second
+open(v);
+
+%% Simulation loop
+for i = 1:N
+    %% Omniwheel robot: straight-line motion along current segment
+    dx = waypoints(segment_index+1,1) - pose_omni(1);
+    dy = waypoints(segment_index+1,2) - pose_omni(2);
+    dist = sqrt(dx^2 + dy^2);
+    
+    % Check if reached end of current segment
+    if dist &lt; v_omni*dt && segment_index &lt; size(waypoints,1)-1
+        segment_index = segment_index + 1;
+        current_heading = atan2(waypoints(segment_index+1,2)-waypoints(segment_index,2), ...
+                                waypoints(segment_index+1,1)-waypoints(segment_index,1));
+        dx = waypoints(segment_index+1,1) - pose_omni(1);
+        dy = waypoints(segment_index+1,2) - pose_omni(2);
+    end
+    
+    vx_omni = v_omni * cos(current_heading);
+    vy_omni = v_omni * sin(current_heading);
+    
+    % Update omniwheel pose
+    pose_omni(1) = pose_omni(1) + vx_omni*dt;
+    pose_omni(2) = pose_omni(2) + vy_omni*dt;
+    pose_omni(3) = current_heading;
+    traj_omni(i,:) = pose_omni';
+    
+    %% 2-wheel robot: move toward omniwheel (non-holonomic)
+    desired_theta = atan2(pose_omni(2) - pose_2w(2), pose_omni(1) - pose_2w(1));
+    theta_err = atan2(sin(desired_theta - pose_2w(3)), cos(desired_theta - pose_2w(3)));
+    omega2 = max(min(theta_err, omega2_max), -omega2_max);  % limit rotation
+    
+    % Forward motion along heading
+    vx2 = v2 * cos(pose_2w(3));
+    vy2 = v2 * sin(pose_2w(3));
+    
+    % Update 2-wheel pose (real non-holonomic motion constraint)
+    pose_2w(1) = pose_2w(1) + vx2*dt;
+    pose_2w(2) = pose_2w(2) + vy2*dt;
+    pose_2w(3) = pose_2w(3) + omega2*dt;
+    traj_2w(i,:) = pose_2w';
+    
+    %% Update plots
+    set(h_omni,'XData',pose_omni(1),'YData',pose_omni(2));
+    set(h_2w,'XData',pose_2w(1),'YData',pose_2w(2));
+    set(traj_plot_omni,'XData',traj_omni(1:i,1),'YData',traj_omni(1:i,2));
+    set(traj_plot_2w,'XData',traj_2w(1:i,1),'YData',traj_2w(1:i,2));
+    
+    drawnow;
+
+    % === Capture Frame for Video ===
+    frame = getframe(gcf);
+    writeVideo(v, frame);
+end
+
+%% Finalize video
+close(v);
+
+title('Omniwheel vs 2-Wheel Balancing: Zig-Zag Sharp Turn Comparison');
+legend('Omniwheel','2-Wheel','Omni Traj','2W Traj');
+      </code></pre>
+      <a class="download" href="videos/zigzag_sim.m" download>
+        Download MATLAB Script (.m)
+      </a>
+   
+  </section>
+
+
   </details>
 
 
   <!-- ========================================================= -->
-  <!-- 4.6 LINKAGE DESIGN ANALYSIS -->
+  <!-- 4.5 LINKAGE DESIGN ANALYSIS -->
   <!-- ========================================================= -->
-  <h3 class="subsection-title" id="sec-4-6">4.6 Linkage Design Analysis (Bipedal with Linkage)</h3>
-
+  <h3 class="subsection-title" id="sec-4-5">4.5 Linkage Design Analysis (Bipedal with Linkage)</h3>
+ <img src="images/5bar.jpg" alt="Prototype Photo" style="width: 80%; display:block; margin:auto;">
+<p style="text-align:center; margin-top:6px;">
+  <strong>Figure X:</strong> Explanation put here.
+</p>
   <p>
-    The bipedal concept with linkages is then studied as a candidate that can
-    amplify torque and enable controlled step-climbing without overloading the
-    actuators. The linkage geometry is tuned to provide favourable mechanical
-    advantage near the step while maintaining a compact configuration during
-    normal driving.
+   Many wheel-leg and quadrupedal robots utilize linkage mechanisms to drive leg movement, 
+   as such systems offer a mechanical advantage in transmitting torque and force. This design 
+   choice enhances the robot’s ability to handle loads efficiently while maintaining smoother 
+   motion control. In this case, a brief evaluative analysis is carried out to assess the potential 
+   benefits and feasibility of applying this linkage-based configuration within the project’s context.
+
   </p>
 
+
   <details class="expand-box">
-    <summary><strong>Click to expand: Linkage configuration and torque amplification</strong></summary>
+    <summary><strong>Linkage-Based Leg Mechanism Evaluation</strong></summary>
+
+  <section id="linkage-evaluation" style="margin-top:15px;">
+  
+
+    <h4>Key Functional Considerations</h4>
+    <table style="border-collapse: collapse; width: 100%;">
+      <tbody>
+        <tr>
+          <th style="text-align:left; padding:6px; border-bottom:1px solid #ccc;">Functionality</th>
+          <td style="padding:6px; border-bottom:1px solid #ccc;">
+            <strong>Motor Placement</strong><br />
+            Able to offset the motor on the chassis:
+            <ul>
+              <li>Compact size</li>
+              <li>Better weight distribution (avoid higher moving mass)</li>
+            </ul>
+          </td>
+        </tr>
+        <tr>
+          <th style="text-align:left; padding:6px; border-bottom:1px solid #ccc;">Special Feature</th>
+          <td style="padding:6px; border-bottom:1px solid #ccc;">
+            <strong>360° Rotation</strong><br />
+            For self-recovery purposes.
+          </td>
+        </tr>
+        <tr>
+          <th style="text-align:left; padding:6px; border-bottom:1px solid #ccc;">Loading</th>
+          <td style="padding:6px; border-bottom:1px solid #ccc;">
+            <strong>Mechanical Advantage</strong><br />
+            From linkage, providing torque step-up.
+          </td>
+        </tr>
+        <tr>
+          <th style="text-align:left; padding:6px;">Terrain Pass</th>
+          <td style="padding:6px;">
+            <ul>
+              <li>Additional mode of climbing steps</li>
+              <li>Leg on one side only</li>
+            </ul>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h4>Five-Bar Scissor Linkage Selection</h4>
+
+
 
     <p>
-      The analysis focuses on:
+      Among the various linkage configurations explored, the five-bar scissor linkage stands 
+      out as particularly noteworthy. This design offers several advantages:
     </p>
     <ul>
-      <li>Mapping motor torque to ground reaction forces through the linkage.</li>
-      <li>Identifying singular configurations and unstable regions.</li>
-      <li>Ensuring that the robot can support its own weight when quasi-static
-          on the step edge.</li>
+      <li>Greater flexibility in achieving mechanical advantage (2–3× torque amplification).</li>
+      <li>Full 360° rotation capability.</li>
+      <li>Ability to integrate a nitrogen spring for additional lift or jumping capability.</li>
     </ul>
 
     <p>
-      These results justify using a linkage-based bipedal architecture over
-      simpler wheel-only designs for reliable 200 mm step-climbing.
+      A simple 3D-printed prototype is produced to validate the concept of such linkage movement.
     </p>
+
+    <!-- Prototype video embed -->
+   <div class="video-wrap">
+    <video class="small-video" autoplay muted loop playsinline controls>
+        <source src="videos/5bar.mp4" type="video/mp4" />
+        Your browser does not support the video tag.
+    </video>
+</div>
+  </section>
+
   </details>
 
 
   <!-- ========================================================= -->
-  <!-- 4.7 BIG WHEEL DESIGN ANALYSIS -->
+  <!-- 4.6 BIG WHEEL DESIGN ANALYSIS -->
   <!-- ========================================================= -->
-  <h3 class="subsection-title" id="sec-4-7">4.7 Big Wheel Design Analysis</h3>
+  <h3 class="subsection-title" id="sec-4-6">4.6 Big Wheel Design Analysis</h3>
+
+<img src="images/RM 2.png" alt="Prototype Photo" style="width: 50%; display:block; margin:auto;">
+<p style="text-align:center; margin-top:6px;">
+  <strong>Figure X:</strong> Explanation put here.
+</p>
+
 
   <p>
     A big-wheel concept is also evaluated, where the robot attempts to clear
     the step primarily through a large effective wheel radius and controlled
-    “hopping” or rolling motion onto the riser. This approach is attractive
+    “hopping” or rolling motion onto the riser.  This configuration 
+    is ideal for uneven ground or outdoor environment due to its robust wheel structure and 
+    terrain pass capability. 
+    This approach is attractive
     because it can simplify the mechanism, but it places strict requirements on
-    wheel size, centre-of-mass position, and available motor power.
+    wheel size, centre-of-mass position, and available motor power. 
+    <br><br>
+    A simple evaluation of the "roll up" mechanism and obstacle clearance capability is done: 
   </p>
 
   <details class="expand-box">
     <summary><strong>Click to expand: Step-climbing and hopping feasibility</strong></summary>
+<img src="images/big wheel.jpg" alt="big wheel" style="width: 70%; display:block; margin:auto;">
+<p style="text-align:center; margin-top:6px;">    
+  <strong>Figure X:</strong> INSERT EXPLANTION
+</p>
 
-    <p>
-      The study includes:
-    </p>
-    <ul>
-      <li>Geometric conditions for the wheel to contact and roll over a 200 mm step.</li>
-      <li>Required vertical and horizontal velocities for smooth “hop” motions.</li>
-      <li>Checking whether the launch speed is achievable within motor torque and
-          power limits.</li>
-    </ul>
 
-    <p>
-      The analysis shows that while large wheels can theoretically climb the
-      step, the associated compromises in packaging, weight distribution, and
-      game layout make this option less favourable than the final bipedal
-      wheel-leg linkage design.
-    </p>
+
+<p>
+  When a big wheel attempts to climb a vertical step, the wheel typically
+  contacts the step edge at a single point. The forces at this contact can be
+  decomposed into a <em>normal force</em> and a <em>friction force</em>, which
+  are then resolved into the world-frame x and y directions.
+</p>
+
+<p>The force balance equations are:</p>
+
+<!-- === Horizontal Equation === -->
+<math display="block">
+  <mrow>
+    <msub><mi>N</mi><mi>w</mi></msub>
+    <mo>&#x2062;</mo><mi>cos</mi><mi>&#x03B4;</mi>
+    <mo>&#x2212;</mo>
+    <msub><mi>f</mi><mi>f</mi></msub>
+    <mo>&#x2062;</mo><mi>sin</mi><mi>&#x03B4;</mi>
+    <mo>&#x2212;</mo>
+    <msub><mi>f</mi><mi>x</mi></msub>
+    <mo>=</mo>
+    <msub><mi>m</mi><mi>w</mi></msub>
+    <mo>&#x2062;</mo>
+    <msub><mi>a</mi><mi>x</mi></msub>
+  </mrow>
+</math>
+
+<!-- === Vertical Equation === -->
+<math display="block">
+  <mrow>
+    <msub><mi>N</mi><mi>w</mi></msub>
+    <mo>&#x2062;</mo><mi>sin</mi><mi>&#x03B4;</mi>
+    <mo>+</mo>
+    <msub><mi>f</mi><mi>f</mi></msub>
+    <mo>&#x2062;</mo><mi>cos</mi><mi>&#x03B4;</mi>
+    <mo>&#x2212;</mo>
+    <msub><mi>m</mi><mi>w</mi></msub>
+    <mi>g</mi>
+    <mo>&#x2212;</mo>
+    <mi>N</mi>
+    <mo>=</mo>
+    <msub><mi>m</mi><mi>w</mi></msub>
+    <mo>&#x2062;</mo>
+    <msub><mi>a</mi><mi>y</mi></msub>
+  </mrow>
+</math>
+
+<p>Where:</p>
+
+<ul>
+  <li><strong>N<sub>w</sub></strong>: normal reaction force at the step corner</li>
+  <li><strong>f<sub>f</sub></strong>: friction force along the tangent direction</li>
+  <li><strong>δ</strong>: contact angle between the normal vector and global x-axis</li>
+  <li><strong>f<sub>x</sub></strong>: horizontal axle reaction from chassis</li>
+  <li><strong>N</strong>: ground normal force (if lower floor contact exists)</li>
+  <li><strong>m<sub>w</sub></strong>: effective wheel mass</li>
+  <li><strong>a<sub>x</sub>, a<sub>y</sub></strong>: horizontal & vertical accelerations</li>
+  <li><strong>g</strong>: gravitational acceleration</li>
+</ul>
+
+<h4>Horizontal Force Balance</h4>
+
+<math display="block">
+  <mrow>
+    <msub><mi>N</mi><mi>w</mi></msub>
+    <mo>&#x2062;</mo><mi>cos</mi><mi>&#x03B4;</mi>
+    <mo>&#x2212;</mo>
+    <msub><mi>f</mi><mi>f</mi></msub>
+    <mo>&#x2062;</mo><mi>sin</mi><mi>&#x03B4;</mi>
+    <mo>&#x2212;</mo>
+    <msub><mi>f</mi><mi>x</mi></msub>
+    <mo>=</mo>
+    <msub><mi>m</mi><mi>w</mi></msub>
+    <mo>&#x2062;</mo>
+    <msub><mi>a</mi><mi>x</mi></msub>
+  </mrow>
+</math>
+
+<p>
+  The term <strong>N<sub>w</sub>cosδ − f<sub>f</sub>sinδ</strong> is the horizontal push
+  from the step edge. For the wheel to climb, this push must be strong enough to overcome
+  the axle reaction <strong>f<sub>x</sub></strong> and produce forward acceleration
+  <strong>a<sub>x</sub></strong>.
+</p>
+
+<h4>Vertical Force Balance</h4>
+
+<math display="block">
+  <mrow>
+    <msub><mi>N</mi><mi>w</mi></msub>
+    <mo>&#x2062;</mo><mi>sin</mi><mi>&#x03B4;</mi>
+    <mo>+</mo>
+    <msub><mi>f</mi><mi>f</mi></msub>
+    <mo>&#x2062;</mo><mi>cos</mi><mi>&#x03B4;</mi>
+    <mo>&#x2212;</mo>
+    <msub><mi>m</mi><mi>w</mi></msub>
+    <mi>g</mi>
+    <mo>&#x2212;</mo>
+    <mi>N</mi>
+    <mo>=</mo>
+    <msub><mi>m</mi><mi>w</mi></msub>
+    <mo>&#x2062;</mo>
+    <msub><mi>a</mi><mi>y</mi></msub>
+  </mrow>
+</math>
+
+<p>
+  The vertical term <strong>N<sub>w</sub>sinδ + f<sub>f</sub>cosδ</strong> determines whether the
+  wheel can lift upward. The wheel climbs successfully only if:
+</p>
+
+<ul>
+  <li>Vertical support ≥ wheel weight → <strong>N<sub>w</sub>sinδ + f<sub>f</sub>cosδ ≥ m<sub>w</sub>g</strong></li>
+  <li>And enough extra force exists to produce <strong>a<sub>y</sub> > 0</strong></li>
+</ul>
+
+<p>
+  If friction is too small (<strong>f<sub>f</sub> ≤ μN<sub>w</sub></strong>) or the vertical component
+  is insufficient, the wheel will slip or stall instead of climbing the obstacle.
+</p>
+
+<p>
+  These equations are therefore used to determine whether a big-wheel design can
+  generate enough torque and reaction forces to lift the wheel centre over a
+  given step height.
+</p>
+
+
+
+
+
+
   </details>
 
 
   <!-- ========================================================= -->
-  <!-- 4.8 DESIGN ANALYSIS SUMMARY -->
+  <!-- 4.7 DESIGN ANALYSIS SUMMARY -->
   <!-- ========================================================= -->
-  <h3 class="subsection-title" id="sec-4-8">4.8 Design Analysis Summary</h3>
+  <h3 class="subsection-title" id="sec-4-7">4.7 Design Analysis Summary</h3>
 
   <p>
     The analyses in Sections 4.4–4.7 are summarised by comparing each concept
-    against the weighted design criteria. Continuous tracks, big wheels, and
-    alternative wheel-leg configurations are systematically eliminated in favour
-    of a bipedal wheel-leg design with linkage-driven step-climbing.
+    against the weighted design criteria. The following 3 design are choosen to be incorporated into the main design
+
+    <br><br>
+    1. Wheel-Leg configuration.
+    <br>
+    2. Linkage-based wheel-leg configuration.
+    <br>
+    3. Big-Wheel configuration.
   </p>
 
   <details class="expand-box">
     <summary><strong>Click to expand: Shortlisted concept rationale</strong></summary>
 
-    <ul>
-      <li><strong>Continuous track</strong>: strong terrain capability, but higher loss,
-          complexity, and packaging challenges.</li>
-      <li><strong>Pure big wheel</strong>: geometrically feasible but bulky and less compatible
-          with RoboMaster chassis constraints.</li>
-      <li><strong>Bipedal wheel-leg with linkage</strong>: good compromise between step-climbing
-          performance, agility, and structural robustness.</li>
-    </ul>
+  <img src="images/summarised.jpg" alt="Prototype Photo" style="width: 80%; display:block; margin:auto;">
+<p style="text-align:center; margin-top:6px;">
+  <strong>Figure X:</strong> Explanation put here.
+</p>
 
-    <p>
-      This leads to the selection of the bipedal wheel-leg robot as the main
-      candidate for detailed design and prototyping in the next section.
-    </p>
+<p>
+  The three designs highlighted in the comparison table were selected as the
+  most relevant and high-performing locomotion concepts for step-climbing and
+  terrain negotiation. Each represents a different approach to achieving
+  vertical mobility while maintaining competition-relevant speed,
+  manoeuvrability, and stability.
+</p>
+
+<p>
+  <strong>Design 1 — Wheel-Leg Robot:</strong>  
+  This platform demonstrates efficient jumping, fast step-climbing, and
+  reliable self-recovery. Its dynamic leg actuation provides strong terrain
+  adaptability and introduces the concept of using the wheel-leg as both a
+  propulsion and suspension module. Its main limitation lies in limited terrain
+  pass capability when using a smaller wheel diameter.
+</p>
+
+<p>
+  <strong>Design 2 — Wheel-Leg with Linkage Mechanism:</strong>  
+  This system extends the wheel-leg concept by integrating a multi-bar linkage,
+  enabling <em>torque amplification</em>, <em>mechanical advantage tuning</em>,
+  and <em>full 360° rotation</em> for self-recovery. The enhanced leg
+  articulation allows controlled lifting motions and efficient step
+  negotiation. Although mechanically more complex, its functional flexibility
+  makes it a strong candidate for integration.
+</p>
+
+<p>
+  <strong>Design 3 — Big-Wheel Robot:</strong>  
+  The large wheel radius provides excellent terrain-pass capability, allowing
+  the robot to roll over obstacles with reduced geometric constraints. This
+  design offers simple, passive step-engagement behaviour and high ground
+  clearance. Its main drawback is the added weight from the big wheel.
+</p>
+
+<p>
+  Together, these three designs form the basis of the final bipedal
+  wheel-leg concept. Their strengths—dynamic jumping and recovery (Design 1),
+  torque-amplified linkage motion with full rotation (Design 2), and high
+  terrain clearance from big-wheel geometry (Design 3)—are selectively combined
+  to produce a hybrid mechanism capable of reliable 200&nbsp;mm step-climbing
+  while maintaining the mobility and stability required for RoboMaster
+  competition conditions.
+</p>
+
+
   </details>
 
 
   <!-- ========================================================= -->
-  <!-- 4.9 INITIAL DESIGN CONCEPT -->
+  <!-- 4.8 INITIAL DESIGN CONCEPT -->
   <!-- ========================================================= -->
-  <h3 class="subsection-title" id="sec-4-9">4.9 Initial Design Concept</h3>
+  <h3 class="subsection-title" id="sec-4-8">4.8 Initial Design Concept</h3>
 
   <p>
     Based on the design thinking process and comparative analyses, an initial

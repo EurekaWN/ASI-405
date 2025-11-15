@@ -1,52 +1,57 @@
 <section id="sec-5-finalised">
   <h2 class="section-title">5. Finalised Main Design Concept Validation and Prototyping</h2>
 
+      <img src="/images/final.png" alt="Prototype Photo" style="width: 50%; display:block; margin:auto;">
+<p style="text-align:center; margin-top:6px;">
+  <strong>Figure X:</strong> Explanation put here.
+</p>
+
+ <div class="video-wrap">
+    <video class="small-video" autoplay muted loop playsinline controls>
+        <source src="videos/explode.mp4" type="video/mp4" />
+    </video>
+</div>
+<p style="text-align:center; margin-top:6px;">
+  <strong>Video X:</strong> Explanation put here.
+</p>
+
+
   <!-- ========================================================= -->
   <!-- 5.1 ROBOT DYNAMIC MOTION CONCEPT -->
   <!-- ========================================================= -->
   <h3 class="subsection-title" id="sec-5-1">5.1 Robot Dynamic Motion Concept</h3>
 
-  <p>
-    The final robot concept combines a wheel–leg architecture with a cascaded joint layout
-    and hubless drive wheel to achieve reliable <strong>200&nbsp;mm step climbing</strong> while
-    maintaining good flat-ground performance and gimbal stability. The dynamic motion concept
-    is built around three key actions:
-  </p>
-
-  <ul>
-    <li>Rolling on flat ground using the primary drive wheels for high-speed motion.</li>
-    <li>Transitioning into a step-climbing posture by reorienting the cascaded leg joint.</li>
-    <li>Executing a controlled “push–up” motion using the linkage to lift the chassis over the step.</li>
-  </ul>
 
   <p>
-    During step climbing, the linkage amplifies motor torque at the critical contact phase,
-    while the cascaded joint ensures that the leg and wheel segments move in a coordinated
-    manner to keep the robot stable. The hubless wheel allows the armour and leg to be
-    packaged within the wheel envelope without violating competition dimensional constraints.
+    There are two ways the big wheel robot can climb up the 200mm step. Both ways are illustrated below in Figure X. <br>
+    1. Putting The robot body on the platform before bringing the leg over the platform. 
+    <br>
+    2. Jump up, the wheel will have a little or no contact with the platform edge before roll up the platform completely
   </p>
 
-  <details class="expand-box">
-    <summary><strong>Click to expand: CAD views and motion sequence (concept)</strong></summary>
-    <p>
-      The complete CAD model illustrates the transition from flat-ground mode to
-      step-climbing mode:
-    </p>
-    <ul>
-      <li>Neutral posture: standard 4-wheel stance with low centre of gravity.</li>
-      <li>Pre-climb posture: front legs rotate to position the hubless wheel against the step.</li>
-      <li>Lift phase: linkage applies amplified torque to rotate the wheel–leg assembly upward.</li>
-      <li>Recovery phase: rear support follows, restoring a stable stance on the upper platform.</li>
-    </ul>
-    <p><em>(Embedded CAD animations / model-viewer are referenced in the main website.)</em></p>
-  </details>
+     <img src="/images/first.jpg" alt="Prototype Photo" style="width: 100%; display:block; margin:auto;">
+     <img src="/images/second.jpg" alt="Prototype Photo" style="width: 100%; display:block; margin:auto;">
+
+<p style="text-align:center; margin-top:6px;">
+  <strong>Figure X:</strong> Explanation put here.
+</p>
+
+
 
 
 
   <!-- ========================================================= -->
   <!-- 5.2 LINKAGE DESIGN AND CALCULATION -->
   <!-- ========================================================= -->
-  <h3 class="subsection-title" id="sec-5-2">5.2 Linkage Design and Calculation</h3>
+  <h3 class="subsection-title" id="sec-5-2">5.2 Linkage Detailed Design</h3>
+<p>
+In this section, the detailed design of the linkage mechanism used in the wheel-leg configuration is presented. 
+The linkage is critical for enabling effective step-climbing capability while optimising torque transmission and structural integrity.
+</p>
+
+
+
+
 
   <!-- 5.2.1 -->
   <h4 class="subsubsection-title" id="sec-5-2-1">5.2.1 Design Consideration</h4>
@@ -68,65 +73,59 @@
   </p>
 
 
+
+
   <!-- 5.2.2 -->
-  <h4 class="subsubsection-title" id="sec-5-2-2">5.2.2 Design Details</h4>
-
-  <p>
-    The linkage geometry is parameterised using a small number of variables:
-  </p>
-
-  <ul>
-    <li>Key arm lengths (e.g., CD, CE and base links).</li>
-    <li>Relative pivot positions with respect to the wheel centre and chassis anchor points.</li>
-    <li>Target wheel centre trajectory during the lifting motion.</li>
-  </ul>
-
-  <p>
-    These parameters are constrained by:
-  </p>
-  <ul>
-    <li>Required step height of <strong>200&nbsp;mm</strong>.</li>
-    <li>Maximum allowable joint angles to avoid singular configurations.</li>
-    <li>Packaging limits inside the robot’s 600&nbsp;mm × 600&nbsp;mm starting footprint.</li>
-  </ul>
-
-
-  <!-- 5.2.3 -->
-  <h4 class="subsubsection-title" id="sec-5-2-3">5.2.3 Design Validation</h4>
+  <h4 class="subsubsection-title" id="sec-5-2-2">5.2.2 Design Validation</h4>
 
   <p>
     At this stage, validation focuses on the linkage’s <strong>static load capacity</strong> under the
-    motor’s holding torque. The objective is to confirm that, in a worst-case step-climbing
+    motor’s holding torque. The objective is to confirm that, in a step-climbing
     posture, the linkage can safely support the full robot weight with a comfortable
     safety margin.
   </p>
 
-  <p>
-    MATLAB was used to sweep multiple linkage length combinations. For each candidate
-    geometry, the script evaluates:
-  </p>
+  <div class="math-image-container">
+          <img src="images/Linkage Calculation.jpg" alt="Linkage Calculation Diagram"style="width: 80%; display:block; margin:auto;" />
+        </div>
+    <p style="text-align:center; margin-top:6px;">
+        <strong>Figure X:</strong> Linkage geometry
+  <details class="expand-box">
+  <summary><strong>Click to expand: Full linkage length calculation page</strong></summary>
 
-  <ul>
-    <li>Resulting wheel centre position and achievable step height.</li>
-    <li>Torque multiplication factor at the motor shaft.</li>
-    <li>Resulting reaction forces in the critical links and joints.</li>
-  </ul>
+  <div class="iframe-wrap" style="margin-top:12px;">
+    <iframe
+      src="/To be included/Linkage Calculations.html"
+      loading="lazy"
+      style="
+        width: 100%;
+        height: 1100px;
+        border: none;
+        border-radius: 10px;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+      "
+    ></iframe>
+  </div>
+
+  <p style="text-align:center; margin-top:6px;">
+    <strong>Figure X:</strong> Embedded linkage length calculation page showing
+    static equilibrium derivation, MATLAB parametric sweep, and torque–weight
+    maps for different link configurations.
+  </p>
+</details>
+
+
 
   <p>
     From the calculation results, many configurations satisfy the 200&nbsp;mm step requirement
     while delivering a static lift capacity exceeding approximately <strong>38&nbsp;kg</strong>, which gives a
     robust safety margin for the current <strong>20&nbsp;kg</strong> robot. These static approximations provide
-    a sufficiently conservative reference during the rapid prototyping phase.
+    a sufficiently conservative reference during the rapid prototyping phase. 
+
+    <br><br>
+    For this project, a ratio of  <strong>cd/ce = 115/75 ≈ 1.5</strong> was selected for design and packaging convenience.
   </p>
 
-  <details class="expand-box">
-    <summary><strong>Click to expand: MATLAB sweep and linkage torque map</strong></summary>
-    <p><em>(Insert colour-density plot and code snippet here if desired.)</em></p>
-    <p>
-      The torque map highlights regions of feasible geometries that meet both step height and
-      stress limits, guiding the final selection implemented in CAD.
-    </p>
-  </details>
 
 
   <!-- 5.2.4 -->

@@ -1,6 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
+  
+
+  <!-- MathJax for equations -->
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+
+<!-- highlight.js for MATLAB syntax -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/matlab.min.js"></script>
+
+<!-- Plotly for the linkage contour plot -->
+<script src="https://cdn.plot.ly/plotly-2.30.0.min.js"></script>
+
+
   <meta charset="UTF-8">
   <title>Robot Design Report</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,6 +26,316 @@
   </script>
 
   <style>
+
+.small-video {
+
+    width: 640px;
+    /* IMPORTANT: Use height: auto to maintain the original aspect ratio */
+    height: auto;
+  
+    width: 100%;
+    /* /* max-width: 400px; */
+}
+
+  .code-block {
+    background: #1e1e1e;
+    color: #e5e5e5;
+    padding: 14px;
+    border-radius: 8px;
+    font-family: Consolas, monospace;
+    font-size: 11pt;
+    line-height: 1.4;
+    white-space: pre;
+    overflow-x: auto;   /* horizontal scroll */
+    overflow-y: auto;   /* vertical scroll */
+    max-height: 280px;  /* adjust height limit */
+    border: 1px solid #444;
+  }
+
+
+
+    .code-block {
+  background: #0b1020;
+  color: #e5e7eb;
+  padding: 12px 14px;
+  border-radius: 8px;
+  overflow-x: auto;
+  font-family: "Consolas", "Courier New", monospace;
+  font-size: 11pt;
+  border: 1px solid #1f2937;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+  margin: 10px 0 18px 0;
+  white-space: pre;
+}
+.code-block code {
+  font-family: inherit;
+  font-size: inherit;
+}
+
+
+    body {
+  font-family: system-ui, 'Times New Roman', Times, serif;
+  background: #f3f5f8;
+  margin: 0;
+  padding: 40px;
+  color: #222;
+  display: flex;
+  justify-content: center;
+}
+
+.container {
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+  max-width: 1300px;
+  width: 100%;
+  padding: 20px;
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+p.sub {
+  text-align: center;
+  margin-bottom: 16px;
+  color: #555;
+}
+
+/* LEFT–RIGHT LAYOUT */
+.layout {
+  display: flex;
+  gap: 18px;
+}
+
+/* LEFT: scrollable gallery window */
+.gallery-window {
+  height: 650px;
+  overflow-y: scroll;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  padding: 10px;
+  background: linear-gradient(180deg, #f9fafc 0%, #f2f3f7 100%);
+  flex: 2;
+}
+
+/* Scrollbar style */
+.gallery-window::-webkit-scrollbar {
+  width: 10px;
+}
+.gallery-window::-webkit-scrollbar-thumb {
+  background: #bbb;
+  border-radius: 10px;
+}
+.gallery-window::-webkit-scrollbar-thumb:hover {
+  background: #888;
+}
+
+/* Grid layout inside scrollable area */
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr); /* 5 per row */
+  gap: 6px;
+}
+
+.card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  aspect-ratio: 1/1;
+  cursor: pointer;
+}
+
+.card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.card:hover img {
+  transform: scale(1.07);
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.8), rgba(0,0,0,0.1));
+  color: #fff;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 8px;
+  font-size: 0.75rem;
+}
+
+.card:hover .overlay {
+  opacity: 1;
+}
+
+.overlay strong {
+  display: block;
+  font-size: 0.8rem;
+  margin-bottom: 2px;
+}
+
+/* RIGHT: preview panel – can grow as tall as needed */
+.preview-panel {
+  flex: 1.2;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  background: #f9fafc;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.preview-image-wrapper {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  border-radius: 8px;
+  background: #e2e6f0;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.preview-image-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.preview-title {
+  font-weight: 600;
+  font-size: 1rem;
+  margin: 0;
+}
+
+.preview-text {
+  font-size: 0.9rem;
+  color: #444;
+  margin: 0;
+}
+
+.preview-meta {
+  font-size: 0.85rem;
+  color: #666;
+  margin: 0 0 4px 0;
+}
+
+/* Parameter grading block */
+.params {
+  margin-top: 6px;
+  border-radius: 8px;
+  background: #eef1f8;
+  padding: 8px 10px;
+  font-size: 0.82rem;
+
+  /* scoring matrix scrollable */
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.params-title {
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+/* small legend for score + weight */
+.params-legend {
+  font-size: 0.78rem;
+  color: #666;
+  margin-bottom: 4px;
+}
+
+.param-row {
+  display: flex;
+  align-items: center;
+  padding: 2px 0;
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+
+.param-row:last-child {
+  border-bottom: none;
+}
+
+.param-label {
+  flex: 1;
+  margin-right: 8px;
+  color: #444;
+}
+
+/* weight pill */
+.param-weight {
+  min-width: 40px;
+  text-align: center;
+  font-size: 0.75rem;
+  margin-right: 6px;
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: #e0e7ff;
+  color: #27326b;
+}
+
+/* score pill */
+.param-value {
+  font-weight: 600;
+  min-width: 24px;
+  text-align: center;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: #d3defc;
+}
+
+/* Total score styling */
+.param-row.total-row .param-label {
+  font-weight: 700;
+}
+.param-row.total-row .param-weight {
+  display: none; /* no weighting for total */
+}
+.param-row.total-row .param-value {
+  font-size: 0.9rem;
+  padding: 3px 10px;
+}
+
+/* Optional: animated pulse for extra emphasis */
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 12px 3px rgba(72,255,125,0.5); }
+  50% { box-shadow: 0 0 20px 5px rgba(72,255,125,0.9); }
+}
+
+/* Highlighted cards */
+.card.highlight {
+  border: 2px solid #22c55e;
+  transform: scale(1.02);
+  transition: all 0.3s ease;
+  animation: pulseGlow 2.5s infinite;
+}
+
+/* Ribbon label for highlighted designs */
+.ribbon {
+  position: absolute;
+  top: 5px;
+  left: -39px;
+  background: #22c55e;
+  color: #fff;
+  padding: 4px 40px;
+  transform: rotate(-45deg);
+  font-size: 0.7rem;
+  text-align: center;
+  font-weight: 600;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+  pointer-events: none;
+}
 
     .hover-zoom {
   transition: transform 0.3s ease;
@@ -227,6 +552,13 @@
       padding-top: 0 !important;
     }
   </style>
+
+
+<!-- Prism.js for syntax highlighting -->
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-matlab.min.js"></script>
 
 </head>
 
@@ -447,7 +779,173 @@
       });
     }
 
-    includeHTML();
+    includeHTML().then(() => {
+      // Initialize morphological chart after includes complete
+      const previewImg = document.getElementById("previewImg");
+      const previewTitle = document.getElementById("previewTitle");
+      const previewText = document.getElementById("previewText");
+      const previewMeta = document.getElementById("previewMeta");
+      const previewParams = document.getElementById("previewParams");
+      const cards = document.querySelectorAll(".card");
+      
+      // Only proceed if elements exist
+      if (!previewImg || !previewTitle || !previewText || !previewMeta || !previewParams || cards.length === 0) {
+        console.warn("Morphological chart elements not found", {
+          previewImg: !!previewImg,
+          previewTitle: !!previewTitle,
+          previewText: !!previewText,
+          previewMeta: !!previewMeta,
+          previewParams: !!previewParams,
+          cardsCount: cards.length
+        });
+        return;
+      }
+      
+      console.log("Morphological chart initialized with", cards.length, "cards");
+
+// mapping dataset keys -> labels
+const paramLabels = {
+  flat: "Flat ground speed",
+  step: "Step climbing speed",
+  stability: "Stability when climbing",
+  maneuver: "Maneuverability (holonomic constraint)",
+  gimbal: "Gimbal stability",
+  spin: "Spin mode efficiency",
+  terrain: "All terrain capability",
+  reliability: "Overall reliability",
+  power: "Power consumption (lower score = more consumption)",
+  structure: "Structure robustness",
+  maintain: "Maintainability",
+  weight: "Weight",
+  mechcomplex: "Mechanism complexity (lower = more complex)",
+  controldiff: "Control difficulty (lower = harder)",
+  designdiff: "Design difficulty",
+  total: "Total score"
+};
+
+// weighting factors you provided (3 3 3 3 3 2 2 2 3 3 3 2 2 2 5)
+const paramWeights = {
+  flat: 3,
+  step: 3,
+  stability: 3,
+  maneuver: 3,
+  gimbal: 3,
+  spin: 2,
+  terrain: 2,
+  reliability: 2,
+  power: 3,
+  structure: 3,
+  maintain: 3,
+  weight: 2,
+  mechcomplex: 2,
+  controldiff: 2,
+  designdiff: 5
+};
+
+// map 1–5 to colours (red→green)
+function getScoreColor(value) {
+  const n = parseInt(value, 10);
+  if (isNaN(n) || n < 1 || n > 5) {
+    return { bg: "#d3defc", fg: "#111" }; // default for totals etc.
+  }
+  switch (n) {
+    case 1: return { bg: "#f97373", fg: "#fff" };  // red
+    case 2: return { bg: "#fb923c", fg: "#fff" };  // orange
+    case 3: return { bg: "#facc15", fg: "#111" };  // yellow
+    case 4: return { bg: "#4ade80", fg: "#111" };  // light green
+    case 5: return { bg: "#22c55e", fg: "#fff" };  // green
+    default: return { bg: "#d3defc", fg: "#111" };
+  }
+}
+
+function updatePreview(card) {
+  const img = card.querySelector("img");
+  const title = card.dataset.title || "Design Preview";
+  const desc = card.dataset.desc || "No description available.";
+  const meta = card.dataset.meta || "";
+
+  previewImg.src = img.src;
+  previewTitle.textContent = title;
+  previewText.textContent = desc;
+  previewMeta.textContent = meta;
+
+  // reset params, but keep title + legend
+  previewParams.innerHTML = `
+    <div class="params-title">Parameter Grading</div>
+    <div class="params-legend">
+      Scores are multiplied by the weighting factor <strong>w</strong> for ranking.
+    </div>
+  `;
+
+  let hasAnyParam = false;
+
+  // build parameter rows (keep 'total' as last)
+  const keysOrder = Object.keys(paramLabels);
+
+  keysOrder.forEach(key => {
+    const value = card.dataset[key];
+    if (value !== undefined) {
+      hasAnyParam = true;
+
+      const row = document.createElement("div");
+      row.className = "param-row";
+      if (key === "total") row.classList.add("total-row");
+
+      const labelSpan = document.createElement("span");
+      labelSpan.className = "param-label";
+      labelSpan.textContent = paramLabels[key];
+
+      const weightSpan = document.createElement("span");
+      weightSpan.className = "param-weight";
+
+      if (key === "total" || paramWeights[key] === undefined) {
+        weightSpan.textContent = "";  // no weight for total
+      } else {
+        weightSpan.textContent = "w=" + paramWeights[key];
+        weightSpan.title = "Weighting factor used when scoring";
+      }
+
+      const valueSpan = document.createElement("span");
+      valueSpan.className = "param-value";
+      valueSpan.textContent = value;
+
+      // colour code 1–5 scores (total will stay neutral)
+      if (key !== "total") {
+        const colors = getScoreColor(value);
+        valueSpan.style.backgroundColor = colors.bg;
+        valueSpan.style.color = colors.fg;
+      }
+
+      row.appendChild(labelSpan);
+      row.appendChild(weightSpan);
+      row.appendChild(valueSpan);
+      previewParams.appendChild(row);
+    }
+  });
+
+  if (!hasAnyParam) {
+    const row = document.createElement("div");
+    row.className = "param-row";
+    const labelSpan = document.createElement("span");
+    labelSpan.className = "param-label";
+    labelSpan.textContent = "No parameter grading recorded for this design yet.";
+    row.appendChild(labelSpan);
+    previewParams.appendChild(row);
+  }
+}
+
+// default preview = first card
+if (cards.length > 0) {
+  updatePreview(cards[0]);
+}
+
+// update preview when hovering any card
+cards.forEach(card => {
+  card.addEventListener("mouseenter", () => updatePreview(card));
+});
+    });
+
+
   </script>
 
 </body>
