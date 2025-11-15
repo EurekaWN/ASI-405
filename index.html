@@ -25,7 +25,8 @@
     body {
       margin: 0;
       background: #dfe4f0;
-      display: flex;
+      /* reserve space for fixed sidebar so content can still be centered */
+      padding-left: 260px;
     }
 
     p, li {
@@ -33,17 +34,19 @@
     }
 
     /* ---------------------------------------------------- */
-    /* SIDEBAR */
+    /* SIDEBAR (FIXED, ALWAYS VISIBLE) */
     /* ---------------------------------------------------- */
     #sidebar {
       width: 260px;
       background: #111827;
       color: #ddd;
       padding: 20px 16px;
-      position: sticky;
+      position: fixed;
       top: 0;
+      left: 0;
       height: 100vh;
       overflow-y: auto;
+      z-index: 10;
     }
 
     #sidebar h2 {
@@ -52,7 +55,10 @@
       font-size: 14pt;
     }
 
-    .toc-item { list-style: none; margin: 4px 0; }
+    .toc-item { 
+      list-style: none; 
+      margin: 4px 0; 
+    }
 
     .toc-link {
       color: #d1d5db;
@@ -79,7 +85,7 @@
     .toc-level-2 { margin-left: 16px; }
     .toc-level-3 { margin-left: 32px; }
 
-    /* Children container */
+    /* Children container: hidden by default */
     .toc-children {
       display: none;
       margin-left: 12px;
@@ -87,18 +93,18 @@
       padding-left: 8px;
     }
 
+    /* Only the active branch expands */
     .toc-expanded > .toc-children {
       display: block;
     }
 
     /* ---------------------------------------------------- */
-    /* REPORT WRAPPER */
+    /* REPORT WRAPPER (CENTERED COLUMN) */
     /* ---------------------------------------------------- */
     .report-wrapper {
       max-width: 900px;
-      margin: 24px auto;
+      margin: 24px auto 40px auto;  /* centered */
       padding: 0 12px;
-      flex-grow: 1;
     }
 
     [include-html] {
@@ -142,80 +148,73 @@
     }
 
     /* Title sizes */
-    .section-title { font-size: 20pt; font-weight: bold; }
+    .section-title    { font-size: 20pt; font-weight: bold; }
     .subsection-title { font-size: 16pt; font-weight: bold; }
     .subsubsection-title { font-size: 14pt; font-weight: bold; font-style: normal; }
     .subsubsubsection-title { font-size: 12pt; font-weight: bold; text-decoration: underline; }
 
-    /* ===================================================== */
-/* EXPANDABLE BOX (FULL FINAL VERSION) */
-/* ===================================================== */
+    /* ---------------------------------------------------- */
+    /* EXPANDABLE BOXES */
+    /* ---------------------------------------------------- */
+    details.expand-box {
+      margin: 14px 0 20px 0;
+      padding: 14px 16px;
+      border-radius: 8px;
+      background: rgba(230, 236, 255, 0.55);
+      cursor: pointer;
+      border: 1px solid rgba(140, 160, 220, 0.3);
+      transition: 0.25s ease;
+    }
 
-details.expand-box {
-  margin: 14px 0 20px 0;
-  padding: 14px 16px;
-  border-radius: 8px;
-  background: rgba(230, 236, 255, 0.55);
-  cursor: pointer;
-  border: 1px solid rgba(140, 160, 220, 0.3);
-  transition: 0.25s ease;
-}
+    details.expand-box[open] {
+      background: rgba(210, 220, 255, 0.65);
+      border-color: rgba(90, 110, 200, 0.45);
+    }
 
-/* SUMMARY — remove ALL browser defaults */
-details.expand-box summary {
-  cursor: pointer;
-  list-style: none;
-  margin: 0;                 /* remove default margin */
-  padding: 0;                /* remove left indent */
-  font-weight: bold;
-  display: flex;
-  align-items: center;
-}
+    /* SUMMARY — remove ALL browser defaults */
+    details.expand-box summary {
+      cursor: pointer;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      margin-bottom: 6px;
+    }
 
-/* Remove default triangles across browsers */
-details.expand-box summary::-webkit-details-marker { display: none; }
-details.expand-box summary::marker { content: ""; }
+    /* Remove default markers */
+    details.expand-box summary::-webkit-details-marker { display: none; }
+    details.expand-box summary::marker { content: ""; }
 
-/* Custom arrow */
-details.expand-box summary::before {
-  content: "▶";
-  font-size: 11pt;
-  margin-right: 6px;
-  transition: transform 0.2s ease;
-}
+    /* Custom arrow */
+    details.expand-box summary::before {
+      content: "▶";
+      font-size: 11pt;
+      margin-right: 6px;
+      transition: transform 0.2s ease;
+    }
 
-/* Arrow rotates when opened */
-details.expand-box[open] summary::before {
-  content: "▼";
-}
+    details.expand-box[open] summary::before {
+      content: "▼";
+    }
 
-/* Highlight background when open */
-details.expand-box[open] {
-  background: rgba(210, 220, 255, 0.65);
-  border-color: rgba(90, 110, 200, 0.45);
-}
+    /* Remove divider line inside expandables */
+    details.expand-box .section-title::before,
+    details.expand-box .subsection-title::before,
+    details.expand-box .subsubsection-title::before,
+    details.expand-box .subsubsubsection-title::before {
+      display: none !important;
+    }
 
-/* ===================================================== */
-/* FIXED: Remove divider lines inside expandable boxes */
-/* ===================================================== */
-details.expand-box .section-title::before,
-details.expand-box .subsection-title::before,
-details.expand-box .subsubsection-title::before,
-details.expand-box .subsubsubsection-title::before {
-  display: none !important;
-}
-
-/* ===================================================== */
-/* FIXED: Remove extra top spacing when heading is inside <summary> */
-/* ===================================================== */
-details.expand-box summary.section-title,
-details.expand-box summary.subsection-title,
-details.expand-box summary.subsubsection-title,
-details.expand-box summary.subsubsubsection-title {
-  margin-top: 0 !important;
-  padding-top: 0 !important;
-}
-
+    /* Remove extra top spacing when heading is inside <summary> */
+    details.expand-box summary.section-title,
+    details.expand-box summary.subsection-title,
+    details.expand-box summary.subsubsection-title,
+    details.expand-box summary.subsubsubsection-title {
+      margin-top: 0 !important;
+      padding-top: 0 !important;
+    }
   </style>
 
 </head>
@@ -232,18 +231,19 @@ details.expand-box summary.subsubsubsection-title {
   <div class="report-wrapper">
 
     <div include-html="Front Page.html"></div>
-    <div include-html="../3D Renders.html"></div>
+    <div include-html="/To be included/3D Renders.html"></div>
 
-    <div id="sec-1-introduction" include-html="Disclaimer.html"></div>
-    <div id="sec-1-introduction" include-html="1. Introduction.html"></div>
+    <!-- Disclaimer with its own ID -->
+    <div id="sec-0-disclaimer" include-html="Disclaimer.html"></div>
 
-    <div id="sec-2-competition" include-html="2. Competition Background Information.html"></div>
-    <div id="sec-3-problem" include-html="3. Problem Clarification.html"></div>
-    <div id="sec-4-design-thinking" include-html="4. Design Thinking Process.html"></div>
-    <div id="sec-5-finalised" include-html="5. Finalised Main Design Concept Validation and Prototyping.html"></div>
-    <div id="sec-6-prototyping" include-html="6. Overall Prototyping Testing.html"></div>
-    <div id="sec-7-forward" include-html="7. Moving Forward.html"></div>
-    <div id="sec-8-conclusion" include-html="8. Conclusion.html"></div>
+    <div include-html="1. Introduction.html"></div>
+    <div include-html="2. Competition Background Information.html"></div>
+    <div include-html="3. Problem Clarification.html"></div>
+    <div include-html="4. Design Thinking Process.html"></div>
+    <div include-html="5. Finalised Main Design Concept Validation and Prototyping.html"></div>
+    <div include-html="6. Overall Prototyping Testing.html"></div>
+    <div include-html="7. Moving Forward.html"></div>
+    <div include-html="8. Conclusion.html"></div>
     <div include-html="References.html"></div>
 
   </div>
@@ -251,7 +251,6 @@ details.expand-box summary.subsubsubsection-title {
 
   <!-- JS SECTION -->
   <script>
-
     /* ========== INCLUDE HTML PARTIALS ========== */
     async function includeHTML() {
       const elements = document.querySelectorAll("[include-html]");
@@ -267,12 +266,13 @@ details.expand-box summary.subsubsubsection-title {
 
       generateTOC();
       initScrollSpy();
-      initExpandAccordion();   /* accordion enabled */
+      initExpandAccordion();
     }
 
-    /* ========== TOC GENERATOR ========== */
+    /* ========== TOC GENERATOR (uses headings directly) ========== */
     function generateTOC() {
       const tocRoot = document.getElementById("toc-root");
+      tocRoot.innerHTML = "";
 
       const headings = document.querySelectorAll(
         ".section-title, .subsection-title, .subsubsection-title"
@@ -281,17 +281,20 @@ details.expand-box summary.subsubsubsection-title {
       let lastLevel1 = null;
       let lastLevel2 = null;
 
-      headings.forEach(h => {
+      headings.forEach((h, index) => {
         const text = h.textContent.trim();
-        const sec = h.closest("section");
-        if (!sec) return;
-
-        const id = sec.id;
-        if (!id) return;
+        if (!text) return;
 
         let level = 1;
         if (h.classList.contains("subsection-title")) level = 2;
         if (h.classList.contains("subsubsection-title")) level = 3;
+
+        // Ensure each heading has a unique ID
+        let id = h.id;
+        if (!id) {
+          id = `sec-auto-${level}-${index}`;
+          h.id = id;
+        }
 
         const li = document.createElement("li");
         li.classList.add("toc-item", `toc-level-${level}`);
@@ -300,55 +303,125 @@ details.expand-box summary.subsubsubsection-title {
         link.classList.add("toc-link");
         link.href = "#" + id;
         link.textContent = text;
+
         li.appendChild(link);
 
         if (level === 1) {
-          li.innerHTML += `<ul class="toc-children"></ul>`;
+          const childList = document.createElement("ul");
+          childList.classList.add("toc-children");
+          li.appendChild(childList);
+
           tocRoot.appendChild(li);
           lastLevel1 = li;
-        }
+          lastLevel2 = null;
+        } else if (level === 2) {
+          if (lastLevel1) {
+            const childList = lastLevel1.querySelector(".toc-children");
+            childList.appendChild(li);
 
-        if (level === 2 && lastLevel1) {
-          lastLevel1.classList.add("toc-expanded");
-          lastLevel1.querySelector(".toc-children").appendChild(li);
-          li.innerHTML += `<ul class="toc-children"></ul>`;
-          lastLevel2 = li;
-        }
+            const childList2 = document.createElement("ul");
+            childList2.classList.add("toc-children");
+            li.appendChild(childList2);
 
-        if (level === 3 && lastLevel2) {
-          lastLevel2.classList.add("toc-expanded");
-          lastLevel2.querySelector(".toc-children").appendChild(li);
+            lastLevel2 = li;
+          } else {
+            tocRoot.appendChild(li);
+          }
+        } else if (level === 3) {
+          if (lastLevel2) {
+            const childList3 = lastLevel2.querySelector(".toc-children");
+            childList3.appendChild(li);
+          } else if (lastLevel1) {
+            const childList = lastLevel1.querySelector(".toc-children");
+            childList.appendChild(li);
+          } else {
+            tocRoot.appendChild(li);
+          }
         }
       });
     }
 
-    /* ========== SCROLL SPY ========== */
+    /* ========== SCROLL SPY (nearest heading to top) ========== */
     function initScrollSpy() {
       const links = document.querySelectorAll(".toc-link");
-
-      const sections = [...links].map(link => {
-        const sec = document.querySelector(link.getAttribute("href"));
-        return { link, sec };
-      });
-
-      const observer = new IntersectionObserver(
-        entries => {
-          entries.forEach(entry => {
-            if (!entry.isIntersecting) return;
-
-            links.forEach(l => l.classList.remove("active-link"));
-
-            const active = sections.find(s => s.sec === entry.target);
-            if (active) active.link.classList.add("active-link");
-          });
-        },
-        { threshold: 0.45 }
+      const headings = document.querySelectorAll(
+        ".section-title, .subsection-title, .subsubsection-title"
       );
 
-      sections.forEach(s => s.sec && observer.observe(s.sec));
+      if (!headings.length) return;
+
+      // map id -> link
+      const linkMap = {};
+      links.forEach(link => {
+        const href = link.getAttribute("href");
+        if (href && href.startsWith("#")) {
+          const id = href.slice(1);
+          linkMap[id] = link;
+        }
+      });
+
+      function setActiveByHeading(heading) {
+        const id = heading.id;
+        if (!id) return;
+        const activeLink = linkMap[id];
+        if (!activeLink) return;
+
+        // 1) Clear active state
+        links.forEach(l => l.classList.remove("active-link"));
+        activeLink.classList.add("active-link");
+
+        // 2) Collapse all branches
+        document.querySelectorAll("#toc-root .toc-item").forEach(li => {
+          li.classList.remove("toc-expanded");
+        });
+
+        // 3) Expand ancestors chain of the active link
+        let li = activeLink.closest(".toc-item");
+        while (li) {
+          li.classList.add("toc-expanded");
+          const parentChildren = li.parentElement;
+          if (parentChildren && parentChildren.classList.contains("toc-children")) {
+            const parentItem = parentChildren.parentElement;
+            if (parentItem && parentItem.classList.contains("toc-item")) {
+              li = parentItem;
+              continue;
+            }
+          }
+          break;
+        }
+      }
+
+      function updateFromScroll() {
+        const offsetTopTarget = 80; // approx from top where we consider "active"
+        let bestHeading = null;
+        let bestOffset = -Infinity;
+
+        headings.forEach(h => {
+          const rect = h.getBoundingClientRect();
+          const offset = rect.top - offsetTopTarget;
+          // we want headings whose top is <= offsetTopTarget, choose one closest to it
+          if (offset <= 0 && offset > bestOffset) {
+            bestOffset = offset;
+            bestHeading = h;
+          }
+        });
+
+        // If none is above the line yet (top of page), just take the first heading
+        if (!bestHeading) {
+          bestHeading = headings[0];
+        }
+
+        setActiveByHeading(bestHeading);
+      }
+
+      // Run once on load
+      updateFromScroll();
+
+      // And on scroll
+      window.addEventListener("scroll", updateFromScroll);
     }
 
-    /* ========== AUTO-CLOSE ACCORDION ========== */
+    /* ========== AUTO-CLOSE ACCORDION FOR EXPANDABLES ========== */
     function initExpandAccordion() {
       const boxes = document.querySelectorAll("details.expand-box");
 
