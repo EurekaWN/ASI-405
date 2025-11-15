@@ -1,10 +1,90 @@
-<section id="sec-1-introduction">
-  <h2 class="section-title">1. Introduction</h2>
-RoboMaster is an international robotics competition founded by DJI that blends engineering innovation with team-based tactical combat. Two teams battle using custom-built robots—such as infantry, hero, engineer, and aerial units—that shoot projectiles and register hits through onboard armor sensors. Victory depends on mobility, positioning, resource control, and ultimately destroying the opponent’s base.
+<!-- Front Page.html -->
 
-This project focuses on developing a RoboMaster-compliant robot chassis capable of reliably climbing a 200 mm step and traversing complex terrain. Such capability provides strategic advantages by enabling faster access to elevated zones, bypassing chokepoints, and securing superior firing positions. The design prioritizes terrain performance without compromising core metrics such as stability, agility, or shooting accuracy, while adhering to current competition rules and anticipating future updates.
+<div class="report-page">
 
-The work encompasses the full development cycle of a RoboMaster combat robot, including mechanical design, prototyping, structural validation, fabrication, electrical and firmware integration, and ultimately kinematic and dynamic motion control.
+  <!-- LOGO -->
+  <div class="front-logo">
+    <img src="images/nus_logo.png" alt="NUS Logo">
+  </div>
 
-  <!-- Insert Introduction content here -->
-</section>
+  <!-- TITLE BLOCK -->
+  <h1 class="front-title">Bipedal Wheel-Leg Robot for RoboMaster</h1>
+
+  <div class="front-subtitle">
+    CDE4301 Project Report
+  </div>
+
+  <!-- SPACING -->
+  <div style="height: 40px;"></div>
+
+  <!-- STUDENT INFO -->
+  <div class="front-info">
+    <p><strong>Name (Student Number):</strong><br>
+       Liu Weining — A0273432J
+    </p>
+
+    <p><strong>Supervised By:</strong><br>
+       Mr Chew Wanlong, Nicholas<br>
+       Mr Royston Shieh Teng Wei
+    </p>
+
+    <p><strong>Programme:</strong><br>
+       Innovation & Design Programme<br>
+       College of Design and Engineering<br>
+       National University of Singapore
+    </p>
+
+    <p><strong>Submission Date:</strong><br>
+       15/11/2025
+    </p>
+  </div>
+
+</div>
+
+<!-- PAGE-LEVEL STYLE (inherits global Times New Roman) -->
+<style>
+  .report-page {
+    width: 80%;
+    max-width: 900px;
+    margin: 60px auto;
+    padding: 60px;
+    background: rgba(255,255,255,0.75);
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+
+    /* gives the “paper” feeling when scrolling */
+    backdrop-filter: blur(4px);
+  }
+
+  .front-logo {
+    width: 100%;
+    text-align: center;
+    margin-bottom: 40px;
+  }
+
+  .front-logo img {
+    width: 180px;
+    height: auto;
+  }
+
+  .front-title {
+    text-align: center;
+    font-size: 28pt;
+    margin-bottom: 10px;
+  }
+
+  .front-subtitle {
+    text-align: center;
+    font-size: 16pt;
+    margin-bottom: 30px;
+  }
+
+  .front-info {
+    font-size: 12pt;
+    line-height: 1.6;
+  }
+
+  .front-info p {
+    margin-bottom: 18px;
+  }
+</style>

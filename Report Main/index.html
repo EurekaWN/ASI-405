@@ -5,68 +5,100 @@
   <title>Robot Design Report</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- Your global CSS here (Times New Roman etc.) -->
+  <!-- Global styles -->
   <style>
-    <style>
-  * {
-    font-family: "Times New Roman", Times, serif;
-    font-size: 12pt;
-  }
+    /* Global font */
+    * {
+      font-family: "Times New Roman", Times, serif;
+      font-size: 12pt;
+      box-sizing: border-box;
+    }
 
-  .section-title {
-    font-size: 20pt;
-    font-weight: bold;
-    margin-top: 40px;
-    margin-bottom: 12px;
-  }
+    /* Page background */
+    body {
+      margin: 0;
+      background: #dfe4f0;               /* soft bluish background */
+    }
 
-  .subsection-title {
-    font-size: 16pt;
-    font-weight: bold;
-    margin-top: 24px;
-  }
+    /* Wrapper to center the report column */
+    .report-wrapper {
+      max-width: 900px;                  /* width of your “report page” */
+      margin: 24px auto 40px auto;       /* center horizontally + top/bottom spacing */
+      padding: 0 12px;                   /* small side padding for small screens */
+    }
 
-  .subsubsection-title {
-    font-size: 14pt;
-    font-weight: bold;
-    font-style: italic;
-    margin-top: 16px;
-  }
+    /* Each included block behaves like a page */
+    [include-html] {
+      background: rgba(255, 255, 255, 0.92);  /* almost white, slightly transparent */
+      border-radius: 10px;
+      padding: 32px 40px;
+      margin-bottom: 24px;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+    }
 
-  .subsubsubsection-title {
-    font-size: 12pt;
-    font-weight: bold;
-    text-decoration: underline;
-    margin-top: 12px;
-  }
+    /* Top-level section titles */
+    .section-title {
+      font-size: 20pt;
+      font-weight: bold;
+      margin-top: 0;              /* first title sits at top of the card */
+      margin-bottom: 12px;
+    }
 
-  p {
-    margin-bottom: 10px;
-    text-align: justify;
-  }
-</style>
+    /* Level 2 */
+    .subsection-title {
+      font-size: 16pt;
+      font-weight: bold;
+      margin-top: 24px;
+      margin-bottom: 6px;
+    }
 
+    /* Level 3 */
+    .subsubsection-title {
+      font-size: 14pt;
+      font-weight: bold;
+      font-style: italic;
+      margin-top: 16px;
+      margin-bottom: 4px;
+    }
+
+    /* Level 4 */
+    .subsubsubsection-title {
+      font-size: 12pt;
+      font-weight: bold;
+      text-decoration: underline;
+      margin-top: 12px;
+      margin-bottom: 4px;
+    }
+
+    p {
+      margin-bottom: 10px;
+      text-align: justify;
+    }
   </style>
 </head>
 <body>
 
-  <!-- HEADER BLOCK -->
-  <div include-html="Front Page.html"></div>
+  <!-- Centered report column -->
+  <div class="report-wrapper">
 
-  <!-- MAIN CONTENT BLOCK (e.g. Morphological Chart) -->
-<div include-html="1. Introduction.html"></div>
-<div include-html="2. Competition Background Information.html"></div>
-<div include-html="3. Problem Clarification.html"></div>
-<div include-html="4. Design Thinking Process.html"></div>
-<div include-html="5. Finalised Main Design Concept Validation and Prototyping.html"></div>
-<div include-html="6. Overall Prototyping Testing.html"></div>
-<div include-html="7. Moving Forward.html"></div>
-<div include-html="8. Conclusion.html"></div>
-<div include-html="References.html"></div>
+    <!-- FRONT PAGE -->
+    <div include-html="Front Page.html"></div>
 
+    <!-- MAIN CONTENT SECTIONS -->
+    <div include-html="1. Introduction.html"></div>
+    <div include-html="2. Competition Background Information.html"></div>
+    <div include-html="3. Problem Clarification.html"></div>
+    <div include-html="4. Design Thinking Process.html"></div>
+    <div include-html="5. Finalised Main Design Concept Validation and Prototyping.html"></div>
+    <div include-html="6. Overall Prototyping Testing.html"></div>
+    <div include-html="7. Moving Forward.html"></div>
+    <div include-html="8. Conclusion.html"></div>
+    <div include-html="References.html"></div>
 
-  <!-- FOOTER BLOCK -->
-  <div include-html="footer.html"></div>
+    <!-- FOOTER (optional small block) -->
+    <div include-html="footer.html"></div>
+
+  </div>
 
   <!-- Include loader script at the end -->
   <script>
