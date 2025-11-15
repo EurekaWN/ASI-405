@@ -7,10 +7,7 @@
   <!-- MathJax for equations -->
 <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
 
-<!-- highlight.js for MATLAB syntax -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/matlab.min.js"></script>
+<!-- (Removed highlight.js; using Prism.js below) -->
 
 <!-- Plotly for the linkage contour plot -->
 <script src="https://cdn.plot.ly/plotly-2.30.0.min.js"></script>
@@ -611,9 +608,11 @@ p.sub {
 
 
 <!-- Prism.js for syntax highlighting -->
-<link rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+<!-- Prism language components: clike (base), C, MATLAB -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-clike.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-matlab.min.js"></script>
 
 </head>
@@ -836,6 +835,19 @@ p.sub {
     }
 
     includeHTML().then(() => {
+      // Re-run syntax highlighting for dynamically included content
+      try {
+        if (window.Prism) {
+          if (typeof Prism.highlightAllUnder === 'function') {
+            Prism.highlightAllUnder(document);
+          } else if (typeof Prism.highlightAll === 'function') {
+            Prism.highlightAll();
+          }
+        }
+      } catch (e) {
+        console.warn('Prism highlight failed:', e);
+      }
+
       // Initialize morphological chart after includes complete
       const previewImg = document.getElementById("previewImg");
       const previewTitle = document.getElementById("previewTitle");

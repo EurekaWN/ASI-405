@@ -542,6 +542,101 @@ allowing the leg to articulate freely while still meeting the competition’s ar
   <h3 class="subsection-title" id="sec-5-7">5.7 Firmware Code</h3>
   <p><em>(Insert high-level firmware architecture and key control snippets.)</em></p>
 
+
+<details class="expand-box">
+    <summary><strong>Click to expand: Example Firmware Code Snippet</strong></summary>
+    
+    <p> 
+Below are example code snippets for the balancing control loop implemented in the robot's firmware. It is used to test 
+the responsiveness of the Hubless Wheel to the IMU data to try to keep the robot balance with PID first.
+
+    </p>
+
+    <div class="code-block">
+        <pre><code class="language-c">
+void balance_init(void)
+{
+    // Angle PID
+    bal_angle_pid.kp = 20.0f;
+    bal_angle_pid.ki = 0.01f;
+    bal_angle_pid.kd = 1.0f;
+    bal_angle_pid.max_out = 8000.0f;
+    bal_angle_pid.int_max = 1000.0f;
+    bal_angle_pid.error[0] = 0.0f;
+    bal_angle_pid.error[1] = 0.0f;
+    bal_angle_pid.integral = 0.0f;
+
+    // Speed PID
+    bal_speed_pid.kp = 20.0f;
+    bal_speed_pid.ki = 0.25f;
+    bal_speed_pid.kd = 1.0f;
+    bal_speed_pid.max_out = 2000.0f;
+    bal_speed_pid.int_max = 1000.0f;
+    bal_speed_pid.error[0] = 0.0f;
+    bal_speed_pid.error[1] = 0.0f;
+    bal_speed_pid.integral = 0.0f;
+}
+
+// Set forward/backward speed
+void set_target_speed(float spd)
+{
+    target_speed = spd;
+}
+
+// Compute linear speed from motor RPM
+static float get_motor_speed_mps(uint8_t motor_id)
+{
+	int16_t rpm = g_can_motors[motor_id - 1].raw_data.rpm;
+    return rpm * RPM_TO_MS;
+}
+
+// Balancing control
+void balancing_control(void)
+{
+    float pitch = imu_heading.pit;
+
+    float gx, gy, gz;
+    get_gyro_data(&gx, &gy, &gz);
+    float gyro_y = gy;
+
+    // --- Get encoder-based wheel speeds ---
+    float left_speed = get_motor_speed_mps(MOTOR_LEFT_ID);
+    float right_speed = get_motor_speed_mps(MOTOR_RIGHT_ID);
+    current_speed = (left_speed + right_speed) * 0.5f; // m/s average
+
+    // --- Outer loop: Speed PID ---
+    bal_speed_pid.error[1] = bal_speed_pid.error[0];
+    bal_speed_pid.error[0] = target_speed - current_speed;
+
+    bal_speed_pid.integral += bal_speed_pid.error[0];
+    bal_speed_pid.integral = clamp(bal_speed_pid.integral, bal_speed_pid.int_max);
+
+    float pitch_target = bal_speed_pid.kp * bal_speed_pid.error[0]
+                       + bal_speed_pid.ki * bal_speed_pid.integral
+                       + bal_speed_pid.kd * (bal_speed_pid.error[0] - bal_speed_pid.error[1]);
+    pitch_target = clamp(pitch_target, 5.0f); // ±5°
+
+    // --- Inner loop: Angle PID ---
+    bal_angle_pid.error[1] = bal_angle_pid.error[0];
+    bal_angle_pid.error[0] = pitch_target - pitch;
+
+    balance_output = bal_angle_pid.kp * bal_angle_pid.error[0]
+                   + bal_angle_pid.kd * (-gyro_y);
+
+    balance_output = clamp(balance_output, bal_angle_pid.max_out);
+}
+        </code></pre>
+    </div>  
+    <p style="text-align:center; margin-top:6px;">
+        <strong>Figure X:</strong> Example firmware code snippet showing PID-based balancing control loop.
+    
+
+
+</details>
+
+
+
+
   <h3 class="subsection-title" id="sec-5-8">5.8 Weight Optimisation</h3>
   <p><em>(Summarise weight breakdown, optimisation steps, and potential reductions.)</em></p>
 
