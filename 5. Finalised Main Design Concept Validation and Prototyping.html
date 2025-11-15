@@ -536,15 +536,71 @@ allowing the leg to articulate freely while still meeting the competition’s ar
   <!-- ========================================================= -->
   <!-- 5.6 – 5.8 PLACEHOLDERS (IF YOU WANT TO KEEP THEM) -->
   <!-- ========================================================= -->
-  <h3 class="subsection-title" id="sec-5-6">5.6 Electrical Diagram</h3>
-  <p><em>(Insert system-level electrical diagram and wiring description.)</em></p>
+  <h3 class="subsection-title" id="sec-5-6">5.6 Electrical</h3>
+
+  <p>
+
+     Owing to project budget limitations, motors supplied by the NUS Calibur team are used 
+  in this design. Prior calculations have already verified that these motors meet the 
+  performance requirements for the intended application.
+
+  </p>
+  
+<details class="expand-box">
+    <summary><strong>Click to expand: Motors Used</strong></summary>
+    
+<img src="images/HT8108.jpg" alt="Electrical Diagram" style="width: 50%; display:block; margin:auto;">
+<p style="text-align:center; margin-top:6px;">
+    <strong>Figure X:</strong> HT8108-J6 Joint Motor 
+</p>
+
+<p>
+    Nominal Torque = 6Nm 
+    <br>
+    Torque After Reduction = 36Nm (with 1:6 reduction)
+    <br>
+    Max Speed After Reduction = 440 RPM
+    <br>
+    Nominal Current = 15A 
+    <br>
+    Voltage Range = 24V - 36V
+    <br>
+    Power = 170W 
+</p>
+
+<img src="images/M3508.jpg" alt="Electrical Diagram" style="width: 50%; display:block; margin:auto;">
+<p style="text-align:center; margin-top:6px;">
+    <strong>Figure X:</strong> M3508-P9 Wheel Motor
+</p>
+
+<p>
+
+    Torque After Reduction = 3Nm (with 1:6 reduction)
+    <br>
+    Max Speed After Reduction = 469 RPM
+    <br>
+    Nominal Current = 15A 
+    <br>
+    Voltage Range = 24V
+</p>
+
+
+    
+
+</details>
+
+
 
   <h3 class="subsection-title" id="sec-5-7">5.7 Firmware Code</h3>
-  <p><em>(Insert high-level firmware architecture and key control snippets.)</em></p>
-
+  
+<p>
+  Firmware development will be the primary focus moving forward. At the current stage, it is 
+  implemented mainly to test integration with the mechanical and electrical systems and to 
+  establish a foundation for future development.
+</p> 
 
 <details class="expand-box">
-    <summary><strong>Click to expand: Example Firmware Code Snippet</strong></summary>
+    <summary><strong>Click to expand: Firmware Code implmented to test the prototype</strong></summary>
     
     <p> 
 Below are example code snippets for the balancing control loop implemented in the robot's firmware. It is used to test 
@@ -625,20 +681,206 @@ void balancing_control(void)
 
     balance_output = clamp(balance_output, bal_angle_pid.max_out);
 }
+while (1) {
+		start_time = xTaskGetTickCount();
+//		speed_pid(30 * 19.2, can_motors[TMOTOR_ID-1].raw_data.rpm, &can_motors[TMOTOR_ID-1].rpm_pid);
+//		can_motors[TMOTOR_ID-1].output = can_motors[TMOTOR_ID-1].rpm_pid.output;
+
+//		{
+//		            motor_data_t *motor = &g_can_motors[BL_MOTOR_ID-1];
+//		            double target_rpm = -200.0;                   // hardcoded target RPM
+//		            double current_rpm = motor->raw_data.rpm;    // read current RPM
+//		            speed_pid(target_rpm, current_rpm, &motor->rpm_pid);  // PID update
+//		            motor->output = motor->rpm_pid.output;       // update motor output
+//		        }
+//
+//		        // ---- FL Motor (CAN ID 2) ----
+//		        {
+//		            motor_data_t *motor = &g_can_motors[FL_MOTOR_ID-1];
+//		            double target_rpm = 200.0;
+//		            double current_rpm = motor->raw_data.rpm;
+//		            speed_pid(target_rpm, current_rpm, &motor->rpm_pid);
+//		            motor->output = motor->rpm_pid.output;
+//		        }
+//
+//		        // Send CAN command (only these two motors)
+//		        motor_send_can(g_can_motors, BL_MOTOR_ID, FL_MOTOR_ID, 0, 0);
+
+
+		balancing_control();
+		double target_rpm_left  = get_balance_output();
+		double target_rpm_right  = -get_balance_output();
+
+		// --- Motor PID for BL Motor (CAN ID 1) ---
+		        {
+		            motor_data_t *motor = &g_can_motors[BL_MOTOR_ID - 1];
+		            double target_rpm = target_rpm_left;                   // hardcoded target RPM
+		            double current_rpm = motor->raw_data.rpm;     // read current RPM
+		            speed_pid(target_rpm, current_rpm, &motor->rpm_pid);
+		            motor->output = motor->rpm_pid.output;
+		        }
+
+		        // --- Motor PID for FL Motor (CAN ID 2) ---
+		        {
+		            motor_data_t *motor = &g_can_motors[FL_MOTOR_ID - 1];
+		            double target_rpm = target_rpm_right;
+		            double current_rpm = motor->raw_data.rpm;
+		            speed_pid(target_rpm, current_rpm, &motor->rpm_pid);
+		            motor->output = motor->rpm_pid.output;
+		        }
+
+		        motor_send_can(g_can_motors, BL_MOTOR_ID, FL_MOTOR_ID, 0, 0);
+
+
+
+		//CanComm_SendControlPara(0,0,5,1,0);
+
+
+
+
+
+		//delays task for other tasks to run
+		vTaskDelay(1);
+	}
         </code></pre>
     </div>  
-    <p style="text-align:center; margin-top:6px;">
-        <strong>Figure X:</strong> Example firmware code snippet showing PID-based balancing control loop.
     
+<p> 
+Below is the CAN Communication protocol function for the HT8108 Motors used for the joint of the robot. 
+It will output a toruqe to the motor, which is what will be needed for LQR Controller in the subsequent development.
+</p>Currently it is set up with MIT Controller.
+    <div class="code-block">
+      <pre><code class="language-c">void CanComm_SendControlPara(float f_p, float f_v, float f_kp, float f_kd, float f_t, int motor_id)
+  {
+    uint16_t p, v, kp, kd, t;
+    uint8_t buf[8];
+
+    LIMIT_MIN_MAX(f_p,  P_MIN,  P_MAX);
+    LIMIT_MIN_MAX(f_v,  V_MIN,  V_MAX);
+    LIMIT_MIN_MAX(f_kp, KP_MIN, KP_MAX);
+    LIMIT_MIN_MAX(f_kd, KD_MIN, KD_MAX);
+    LIMIT_MIN_MAX(f_t,  T_MIN,  T_MAX);
+
+    p = float_to_uint(f_p,      P_MIN,  P_MAX,  16);
+    v = float_to_uint(f_v,      V_MIN,  V_MAX,  12);
+    kp = float_to_uint(f_kp,    KP_MIN, KP_MAX, 12);
+    kd = float_to_uint(f_kd,    KD_MIN, KD_MAX, 12);
+    t = float_to_uint(f_t,      T_MIN,  T_MAX,  12);
+
+    buf[0] = p>>8;
+    buf[1] = p&0xFF;
+    buf[2] = v>>4;
+    buf[3] = ((v&0xF)<<4)|(kp>>8);
+    buf[4] = kp&0xFF;
+    buf[5] = kd>>4;
+    buf[6] = ((kd&0xF)<<4)|(t>>8);
+    buf[7] = t&0xff;
+
+
+    CanTransmit(buf, sizeof(buf), motor_id);
+  }
+      </code></pre>
+    </div>
+
+
 
 
 </details>
 
 
 
-
   <h3 class="subsection-title" id="sec-5-8">5.8 Weight Optimisation</h3>
-  <p><em>(Summarise weight breakdown, optimisation steps, and potential reductions.)</em></p>
+  
+<p>
+
+ As implementing both the big-wheel and hubless wheel designs increases the overall robot mass, 
+  weight optimisation becomes critical to ensure compliance with competition rule limits. 
+  A detailed evaluation and a structured optimisation approach are therefore required moving forward 
+  to keep the design both lightweight and mechanically robust.
+
+</p>
+
+
+<details class="expand-box">
+    <summary><strong>Click to expand: Weight Optimisation Evaluation</strong></summary>
+
+    <p>
+  Weight optimisation is a critical part of robot design, particularly for mobile systems where 
+  performance is strongly affected by inertia, power consumption, and structural loading. The 
+  objective is not simply to minimise weight, but to achieve an optimal balance between mass, 
+  stiffness, durability, and functional performance.
+</p>
+
+<h4>General Approach to Mechanical Weight Optimisation</h4>
+
+<p>The standard engineering workflow typically involves the following steps:</p>
+
+<ul>
+  <li><strong>1. Define weight targets</strong><br>
+      Establish a practical mass budget based on competition rules, motor capabilities, and 
+      performance requirements (acceleration, step-climbing torque, maneuverability).
+  </li>
+
+  <li><strong>2. Identify weight-critical subsystems</strong><br>
+      Components such as the chassis frame, wheel-leg assembly, linkages, and gimbal 
+      are usually the largest contributors to mass. These areas are prioritised for optimisation.
+  </li>
+
+  <li><strong>3. Apply structural optimisation techniques</strong><br>
+    Common methods include:
+    <ul>
+      <li><em>Topology optimisation</em>: remove low-stress regions identified through FEA.</li>
+      <li><em>Material substitution</em>: replace aluminium/steel with composites or high-strength polymers.</li>
+      <li><em>Geometry refinement</em>: convert solid components into ribs, shells, or trusses.</li>
+      <li><em>Load-path design</em>: ensure mass is concentrated along principal stress lines.</li>
+    </ul>
+  </li>
+
+  <li><strong>4. Validate using Finite Element Analysis (FEA)</strong><br>
+      Simulate bending, torsion, impact, and cyclic loading to ensure the optimised part still 
+      meets strength and safety-factor requirements.
+  </li>
+
+  <li><strong>5. Perform iterative refinement</strong><br>
+      Adjust dimensions, cutouts, wall thickness, or reinforcement ribs based on FEA results 
+      until the component reaches an acceptable balance of mass and stiffness.
+  </li>
+</ul>
+
+<h4>Threshold for Optimisation</h4>
+
+<ul>
+  <li>Mass exceeds the target weight budget for the subsystem, or</li>
+  <li>The component contributes significantly to inertia and reduces dynamic performance, or</li>
+  <li>The weight compromises functionality such as step-climbing, acceleration, or gimbal behavior.</li>
+</ul>
+
+<h4>Application to This Project</h4>
+
+<p>
+  For this robot, weight optimisation will focus on:
+</p>
+
+<ul>
+  <li>Reducing mass in the wheel-leg assembly without compromising step-climbing stiffness</li>
+  <li>Optimising the linkage thickness and geometry through FEA-driven cutouts</li>
+  <li>Evaluating the hubless wheel frame for ribbed-shell or lattice structures</li>
+  <li>Minimising chassis overdesign while maintaining rigidity for gimbal aiming</li>
+  <li>Rebalancing weight distribution to maintain stability during stepping and landing</li>
+</ul>
+
+<p>
+  Moving forward, each mechanical subsystem will undergo a structured optimisation cycle 
+  involving material review, topology optimisation, and simulation verification. This ensures 
+  the robot meets performance requirements while staying within the mass limitations imposed 
+  by the competition and the available motor capabilities.
+</p>
+
+</details>
+
+
+
+
 
 </section>
 
