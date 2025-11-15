@@ -1,37 +1,464 @@
 <section id="sec-5-finalised">
   <h2 class="section-title">5. Finalised Main Design Concept Validation and Prototyping</h2>
 
+  <!-- ========================================================= -->
+  <!-- 5.1 ROBOT DYNAMIC MOTION CONCEPT -->
+  <!-- ========================================================= -->
   <h3 class="subsection-title" id="sec-5-1">5.1 Robot Dynamic Motion Concept</h3>
 
+  <p>
+    The final robot concept combines a wheel–leg architecture with a cascaded joint layout
+    and hubless drive wheel to achieve reliable <strong>200&nbsp;mm step climbing</strong> while
+    maintaining good flat-ground performance and gimbal stability. The dynamic motion concept
+    is built around three key actions:
+  </p>
+
+  <ul>
+    <li>Rolling on flat ground using the primary drive wheels for high-speed motion.</li>
+    <li>Transitioning into a step-climbing posture by reorienting the cascaded leg joint.</li>
+    <li>Executing a controlled “push–up” motion using the linkage to lift the chassis over the step.</li>
+  </ul>
+
+  <p>
+    During step climbing, the linkage amplifies motor torque at the critical contact phase,
+    while the cascaded joint ensures that the leg and wheel segments move in a coordinated
+    manner to keep the robot stable. The hubless wheel allows the armour and leg to be
+    packaged within the wheel envelope without violating competition dimensional constraints.
+  </p>
+
+  <details class="expand-box">
+    <summary><strong>Click to expand: CAD views and motion sequence (concept)</strong></summary>
+    <p>
+      The complete CAD model illustrates the transition from flat-ground mode to
+      step-climbing mode:
+    </p>
+    <ul>
+      <li>Neutral posture: standard 4-wheel stance with low centre of gravity.</li>
+      <li>Pre-climb posture: front legs rotate to position the hubless wheel against the step.</li>
+      <li>Lift phase: linkage applies amplified torque to rotate the wheel–leg assembly upward.</li>
+      <li>Recovery phase: rear support follows, restoring a stable stance on the upper platform.</li>
+    </ul>
+    <p><em>(Embedded CAD animations / model-viewer are referenced in the main website.)</em></p>
+  </details>
+
+
+
+  <!-- ========================================================= -->
+  <!-- 5.2 LINKAGE DESIGN AND CALCULATION -->
+  <!-- ========================================================= -->
   <h3 class="subsection-title" id="sec-5-2">5.2 Linkage Design and Calculation</h3>
-      <h4 class="subsubsection-title" id="sec-5-2-1">5.2.1 Design Consideration</h4>
-      <h4 class="subsubsection-title" id="sec-5-2-2">5.2.2 Design Details</h4>
-      <h4 class="subsubsection-title" id="sec-5-2-3">5.2.3 Design Validation</h4>
-      <h4 class="subsubsection-title" id="sec-5-2-4">5.2.4 Prototyping</h4>
-      <h4 class="subsubsection-title" id="sec-5-2-5">5.2.5 Future Improvements (Linkage)</h4>
 
+  <!-- 5.2.1 -->
+  <h4 class="subsubsection-title" id="sec-5-2-1">5.2.1 Design Consideration</h4>
+
+  <p>
+    The linkage is used to create a <strong>torque step-up</strong> based on the ratio between the
+    linkage arms (for example, segments CD and CE in the design). A scissor-type five-bar
+    configuration is adopted because it offers a much wider tuning range for this ratio compared
+    to conventional linkages mounted behind the wheel, which only provide limited
+    mechanical amplification.
+  </p>
+
+  <p>
+    By adjusting pivot positions and arm lengths, the scissor layout allows a higher and more
+    controllable torque multiplier specifically in the step-climbing posture. This produces a
+    stronger lifting moment at the wheel–step contact while keeping linkage forces within
+    realistic material limits. At this stage, the design mainly targets <strong>static load-carrying
+    capability</strong> to ensure the robot can hold its weight on a step without back-driving.
+  </p>
+
+
+  <!-- 5.2.2 -->
+  <h4 class="subsubsection-title" id="sec-5-2-2">5.2.2 Design Details</h4>
+
+  <p>
+    The linkage geometry is parameterised using a small number of variables:
+  </p>
+
+  <ul>
+    <li>Key arm lengths (e.g., CD, CE and base links).</li>
+    <li>Relative pivot positions with respect to the wheel centre and chassis anchor points.</li>
+    <li>Target wheel centre trajectory during the lifting motion.</li>
+  </ul>
+
+  <p>
+    These parameters are constrained by:
+  </p>
+  <ul>
+    <li>Required step height of <strong>200&nbsp;mm</strong>.</li>
+    <li>Maximum allowable joint angles to avoid singular configurations.</li>
+    <li>Packaging limits inside the robot’s 600&nbsp;mm × 600&nbsp;mm starting footprint.</li>
+  </ul>
+
+
+  <!-- 5.2.3 -->
+  <h4 class="subsubsection-title" id="sec-5-2-3">5.2.3 Design Validation</h4>
+
+  <p>
+    At this stage, validation focuses on the linkage’s <strong>static load capacity</strong> under the
+    motor’s holding torque. The objective is to confirm that, in a worst-case step-climbing
+    posture, the linkage can safely support the full robot weight with a comfortable
+    safety margin.
+  </p>
+
+  <p>
+    MATLAB was used to sweep multiple linkage length combinations. For each candidate
+    geometry, the script evaluates:
+  </p>
+
+  <ul>
+    <li>Resulting wheel centre position and achievable step height.</li>
+    <li>Torque multiplication factor at the motor shaft.</li>
+    <li>Resulting reaction forces in the critical links and joints.</li>
+  </ul>
+
+  <p>
+    From the calculation results, many configurations satisfy the 200&nbsp;mm step requirement
+    while delivering a static lift capacity exceeding approximately <strong>38&nbsp;kg</strong>, which gives a
+    robust safety margin for the current <strong>20&nbsp;kg</strong> robot. These static approximations provide
+    a sufficiently conservative reference during the rapid prototyping phase.
+  </p>
+
+  <details class="expand-box">
+    <summary><strong>Click to expand: MATLAB sweep and linkage torque map</strong></summary>
+    <p><em>(Insert colour-density plot and code snippet here if desired.)</em></p>
+    <p>
+      The torque map highlights regions of feasible geometries that meet both step height and
+      stress limits, guiding the final selection implemented in CAD.
+    </p>
+  </details>
+
+
+  <!-- 5.2.4 -->
+  <h4 class="subsubsection-title" id="sec-5-2-4">5.2.4 Prototyping</h4>
+
+  <p>
+    A first prototype of the linkage was manufactured using plate stock and standard
+    fasteners to quickly verify motion, interference clearance and general stiffness. This
+    prototype focuses on:
+  </p>
+
+  <ul>
+    <li>Checking the real motion envelope against the CAD model.</li>
+    <li>Confirming there is no collision with the wheel, chassis or armour.</li>
+    <li>Assessing qualitative rigidity and backlash at the joints.</li>
+  </ul>
+
+  <p><em>(Prototype photos / GIFs of the linkage motion can be embedded here.)</em></p>
+
+
+  <!-- 5.2.5 -->
+  <h4 class="subsubsection-title" id="sec-5-2-5">5.2.5 Future Improvements – Linkage</h4>
+
+  <ul>
+    <li>Perform full dynamic simulation to identify the most energy-efficient linkage profile for repeated step climbing.</li>
+    <li>Use FEA to determine the required plate thickness and verify stiffness and strength under worst-case loads.</li>
+    <li>Optimise joint hardware and countersink depths to eliminate unwanted looseness caused by over-long bolts.</li>
+    <li>Select suitable structural materials (e.g., aluminium vs. carbon fibre) while avoiding geometries that promote carbon fibre delamination.</li>
+    <li>Justify any weight-reduction pockets using FEA to ensure no local overstress is introduced.</li>
+    <li>Add wire-routing holes and dedicated mounting points for motor drivers and sensors to improve integration and serviceability.</li>
+  </ul>
+
+
+
+  <!-- ========================================================= -->
+  <!-- 5.3 CASCADED LEG JOINT DESIGN -->
+  <!-- ========================================================= -->
   <h3 class="subsection-title" id="sec-5-3">5.3 Cascaded Leg Joint Design</h3>
-      <h4 class="subsubsection-title" id="sec-5-3-1">5.3.1 Design Consideration</h4>
-      <h4 class="subsubsection-title" id="sec-5-3-2">5.3.2 Design Details</h4>
-      <h4 class="subsubsection-title" id="sec-5-3-3">5.3.3 Design Validation</h4>
-      <h4 class="subsubsection-title" id="sec-5-3-4">5.3.4 Prototyping</h4>
-      <h4 class="subsubsection-title" id="sec-5-3-5">5.3.5 Future Improvements (Cascaded Joint)</h4>
 
+  <!-- 5.3.1 -->
+  <h4 class="subsubsection-title" id="sec-5-3-1">5.3.1 Design Consideration</h4>
+
+  <p>
+    Many legged robots stack hip and knee motors directly at the joint, which leads to a thick
+    cross-section and high concentrated loads at a single location. In contrast, this design
+    uses a <strong>cascaded leg joint</strong>, where torque is transmitted through chain stages to the
+    upper (“big”) leg and lower (“small”) leg segments.
+  </p>
+
+  <p>
+    This cascaded arrangement:
+  </p>
+
+  <ul>
+    <li>Spreads mass along the leg instead of concentrating it at a single joint.</li>
+    <li>Improves packaging around the hubless wheel and armour envelope.</li>
+    <li>Reduces bending loads on the motor output shafts.</li>
+  </ul>
+
+  <p><em>(A short clip of the cascaded joint motion can be embedded here.)</em></p>
+
+
+  <!-- 5.3.2 -->
+  <h4 class="subsubsection-title" id="sec-5-3-2">5.3.2 Design Details</h4>
+
+  <p>
+    The cascaded joint comprises:
+  </p>
+
+  <ul>
+    <li>Two drive stages using chains and sprockets to route torque to the big and small leg segments.</li>
+    <li>A central support structure that houses the headset bearing and chain paths.</li>
+    <li>Carefully controlled fabrication tolerances to minimise backlash and misalignment.</li>
+  </ul>
+
+  <p>
+    Fabrication tolerance is critical: too much clearance introduces backlash and vibration,
+    while too little makes assembly difficult. The joint geometry is therefore designed with
+    explicit allowance for machining and anodising while keeping functional fits tight in
+    high-load regions.
+  </p>
+
+  <p>
+    The main joint bearing is a <strong>1.8″ bicycle headset angular-contact bearing</strong> with nominal
+    size <strong>47.8 × 56.8 × 6.5&nbsp;mm (ACB568H6.5-type)</strong>, chosen primarily for its compact
+    form factor and convenient integration with circular housings.
+  </p>
+
+
+  <!-- 5.3.3 -->
+  <h4 class="subsubsection-title" id="sec-5-3-3">5.3.3 Design Validation</h4>
+
+  <p>
+    Although the exact load rating of the 47.8 × 56.8 × 6.5&nbsp;mm ACB568H6.5 headset bearing
+    is not published by the vendor, a comparable headset bearing (Enduro ACB&nbsp;4545&nbsp;150,
+    40&nbsp;×&nbsp;52&nbsp;×&nbsp;7&nbsp;mm) has a static load rating of approximately <strong>4.34&nbsp;kN</strong>. By comparison, the
+    worst-case static load transmitted through one leg of this 20&nbsp;kg robot is far lower, so
+    the headset bearing is considered significantly over-specified for this application.
+  </p>
+
+  <p>
+    As a result, the bearing choice is driven almost purely by <strong>geometric constraints and
+    packaging</strong> rather than by ultimate load capacity.
+  </p>
+
+
+  <!-- 5.3.4 -->
+  <h4 class="subsubsection-title" id="sec-5-3-4">5.3.4 Prototyping</h4>
+
+  <p>
+    A metal prototype of the cascaded joint was manufactured and assembled with the
+    selected bearing, sprockets and chain. The prototype demonstrates:
+  </p>
+
+  <ul>
+    <li>Smooth rotational motion over the full operating range.</li>
+    <li>Acceptable backlash for the current stage of development.</li>
+    <li>No obvious binding, scraping or structural instability under manual loading.</li>
+  </ul>
+
+  <p><em>(Photographs and video of the joint prototype can be placed here.)</em></p>
+
+
+  <!-- 5.3.5 -->
+  <h4 class="subsubsection-title" id="sec-5-3-5">5.3.5 Future Improvements – Cascaded Joint</h4>
+
+  <p>
+    The cascaded joint currently performs well with smooth motion and no noticeable
+    vibration or noise in manual tests. At this stage, no major redesign is required. Future
+    refinements, if any, would focus on minor tolerance tuning and surface finishing rather
+    than geometry changes.
+  </p>
+
+
+
+  <!-- ========================================================= -->
+  <!-- 5.4 HUBLESS WHEEL DESIGN -->
+  <!-- ========================================================= -->
   <h3 class="subsection-title" id="sec-5-4">5.4 Hubless Wheel Design</h3>
-      <h4 class="subsubsection-title" id="sec-5-4-1">5.4.1 Design Consideration</h4>
-      <h4 class="subsubsection-title" id="sec-5-4-2">5.4.2 Design Details</h4>
-      <h4 class="subsubsection-title" id="sec-5-4-3">5.4.3 Design Validation</h4>
-      <h4 class="subsubsection-title" id="sec-5-4-4">5.4.4 Prototyping</h4>
-      <h4 class="subsubsection-title" id="sec-5-4-5">5.4.5 Future Improvements</h4>
 
+  <!-- 5.4.1 -->
+  <h4 class="subsubsection-title" id="sec-5-4-1">5.4.1 Design Consideration</h4>
+
+  <p>
+    RoboMaster armour mounting rules require the armour plates to remain horizontally
+    aligned with the chassis. This constraint makes it difficult to use large conventional
+    wheels without either:
+  </p>
+
+  <ul>
+    <li>Violating the starting footprint, or</li>
+    <li>Interfering with the armour and gimbal mounting envelope.</li>
+  </ul>
+
+  <p>
+    To resolve this, a <strong>hubless wheel</strong> concept was adopted. The drive motor and support
+    structure are located inside the wheel’s inner ring while the outer rim carries the tyre.
+    This allows:
+  </p>
+
+  <ul>
+    <li>Large effective wheel diameter for step climbing.</li>
+    <li>Armour mounting surfaces that stay horizontal relative to the chassis.</li>
+    <li>Integration of the leg structure through the wheel centre.</li>
+  </ul>
+
+
+  <!-- 5.4.2 -->
+  <h4 class="subsubsection-title" id="sec-5-4-2">5.4.2 Design Details</h4>
+
+  <p>
+    The current design uses a large turntable bearing as the inner raceway, with a
+    3D-printed gear profile attached to the wheel rim for prototyping. The inner non-rotating
+    frame mounts directly to the cascaded leg joint, and the outer ring acts as the driven
+    wheel.
+  </p>
+
+  <p><em>(Figures showing the hubless wheel assembly and gear specification can be inserted here.)</em></p>
+
+
+  <!-- 5.4.3 -->
+  <h4 class="subsubsection-title" id="sec-5-4-3">5.4.3 Design Validation</h4>
+
+  <p>
+    Kinematic calculations were carried out using the selected motor (e.g. M3508) and gear
+    ratio to ensure that the hubless wheel can deliver sufficient tangential speed and
+    acceleration on flat ground and during step climbing. These checks confirm that the
+    prototype meets the required speed range while staying within realistic torque limits.
+  </p>
+
+
+  <!-- 5.4.4 -->
+  <h4 class="subsubsection-title" id="sec-5-4-4">5.4.4 Prototyping</h4>
+
+  <p>
+    Due to time constraints, the hubless wheel prototype was built using a
+    <strong>350&nbsp;mm-diameter turntable</strong> and a 3D-printed gear profile. This is not a production-grade
+    solution, but it is sufficient to:
+  </p>
+
+  <ul>
+    <li>Verify the feasibility of the hubless geometry.</li>
+    <li>Test smooth rotational motion under light load.</li>
+    <li>Check assembly and integration with the leg structure.</li>
+  </ul>
+
+  <p><em>(Prototype photos and test videos can be embedded here.)</em></p>
+
+
+  <!-- 5.4.5 -->
+  <h4 class="subsubsection-title" id="sec-5-4-5">5.4.5 Future Improvements</h4>
+
+  <ul>
+    <li>
+      Replace the temporary turntable with a bearing specifically designed for radial loads.
+      The current turntable risks ball jamming under high radial forces.
+    </li>
+    <li>
+      Perform dynamic modelling of the gear train to determine the optimal gear ratio with
+      respect to the motor torque and desired step-climbing speed.
+    </li>
+    <li>
+      Simplify and stiffen the mounting structure between the inner frame and the leg;
+      several intermediate pieces are currently used only to “fit” the wheel-leg assembly and
+      can be eliminated.
+    </li>
+    <li>
+      Increase overall structural rigidity to reduce flex, which would otherwise degrade
+      control performance and sensor alignment.
+    </li>
+  </ul>
+
+
+
+  <!-- ========================================================= -->
+  <!-- 5.5 CHAIN DRIVE MECHANISM -->
+  <!-- ========================================================= -->
   <h3 class="subsection-title" id="sec-5-5">5.5 Chain Drive Mechanism</h3>
-      <h4 class="subsubsection-title" id="sec-5-5-1">5.5.1 Design Consideration</h4>
-      <h4 class="subsubsection-title" id="sec-5-5-2">5.5.2 Design Details</h4>
-      <h4 class="subsubsection-title" id="sec-5-5-3">5.5.3 Design Validation</h4>
-      <h4 class="subsubsection-title" id="sec-5-5-4">5.5.4 Prototyping</h4>
 
+  <!-- 5.5.1 -->
+  <h4 class="subsubsection-title" id="sec-5-5-1">5.5.1 Design Consideration</h4>
+
+  <p>
+    The chain drive is used to offset the drive motor to the side of the leg while still
+    transmitting torque to the hubless wheel and cascaded joints. This improves packaging
+    flexibility and keeps the motor away from direct impact zones.
+  </p>
+
+  <p>
+    A lightweight bicycle-type chain is selected rather than a standard industrial roller chain,
+    in order to reduce mass and inertia at the leg. Sprocket sizes are chosen to achieve the
+    required overall gear ratio when combined with the motor’s internal reduction.
+  </p>
+
+
+  <!-- 5.5.2 -->
+  <h4 class="subsubsection-title" id="sec-5-5-2">5.5.2 Design Details</h4>
+
+  <p>
+    The chain drive consists of:
+  </p>
+
+  <ul>
+    <li>Primary drive sprocket on the motor output shaft.</li>
+    <li>Driven sprocket on the hubless wheel / intermediate shaft.</li>
+    <li>A small roller acting as a chain tensioner.</li>
+  </ul>
+
+  <p>
+    Detailed chain specifications (pitch, width and tensile rating), sprocket tooth counts and
+    overall reduction ratio are documented in the accompanying design tables.
+  </p>
+
+  <p>
+    Currently, a small bicycle roller is installed to tension the chain. However, its position is
+    fixed, so the tension cannot be adjusted once assembled.
+  </p>
+
+
+  <!-- 5.5.3 -->
+  <h4 class="subsubsection-title" id="sec-5-5-3">5.5.3 Design Validation</h4>
+
+  <p>
+    The mechanical strength of the selected chain significantly exceeds the torque produced
+    by the drive motor, even under conservative shock-load assumptions. Basic loading
+    calculations confirm that the chain operates well below its allowable working load.
+  </p>
+
+  <p>
+    Material fatigue life is also considered, ensuring that the expected number of step-climbing
+    cycles remains within the safe fatigue region for the chosen chain specification.
+  </p>
+
+
+  <!-- 5.5.4 -->
+  <h4 class="subsubsection-title" id="sec-5-5-4">5.5.4 Prototyping</h4>
+
+  <p>
+    A prototype chain drive was assembled on the leg module and tested for:
+  </p>
+
+  <ul>
+    <li>Chain tracking and alignment across the full range of motion.</li>
+    <li>Noise and vibration under moderate load.</li>
+    <li>Ease of assembly and chain installation.</li>
+  </ul>
+
+  <p><em>(Photographs of the assembled chain drive can be inserted here.)</em></p>
+
+
+  <!-- 5.5.5 -->
+  <h4 class="subsubsection-title" id="sec-5-5-5">5.5.5 Future Work</h4>
+
+  <p>
+    Implement a <strong>screw-adjustable tensioning mechanism</strong> so that chain tension can be
+    tuned precisely during assembly and maintenance. The mounting brackets for both the
+    tensioner and the sprockets should be stiffened and simplified to minimise play, which
+    will improve drivetrain efficiency and reduce backlash.
+  </p>
+
+
+
+  <!-- ========================================================= -->
+  <!-- 5.6 – 5.8 PLACEHOLDERS (IF YOU WANT TO KEEP THEM) -->
+  <!-- ========================================================= -->
   <h3 class="subsection-title" id="sec-5-6">5.6 Electrical Diagram</h3>
+  <p><em>(Insert system-level electrical diagram and wiring description.)</em></p>
+
   <h3 class="subsection-title" id="sec-5-7">5.7 Firmware Code</h3>
-  <h3 class="subsection-title" id="sec-5-8">5.8 Weight Optimization</h3>
+  <p><em>(Insert high-level firmware architecture and key control snippets.)</em></p>
+
+  <h3 class="subsection-title" id="sec-5-8">5.8 Weight Optimisation</h3>
+  <p><em>(Summarise weight breakdown, optimisation steps, and potential reductions.)</em></p>
 
 </section>
