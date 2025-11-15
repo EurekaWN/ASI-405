@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Robot Design Report</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Your global CSS here (Times New Roman etc.) -->
+  <style>
+    <style>
+  * {
+    font-family: "Times New Roman", Times, serif;
+    font-size: 12pt;
+  }
+
+  .section-title {
+    font-size: 20pt;
+    font-weight: bold;
+    margin-top: 40px;
+    margin-bottom: 12px;
+  }
+
+  .subsection-title {
+    font-size: 16pt;
+    font-weight: bold;
+    margin-top: 24px;
+  }
+
+  .subsubsection-title {
+    font-size: 14pt;
+    font-weight: bold;
+    font-style: italic;
+    margin-top: 16px;
+  }
+
+  .subsubsubsection-title {
+    font-size: 12pt;
+    font-weight: bold;
+    text-decoration: underline;
+    margin-top: 12px;
+  }
+
+  p {
+    margin-bottom: 10px;
+    text-align: justify;
+  }
+</style>
+
+  </style>
+</head>
+<body>
+
+  <!-- HEADER BLOCK -->
+  <div include-html="Front Page.html"></div>
+
+  <!-- MAIN CONTENT BLOCK (e.g. Morphological Chart) -->
+<div include-html="1. Introduction.html"></div>
+<div include-html="2. Competition Background Information.html"></div>
+<div include-html="3. Problem Clarification.html"></div>
+<div include-html="4. Design Thinking Process.html"></div>
+<div include-html="5. Finalised Main Design Concept Validation and Prototyping.html"></div>
+<div include-html="6. Overall Prototyping Testing.html"></div>
+<div include-html="7. Moving Forward.html"></div>
+<div include-html="8. Conclusion.html"></div>
+<div include-html="References.html"></div>
+
+
+  <!-- FOOTER BLOCK -->
+  <div include-html="footer.html"></div>
+
+  <!-- Include loader script at the end -->
+  <script>
+    // simple HTML include using fetch()
+    async function includeHTML() {
+      const elements = document.querySelectorAll("[include-html]");
+      for (const el of elements) {
+        const file = el.getAttribute("include-html");
+        if (!file) continue;
+
+        try {
+          const resp = await fetch(file);
+          if (!resp.ok) {
+            el.innerHTML = "Include error: " + resp.status + " " + file;
+          } else {
+            el.innerHTML = await resp.text();
+          }
+        } catch (e) {
+          el.innerHTML = "Include error: " + e;
+        }
+      }
+    }
+
+    includeHTML();
+  </script>
+</body>
+</html>

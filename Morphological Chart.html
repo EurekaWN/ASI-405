@@ -44,7 +44,7 @@ p.sub {
 
 /* LEFT: scrollable gallery window */
 .gallery-window {
-  height: 950px;
+  height: 650px;
   overflow-y: scroll;
   border-radius: 10px;
   border: 1px solid #ccc;
@@ -171,6 +171,10 @@ p.sub {
   background: #eef1f8;
   padding: 8px 10px;
   font-size: 0.82rem;
+
+  /* scoring matrix scrollable */
+  max-height: 180px;
+  overflow-y: auto;
 }
 
 .params-title {
@@ -178,9 +182,15 @@ p.sub {
   margin-bottom: 4px;
 }
 
+/* small legend for score + weight */
+.params-legend {
+  font-size: 0.78rem;
+  color: #666;
+  margin-bottom: 4px;
+}
+
 .param-row {
   display: flex;
-  justify-content: space-between;
   align-items: center;
   padding: 2px 0;
   border-bottom: 1px solid rgba(0,0,0,0.05);
@@ -196,6 +206,19 @@ p.sub {
   color: #444;
 }
 
+/* weight pill */
+.param-weight {
+  min-width: 40px;
+  text-align: center;
+  font-size: 0.75rem;
+  margin-right: 6px;
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: #e0e7ff;
+  color: #27326b;
+}
+
+/* score pill */
 .param-value {
   font-weight: 600;
   min-width: 24px;
@@ -208,6 +231,9 @@ p.sub {
 /* Total score styling */
 .param-row.total-row .param-label {
   font-weight: 700;
+}
+.param-row.total-row .param-weight {
+  display: none; /* no weighting for total */
 }
 .param-row.total-row .param-value {
   font-size: 0.9rem;
@@ -231,8 +257,8 @@ p.sub {
 /* Ribbon label for highlighted designs */
 .ribbon {
   position: absolute;
-  top: 8px;
-  left: -35px;
+  top: 5px;
+  left: -39px;
   background: #22c55e;
   color: #fff;
   padding: 4px 40px;
@@ -247,9 +273,12 @@ p.sub {
 
 <body>
 <div class="container">
-  <h1>Morphological Chart </h1>
+  <h1>Morphological Chart</h1>
   <p class="sub">
-    With the large variety of designs found online, evaluating every concept in detail is not feasible. Therefore a few viable options are shortlisted based on engineering intuition. Morphological Chart is used in this process as a guide. Hover over to see the scoring. 
+    With the large variety of designs found online, evaluating every concept in detail is not feasible.
+    Therefore a few viable options are shortlisted based on engineering intuition. A Morphological Chart
+    is used in this process as a guide. Hover over a design to see its scoring and weighting. W is the weightage of each parametres base on how important it is.
+  </p>
 
   <div class="layout">
     <!-- LEFT: GALLERY -->
@@ -278,7 +307,7 @@ p.sub {
              data-designdiff="2"
              data-total="154">
 
-          <div class="ribbon">Main Design</div>
+          <div class="ribbon">Choosen Design</div>
           <img src="images/RM 3.png" alt="Design 1" />
           <div class="overlay">
             <strong>Bipedal Leg</strong>
@@ -307,6 +336,7 @@ p.sub {
              data-controldiff="2"
              data-designdiff="2"
              data-total="140">
+          <div class="ribbon">Choosen Design</div>
           <img src="images/Ascento V2.jpg" alt="Design 2" />
           <div class="overlay">
             <strong>Wheel-Leg</strong>
@@ -318,7 +348,7 @@ p.sub {
         <div class="card"
              data-title="RM Linkage Climber"
              data-desc="RoboMaster Circle Leg Wheel, hard to control but high terrain pass capability"
-             data-meta="Double Motor Wheel" 
+             data-meta="Double Motor Wheel"
              data-flat="5"
              data-step="5"
              data-stability="4"
@@ -335,6 +365,7 @@ p.sub {
              data-controldiff="4"
              data-designdiff="4"
              data-total="142">
+          <div class="ribbon">Choosen Design</div>
           <img src="images/RM 2.png" alt="Design 3" />
           <div class="overlay">
             <strong>Linkage Climber</strong>
@@ -419,6 +450,7 @@ p.sub {
              data-controldiff="4"
              data-designdiff="3"
              data-total="108">
+          <div class="ribbon">Explored Design</div>
           <img src="images/Track Design 4.png" alt="Design 6" />
           <div class="overlay">
             <strong>Track Concept</strong>
@@ -430,7 +462,7 @@ p.sub {
         <div class="card"
              data-title="Planetary Wheel Variant 1"
              data-desc="Planetary wheel mechanism where a set of wheels are arranged around a hub, allowing step-by-step rotation over obstacles."
-             data-meta="Locomotion: Planetary wheel · "
+             data-meta="Locomotion: Planetary wheel"
              data-flat="4"
              data-step="3"
              data-stability="4"
@@ -457,8 +489,8 @@ p.sub {
         <!-- Card 8 – Excel Design No.8 -->
         <div class="card"
              data-title="Multi Wheel Design 1"
-             data-desc=" wheel design for simple step climbing using rotational wheels around a common axle."
-             data-meta="Locomotion: Wheel "
+             data-desc="Wheel design for simple step climbing using rotational wheels around a common axle."
+             data-meta="Locomotion: Wheel"
              data-flat="4"
              data-step="2"
              data-stability="4"
@@ -485,8 +517,8 @@ p.sub {
         <!-- Card 9 – Excel Design No.9 -->
         <div class="card"
              data-title="Transformable wheel"
-             data-desc="Wheel expand to increase in climbing radius"
-             data-meta="Locomotion: Transformable wheel "
+             data-desc="Wheel expands to increase its effective climbing radius."
+             data-meta="Locomotion: Transformable wheel"
              data-flat="4"
              data-step="3"
              data-stability="3"
@@ -512,8 +544,8 @@ p.sub {
 
         <!-- Card 10 – Excel Design No.11 -->
         <div class="card"
-             data-title="Track Under the robot"
-             data-desc="Special concept chassis using unconventional track attachment under the chassis to assist climbing"
+             data-title="Track Under the Robot"
+             data-desc="Special concept chassis using unconventional track attachment under the chassis to assist climbing."
              data-meta="Locomotion: hybrid with track assistance"
              data-flat="4"
              data-step="2"
@@ -541,7 +573,7 @@ p.sub {
         <!-- Card 11 – Excel Design No.12 -->
         <div class="card"
              data-title="Track with Mecanum Wheel"
-             data-desc="Track with attached Mecanum rollers"
+             data-desc="Track with attached Mecanum rollers."
              data-meta="Locomotion: Track + Mecanum rollers"
              data-flat="2"
              data-step="1"
@@ -570,7 +602,7 @@ p.sub {
         <div class="card"
              data-title="Special Wheel Concept"
              data-desc="Dual-joint wheel mechanism capable of changing the effective wheelbase during step climbing."
-             data-meta="Locomotion: Wheel +  Dual joint"
+             data-meta="Locomotion: Wheel + Dual joint"
              data-flat="5"
              data-step="3"
              data-stability="4"
@@ -596,9 +628,37 @@ p.sub {
 
         <!-- Card 13 – Excel Design No.14 -->
         <div class="card"
-             data-title="Special Concept 3"
-             data-desc="Compact hybrid concept combining wheels and lifting elements, intended to minimise footprint while maintaining climbing capability."
-             data-meta="Locomotion: Hybrid · Compact · Confined spaces"
+             data-title="Ball Robot"
+             data-desc="Robot body is fitted within a massive rotating ball balanced by rolling/Gyro."
+             data-meta="Single Wheel balancing"
+             data-flat="3"
+             data-step="4"
+             data-stability="3"
+             data-maneuver="2"
+             data-gimbal="2"
+             data-spin="2"
+             data-terrain="3"
+             data-reliability="3"
+             data-power="2"
+             data-structure="5"
+             data-maintain="3"
+             data-weight="2"
+             data-mechcomplex="3"
+             data-controldiff="1"
+             data-designdiff="2"
+             data-total="120">
+          <img src="images/ball robot.jpg" alt="Design 13" />
+          <div class="overlay">
+            <strong>Special 3</strong>
+            Compact hybrid<br>Confined spaces
+          </div>
+        </div>
+
+        <!-- Card 14 – Excel Design No.14 (existing continuation) -->
+        <div class="card"
+             data-title="Wheel Leg with Wheel at the Joint"
+             data-desc="Wheel leg able to transform into a 4 wheel robot."
+             data-meta="Non-holonomic"
              data-flat="5"
              data-step="4"
              data-stability="3"
@@ -615,125 +675,96 @@ p.sub {
              data-controldiff="1"
              data-designdiff="2"
              data-total="144">
-          <img src="" alt="Design 13" />
+          <img src="images/Design14.jpg" alt="Design 14" />
           <div class="overlay">
-            <strong>Special 3</strong>
-            Compact hybrid<br>Confined spaces
+            <strong>Dual-DOF Leg</strong>
+            Translation + Rotation<br>Non-holonomic
           </div>
         </div>
 
-        <!-- Card 14 – Excel Design No.14 (existing continuation) -->
-<div class="card"
-     data-title="Wheel Leg with wheel at the joint"
-     data-desc="Wheel leg able to transform into a 4 wheel robot."
-     data-meta="Non-holonomic"
-     data-flat="5"
-     data-step="4"
-     data-stability="3"
-     data-maneuver="5"
-     data-gimbal="5"
-     data-spin="5"
-     data-terrain="3"
-     data-reliability="4"
-     data-power="3"
-     data-structure="3"
-     data-maintain="4"
-     data-weight="3"
-     data-mechcomplex="3"
-     data-controldiff="1"
-     data-designdiff="2"
-     data-total="144">
-  <img src="images/Design14.jpg" alt="Design 14" />
-  <div class="overlay">
-    <strong>Dual-DOF Leg</strong>
-    Translation + Rotation<br>Non-holonomic
-  </div>
-</div>
+        <!-- Card 15 – Excel Design No.15 -->
+        <div class="card"
+             data-title="Robot Wheel Leg Dog"
+             data-desc="A four-wheel robot dog capable of adaptive stair climbing using active suspension geometry. Demonstrates good adaptability and traction."
+             data-meta="Locomotion: 4 wheel leg, Non-holonomic"
+             data-flat="5"
+             data-step="3"
+             data-stability="4"
+             data-maneuver="3"
+             data-gimbal="5"
+             data-spin="3"
+             data-terrain="5"
+             data-reliability="4"
+             data-power="1"
+             data-structure="3"
+             data-maintain="4"
+             data-weight="2"
+             data-mechcomplex="4"
+             data-controldiff="2"
+             data-designdiff="2"
+             data-total="134">
+          <img src="images/Design15.jpg" alt="Design 15" />
+          <div class="overlay">
+            <strong>Four-Wheel Stair Climber</strong>
+            Active suspension<br>Stair-climbing test
+          </div>
+        </div>
 
-<!-- Card 15 – Excel Design No.15 -->
-<div class="card"
-     data-title="Robot Wheel Leg Dog"
-     data-desc="A four-wheel robot dog capable of adaptive stair climbing using active suspension geometry. Demonstrates good adaptability and traction."
-     data-meta="Locomotion: 4 wheel leg, Non-holonomic"
-     data-flat="5"
-     data-step="3"
-     data-stability="4"
-     data-maneuver="3"
-     data-gimbal="5"
-     data-spin="3"
-     data-terrain="5"
-     data-reliability="4"
-     data-power="1"
-     data-structure="3"
-     data-maintain="4"
-     data-weight="2"
-     data-mechcomplex="4"
-     data-controldiff="2"
-     data-designdiff="2"
-     data-total="134">
-  <img src="images/Design15.jpg" alt="Design 15" />
-  <div class="overlay">
-    <strong>Four-Wheel Stair Climber</strong>
-    Active suspension<br>Stair-climbing test
-  </div>
-</div>
+        <!-- Card 16 – Excel Design No.16 -->
+        <div class="card"
+             data-title="Inverted Wheel-Leg Robot Dog"
+             data-desc="A four-legged hybrid robot with powered wheels on each leg, designed for both flat motion and step negotiation."
+             data-meta="Locomotion: Wheel-Leg Hybrid · 4-legged crawler"
+             data-flat="5"
+             data-step="3"
+             data-stability="4"
+             data-maneuver="4"
+             data-gimbal="5"
+             data-spin="4"
+             data-terrain="5"
+             data-reliability="3"
+             data-power="1"
+             data-structure="2"
+             data-maintain="4"
+             data-weight="1"
+             data-mechcomplex="3"
+             data-controldiff="1"
+             data-designdiff="2"
+             data-total="128">
+          <img src="images/Design16.jpg" alt="Design 16" />
+          <div class="overlay">
+            <strong>Hybrid Leg-Wheel</strong>
+            Six-legged crawler<br>Hybrid design
+          </div>
+        </div>
 
-<!-- Card 16 – Excel Design No.16 -->
-<div class="card"
-     data-title="Inverted Wheel leg robot Dog"
-     data-desc="A four-legged hybrid robot with powered wheels on each leg, designed for both flat motion and step negotiation."
-     data-meta="Locomotion: Wheel-Leg Hybrid · 4-legged crawler"
-     data-flat="5"
-     data-step="3"
-     data-stability="4"
-     data-maneuver="4"
-     data-gimbal="5"
-     data-spin="4"
-     data-terrain="5"
-     data-reliability="3"
-     data-power="1"
-     data-structure="2"
-     data-maintain="4"
-     data-weight="1"
-     data-mechcomplex="3"
-     data-controldiff="1"
-     data-designdiff="2"
-     data-total="128">
-  <img src="images/Design16.jpg" alt="Design 16" />
-  <div class="overlay">
-    <strong>Hybrid Leg-Wheel</strong>
-    Six-legged crawler<br>Hybrid design
-  </div>
-</div>
-
-<!-- Card 17 – Excel Design No.17 -->
-<div class="card"
-     data-title="Bipedal Balancing Robot"
-     data-desc="Self-balancing bipedal design using two large wheels. Combines stability control and step climbing with pendulum-like leg motion."
-     data-meta="Locomotion: Bipedal · Self-balancing"
-     data-flat="5"
-     data-step="4"
-     data-stability="3"
-     data-maneuver="2"
-     data-gimbal="4"
-     data-spin="4"
-     data-terrain="4"
-     data-reliability="4"
-     data-power="4"
-     data-structure="4"
-     data-maintain="3"
-     data-weight="3"
-     data-mechcomplex="2"
-     data-controldiff="2"
-     data-designdiff="2"
-     data-total="140">
-  <img src="images/Design17.jpg" alt="Design 17" />
-  <div class="overlay">
-    <strong>Bipedal Balancing</strong>
-    Self-balancing<br>Wheel-based biped
-  </div>
-</div>
-
+        <!-- Card 17 – Excel Design No.17 -->
+        <div class="card"
+             data-title="Bipedal Balancing Robot"
+             data-desc="Self-balancing bipedal design using two large wheels. Combines stability control and step climbing with pendulum-like leg motion."
+             data-meta="Locomotion: Bipedal · Self-balancing"
+             data-flat="5"
+             data-step="4"
+             data-stability="3"
+             data-maneuver="2"
+             data-gimbal="4"
+             data-spin="4"
+             data-terrain="4"
+             data-reliability="4"
+             data-power="4"
+             data-structure="4"
+             data-maintain="3"
+             data-weight="3"
+             data-mechcomplex="2"
+             data-controldiff="2"
+             data-designdiff="2"
+             data-total="140">
+          <img src="images/Design17.jpg" alt="Design 17" />
+          <div class="overlay">
+            <strong>Bipedal Balancing</strong>
+            Self-balancing<br>Wheel-based biped
+          </div>
+        </div>
 
       </div>
     </div>
@@ -755,6 +786,9 @@ p.sub {
 
       <div id="previewParams" class="params">
         <div class="params-title">Parameter Grading</div>
+        <div class="params-legend">
+          Scores are multiplied by the weighting factor <strong>w</strong> for ranking.
+        </div>
         <!-- parameter rows injected via JS -->
       </div>
     </div>
@@ -789,6 +823,25 @@ const paramLabels = {
   total: "Total score"
 };
 
+// weighting factors you provided (3 3 3 3 3 2 2 2 3 3 3 2 2 2 5)
+const paramWeights = {
+  flat: 3,
+  step: 3,
+  stability: 3,
+  maneuver: 3,
+  gimbal: 3,
+  spin: 2,
+  terrain: 2,
+  reliability: 2,
+  power: 3,
+  structure: 3,
+  maintain: 3,
+  weight: 2,
+  mechcomplex: 2,
+  controldiff: 2,
+  designdiff: 5
+};
+
 // map 1–5 to colours (red→green)
 function getScoreColor(value) {
   const n = parseInt(value, 10);
@@ -816,8 +869,13 @@ function updatePreview(card) {
   previewText.textContent = desc;
   previewMeta.textContent = meta;
 
-  // reset params
-  previewParams.innerHTML = '<div class="params-title">Parameter Grading</div>';
+  // reset params, but keep title + legend
+  previewParams.innerHTML = `
+    <div class="params-title">Parameter Grading</div>
+    <div class="params-legend">
+      Scores are multiplied by the weighting factor <strong>w</strong> for ranking.
+    </div>
+  `;
 
   let hasAnyParam = false;
 
@@ -837,16 +895,29 @@ function updatePreview(card) {
       labelSpan.className = "param-label";
       labelSpan.textContent = paramLabels[key];
 
+      const weightSpan = document.createElement("span");
+      weightSpan.className = "param-weight";
+
+      if (key === "total" || paramWeights[key] === undefined) {
+        weightSpan.textContent = "";  // no weight for total
+      } else {
+        weightSpan.textContent = "w=" + paramWeights[key];
+        weightSpan.title = "Weighting factor used when scoring";
+      }
+
       const valueSpan = document.createElement("span");
       valueSpan.className = "param-value";
       valueSpan.textContent = value;
 
       // colour code 1–5 scores (total will stay neutral)
-      const colors = getScoreColor(value);
-      valueSpan.style.backgroundColor = colors.bg;
-      valueSpan.style.color = colors.fg;
+      if (key !== "total") {
+        const colors = getScoreColor(value);
+        valueSpan.style.backgroundColor = colors.bg;
+        valueSpan.style.color = colors.fg;
+      }
 
       row.appendChild(labelSpan);
+      row.appendChild(weightSpan);
       row.appendChild(valueSpan);
       previewParams.appendChild(row);
     }
