@@ -1,26 +1,307 @@
 <section id="sec-4-design-thinking">
   <h2 class="section-title">4. Design Thinking Process</h2>
 
+  <p>
+    This section documents the overall design thinking process used to arrive
+    at the final bipedal wheel-leg robot concept. Rather than jumping directly
+    into a single solution, multiple design directions were explored,
+    evaluated, and iteratively refined using design specifications, literature
+    review, morphological charts, and quantitative analysis of key locomotion
+    concepts.
+  </p>
+
+
+  <!-- ========================================================= -->
+  <!-- 4.1 DESIGN SPECIFICATION -->
+  <!-- ========================================================= -->
   <h3 class="subsection-title" id="sec-4-1">4.1 Design Specification (Bipedal Wheel Leg Robot)</h3>
 
+  <p>
+    The design specifications for the bipedal wheel-leg robot are derived
+    directly from the RoboMaster competition rules and the strategic needs of
+    the NUS Calibur team. These specifications act as <strong>hard design
+    constraints</strong> and ensure that every concept considered remains both
+    competition legal and practically deployable.
+  </p>
+
+  <details class="expand-box">
+    <summary><strong>Click to expand: Key design specifications</strong></summary>
+
+    <ul>
+      <li>Robot type: <strong>Standard robot chassis</strong> (primary combat platform).</li>
+      <li>Compliant with all current <strong>RMUC mechanical, electrical, and safety rules</strong>.</li>
+      <li>Maximum dimensions: within <strong>600 × 600 × 500 mm</strong> initial, expandable to
+          <strong>800 × 800 × 800 mm</strong>.</li>
+      <li>Total mass target: approximately <strong>20–25 kg</strong> (excluding referee system).</li>
+      <li>Power system: ≤ <strong>300 Wh</strong> pack energy, ≤ <strong>30 V</strong> bus voltage,
+          ≤ <strong>2200 J</strong> supercapacitor energy.</li>
+      <li>Mobility target: high-speed movement on flat terrain with efficient
+          <strong>200 mm step-climbing capability</strong>.</li>
+      <li>Compatibility with existing <strong>gimbal, referee system, armour modules,
+          and sensors</strong> used by the Calibur team.</li>
+    </ul>
+
+    <p><em>Table X: Formal Design Specification can be inserted here as a rendered table.</em></p>
+  </details>
+
+
+  <!-- ========================================================= -->
+  <!-- 4.2 LITERATURE REVIEW -->
+  <!-- ========================================================= -->
   <h3 class="subsection-title" id="sec-4-2">4.2 Literature Review of the Past Designs</h3>
 
+  <p>
+    This subsection reviews relevant climbing and all-terrain robot designs
+    from both research literature and existing RoboMaster robots. The goal is
+    to understand the strengths and limitations of different locomotion
+    strategies—continuous tracks, articulated legs, wheel-leg hybrids, and
+    transformable wheels—and how they influence step-climbing and terrain
+    adaptability.
+  </p>
+
+  <details class="expand-box">
+    <summary><strong>Click to expand: Summary of reviewed design families</strong></summary>
+
+    <ul>
+      <li><strong>Tracked robots</strong> – excellent terrain contact and stability, but higher
+          mechanical complexity, higher internal losses, and potential speed penalties.</li>
+      <li><strong>Legged robots</strong> – high adaptability and obstacle negotiation, but require
+          sophisticated control and often sacrifice top speed and robustness.</li>
+      <li><strong>Wheel-leg hybrids</strong> – combine rolling efficiency with active step-climbing
+          through leg motion, offering a promising balance for RoboMaster applications.</li>
+      <li><strong>Planetary and transformable wheels</strong> – mechanically clever and capable of
+          large effective radii, but often complex to design and maintain.</li>
+    </ul>
+
+    <p>
+      Insights from these designs directly inform which concepts are shortlisted
+      for further analysis in the morphological chart and subsequent design
+      sense-making steps.
+    </p>
+  </details>
+
+
+  <!-- ========================================================= -->
+  <!-- 4.3 MORPHOLOGICAL CHART -->
+  <!-- ========================================================= -->
   <h3 class="subsection-title" id="sec-4-3">4.3 Morphological Chart</h3>
 
-  <h3 class="subsection-title" id="sec-4-4">4.4 Design Sense Making (Continuous Track)</h3>
-      <h4 class="subsubsection-title" id="sec-4-4-1">4.4.1 Continuous Track Speed Calculation</h4>
+  <p>
+    To systematically explore the design space, a morphological chart is used
+    to decompose the robot into key functional blocks (locomotion type, step
+    strategy, suspension concept, wheel geometry, etc.) and to generate
+    multiple concept combinations. Each concept is scored against weighted
+    performance criteria such as flat-ground speed, step-climbing capability,
+    stability, power consumption, and mechanical complexity.
+  </p>
 
+  <p>
+    The interactive morphological gallery embedded in this report allows each
+    concept to be visualised and compared dynamically. Hovering over a design
+    reveals its parameter scores and a short description, making the trade-offs
+    between concepts more intuitive.
+  </p>
+
+  <!-- If you want, you can include your morphological chart HTML here, e.g.: -->
+  <!-- <div include-html="Morphological Chart.html"></div> -->
+
+
+  <!-- ========================================================= -->
+  <!-- 4.4 DESIGN SENSE MAKING – CONTINUOUS TRACK -->
+  <!-- ========================================================= -->
+  <h3 class="subsection-title" id="sec-4-4">4.4 Design Sense Making – Continuous Track</h3>
+
+  <p>
+    Continuous tracks are a natural candidate for all-terrain RoboMaster
+    robots because of their large contact area and ability to maintain traction
+    over uneven ground. In this project, a tracked configuration was analysed
+    in detail to evaluate whether it could meet the required 200 mm step
+    performance while staying within speed, power, and weight constraints.
+  </p>
+
+  <p>
+    The analysis included rolling resistance, internal track losses, and
+    available motor torque, which together determine the achievable robot
+    speed and climbing capability.
+  </p>
+
+  <!-- 4.4.1 Continuous Track Speed Calculation -->
+  <h4 class="subsubsection-title" id="sec-4-4-1">4.4.1 Continuous Track Speed Calculation</h4>
+
+  <details class="expand-box">
+    <summary><strong>Click to expand: Track speed and power calculations</strong></summary>
+
+    <p>
+      This subsection documents the estimation of the track-driven robot speed
+      based on motor characteristics, gear ratios, and rolling resistance
+      coefficients. The key steps include:
+    </p>
+
+    <ul>
+      <li>Estimating <strong>rolling resistance (C<sub>roll</sub>)</strong> and internal losses in the
+          undercarriage.</li>
+      <li>Computing maximum tractive effort from motor torque and sprocket radius.</li>
+      <li>Relating available thrust to steady-state speed on flat ground.</li>
+      <li>Checking whether the resulting speed and acceleration meet competition needs.</li>
+    </ul>
+
+    <p>
+      The results show that, although a tracked design offers strong terrain
+      capability, the penalty in internal losses and mechanical complexity makes
+      it less attractive compared to lighter wheel-leg and linkage-based
+      solutions for this specific RoboMaster task.
+    </p>
+  </details>
+
+
+  <!-- ========================================================= -->
+  <!-- 4.5 WHEEL-LEG HOLONOMIC ANALYSIS -->
+  <!-- ========================================================= -->
   <h3 class="subsection-title" id="sec-4-5">4.5 Wheel Leg Holonomic Analysis</h3>
 
+  <p>
+    After evaluating the continuous track design, attention is shifted to
+    wheel-leg locomotion. This subsection analyses the kinematics and mobility
+    characteristics of wheel-leg concepts, including whether they behave as
+    holonomic or non-holonomic systems and how that affects battlefield
+    manoeuvrability.
+  </p>
+
+  <details class="expand-box">
+    <summary><strong>Click to expand: Overview of wheel-leg mobility analysis</strong></summary>
+
+    <p>
+      The analysis examines:
+    </p>
+    <ul>
+      <li>Feasible motion directions when the legs are in ground-contact phase.</li>
+      <li>Turning radius and pivoting behaviour during step-climbing.</li>
+      <li>Impact of leg geometry on stability and gimbal aiming performance.</li>
+    </ul>
+
+    <p>
+      These insights help filter out purely holonomic but mechanically fragile
+      designs in favour of robust non-holonomic variants that still provide
+      adequate manoeuvrability for RoboMaster gameplay.
+    </p>
+  </details>
+
+
+  <!-- ========================================================= -->
+  <!-- 4.6 LINKAGE DESIGN ANALYSIS -->
+  <!-- ========================================================= -->
   <h3 class="subsection-title" id="sec-4-6">4.6 Linkage Design Analysis (Bipedal with Linkage)</h3>
 
-  <h3 class="subsection-title" id="sec-4-7">4.7 Big Wheel Design Analysis</h3>
-      <h4 class="subsubsection-title">Required vertical takeoff speed</h4>
-      <h4 class="subsubsection-title">Total speed vs. launch angle</h4>
-      <h4 class="subsubsection-title">TL;DR</h4>
+  <p>
+    The bipedal concept with linkages is then studied as a candidate that can
+    amplify torque and enable controlled step-climbing without overloading the
+    actuators. The linkage geometry is tuned to provide favourable mechanical
+    advantage near the step while maintaining a compact configuration during
+    normal driving.
+  </p>
 
+  <details class="expand-box">
+    <summary><strong>Click to expand: Linkage configuration and torque amplification</strong></summary>
+
+    <p>
+      The analysis focuses on:
+    </p>
+    <ul>
+      <li>Mapping motor torque to ground reaction forces through the linkage.</li>
+      <li>Identifying singular configurations and unstable regions.</li>
+      <li>Ensuring that the robot can support its own weight when quasi-static
+          on the step edge.</li>
+    </ul>
+
+    <p>
+      These results justify using a linkage-based bipedal architecture over
+      simpler wheel-only designs for reliable 200 mm step-climbing.
+    </p>
+  </details>
+
+
+  <!-- ========================================================= -->
+  <!-- 4.7 BIG WHEEL DESIGN ANALYSIS -->
+  <!-- ========================================================= -->
+  <h3 class="subsection-title" id="sec-4-7">4.7 Big Wheel Design Analysis</h3>
+
+  <p>
+    A big-wheel concept is also evaluated, where the robot attempts to clear
+    the step primarily through a large effective wheel radius and controlled
+    “hopping” or rolling motion onto the riser. This approach is attractive
+    because it can simplify the mechanism, but it places strict requirements on
+    wheel size, centre-of-mass position, and available motor power.
+  </p>
+
+  <details class="expand-box">
+    <summary><strong>Click to expand: Step-climbing and hopping feasibility</strong></summary>
+
+    <p>
+      The study includes:
+    </p>
+    <ul>
+      <li>Geometric conditions for the wheel to contact and roll over a 200 mm step.</li>
+      <li>Required vertical and horizontal velocities for smooth “hop” motions.</li>
+      <li>Checking whether the launch speed is achievable within motor torque and
+          power limits.</li>
+    </ul>
+
+    <p>
+      The analysis shows that while large wheels can theoretically climb the
+      step, the associated compromises in packaging, weight distribution, and
+      game layout make this option less favourable than the final bipedal
+      wheel-leg linkage design.
+    </p>
+  </details>
+
+
+  <!-- ========================================================= -->
+  <!-- 4.8 DESIGN ANALYSIS SUMMARY -->
+  <!-- ========================================================= -->
   <h3 class="subsection-title" id="sec-4-8">4.8 Design Analysis Summary</h3>
 
+  <p>
+    The analyses in Sections 4.4–4.7 are summarised by comparing each concept
+    against the weighted design criteria. Continuous tracks, big wheels, and
+    alternative wheel-leg configurations are systematically eliminated in favour
+    of a bipedal wheel-leg design with linkage-driven step-climbing.
+  </p>
+
+  <details class="expand-box">
+    <summary><strong>Click to expand: Shortlisted concept rationale</strong></summary>
+
+    <ul>
+      <li><strong>Continuous track</strong>: strong terrain capability, but higher loss,
+          complexity, and packaging challenges.</li>
+      <li><strong>Pure big wheel</strong>: geometrically feasible but bulky and less compatible
+          with RoboMaster chassis constraints.</li>
+      <li><strong>Bipedal wheel-leg with linkage</strong>: good compromise between step-climbing
+          performance, agility, and structural robustness.</li>
+    </ul>
+
+    <p>
+      This leads to the selection of the bipedal wheel-leg robot as the main
+      candidate for detailed design and prototyping in the next section.
+    </p>
+  </details>
+
+
+  <!-- ========================================================= -->
+  <!-- 4.9 INITIAL DESIGN CONCEPT -->
+  <!-- ========================================================= -->
   <h3 class="subsection-title" id="sec-4-9">4.9 Initial Design Concept</h3>
+
+  <p>
+    Based on the design thinking process and comparative analyses, an initial
+    bipedal wheel-leg concept is proposed. The robot uses a pair of actuated
+    wheel-legs that can perform both high-speed rolling on flat terrain and
+    controlled stepping motions over 200 mm obstacles.
+  </p>
+
+  <p>
+    This initial concept provides the foundation for the detailed CAD design,
+    structural validation, and prototyping described in
+    <strong>Section 5: Finalised Main Design Concept Validation and Prototyping</strong>.
+  </p>
 
 </section>
