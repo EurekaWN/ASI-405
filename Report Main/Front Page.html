@@ -1,6 +1,6 @@
 <!-- Front Page.html -->
 
-<div class="report-page">
+<div class="front-page">
 
   <!-- LOGO -->
   <div class="front-logo">
@@ -41,50 +41,36 @@
 
 </div>
 
-<!-- PAGE-LEVEL STYLE (inherits global Times New Roman) -->
 <style>
-  .report-page {
-    width: 80%;
-    max-width: 900px;
-    margin: 60px auto;
-    padding: 60px;
-    background: rgba(255,255,255,0.75);
-    border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-
-    /* gives the “paper” feeling when scrolling */
-    backdrop-filter: blur(4px);
+  /* FORCE centering inside front page only */
+  .front-page, 
+  .front-page * {
+    text-align: center !important;
   }
 
-  .front-logo {
-    width: 100%;
-    text-align: center;
-    margin-bottom: 40px;
-  }
-
+  /* Logo */
   .front-logo img {
     width: 180px;
     height: auto;
+    display: block;
+    margin: 0 auto 30px auto;
   }
 
+  /* Title */
   .front-title {
-    text-align: center;
     font-size: 28pt;
     margin-bottom: 10px;
   }
 
+  /* Subtitle */
   .front-subtitle {
-    text-align: center;
     font-size: 16pt;
     margin-bottom: 30px;
   }
 
-  .front-info {
-    font-size: 12pt;
-    line-height: 1.6;
-  }
-
+  /* Info text */
   .front-info p {
-    margin-bottom: 18px;
+    margin-bottom: 16px;
+    line-height: 1.5;
   }
 </style>
