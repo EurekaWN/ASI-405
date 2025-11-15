@@ -5,35 +5,67 @@
   <title>Robot Design Report</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- Load model-viewer globally -->
+  <!-- model-viewer -->
   <script type="module"
     src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js">
   </script>
 
-  <!-- Global + Layout Styles -->
   <style>
-    /* Smooth scroll */
+
+    /* Divider line before all heading levels */
+.section-title,
+.subsection-title,
+.subsubsection-title,
+.subsubsubsection-title {
+  position: relative;
+  padding-top: 20px;   /* spacing above the heading */
+  margin-top: 30px;    /* spacing between blocks */
+}
+
+.section-title::before,
+.subsection-title::before,
+.subsubsection-title::before,
+.subsubsubsection-title::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: rgba(0, 0, 0, 0.15);  /* subtle grey line */
+}
+
+
+    p {
+  line-height: 1.5;
+}
+
+.section-title,
+.subsection-title,
+.subsubsection-title,
+.subsubsubsection-title {
+  line-height: 1.5;
+}
+
     html { scroll-behavior: smooth; }
 
-    /* Global font */
     * {
       font-family: "Times New Roman", Times, serif;
       font-size: 12pt;
       box-sizing: border-box;
     }
 
-    /* Background */
     body {
       margin: 0;
       background: #dfe4f0;
       display: flex;
     }
 
-    /* ========== SIDEBAR ========== */
-    .sidebar {
-      width: 230px;
+    /* SIDEBAR */
+    #sidebar {
+      width: 260px;
       background: #111827;
-      color: #e5e7eb;
+      color: #ddd;
       padding: 20px 16px;
       position: sticky;
       top: 0;
@@ -41,159 +73,211 @@
       overflow-y: auto;
     }
 
-    .sidebar h2 {
-      font-size: 14pt;
-      margin-top: 0;
-      margin-bottom: 12px;
+    #sidebar h2 {
       color: #fff;
+      margin: 0 0 12px 0;
+      font-size: 14pt;
     }
 
-    .sidebar ul {
+    .toc-item {
       list-style: none;
-      margin: 0;
-      padding: 0;
+      margin: 4px 0;
     }
 
-    .sidebar li {
-      margin-bottom: 6px;
-    }
-
-    .sidebar a {
-      text-decoration: none;
+    .toc-link {
       color: #d1d5db;
-      padding: 6px 10px;
+      text-decoration: none;
+      padding: 6px 8px;
       display: block;
       border-radius: 6px;
       transition: 0.15s;
     }
 
-    .sidebar a:hover {
+    .toc-link:hover {
       background: #374151;
       color: #fff;
     }
 
-    .sidebar a.active {
-      background: #2563eb;
-      color: #fff;
+    .active-link {
+      background: #2563eb !important;
+      color: #fff !important;
       font-weight: bold;
     }
 
-    /* ========== MAIN REPORT WRAPPER ========== */
+    /* LEVEL INDENTATION */
+    .toc-level-1 { margin-left: 0; }
+    .toc-level-2 { margin-left: 16px; }
+    .toc-level-3 { margin-left: 32px; }
+
+    /* Expandable children */
+    .toc-children {
+      display: none;
+      margin-left: 12px;
+      border-left: 1px solid #555;
+      padding-left: 8px;
+    }
+
+    .toc-expanded > .toc-children {
+      display: block;
+    }
+
+    /* REPORT WRAPPER */
     .report-wrapper {
       max-width: 900px;
-      padding: 24px;
-      margin: 0 auto;
+      margin: 24px auto;
+      padding: 0 12px;
       flex-grow: 1;
     }
 
-    /* “Page-like” block */
+    /* PAGE BLOCK STYLE */
     [include-html] {
       background: rgba(255, 255, 255, 0.92);
       border-radius: 10px;
       padding: 32px 40px;
       margin-bottom: 24px;
-      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+      box-shadow: 0 6px 18px rgba(0,0,0,0.08);
     }
 
-    /* Titles */
-    .section-title { font-size: 20pt; font-weight: bold; margin-bottom: 12px; }
-    .subsection-title { font-size: 16pt; font-weight: bold; margin-top: 24px; margin-bottom: 6px; }
-    .subsubsection-title { font-size: 14pt; font-weight: bold; font-style: italic; margin-top: 16px; }
+    .section-title { font-size: 20pt; font-weight: bold; }
+    .subsection-title { font-size: 16pt; font-weight: bold; margin-top: 24px; }
+    .subsubsection-title { font-size: 12pt; font-weight: bold; font-style: normal; margin-top: 16px; }
     .subsubsubsection-title { font-size: 12pt; font-weight: bold; text-decoration: underline; margin-top: 12px; }
-
-    p { text-align: justify; margin-bottom: 10px; }
-
-    /* Mobile */
-    @media (max-width: 900px) {
-      body { flex-direction: column; }
-      .sidebar { width: 100%; height: auto; position: relative; }
-    }
   </style>
 </head>
 
 <body>
 
-  <!-- ================================================= -->
-  <!-- LEFT NAVIGATION (SCROLLSPY) -->
-  <!-- ================================================= -->
-  <nav class="sidebar">
-    <h2>Sections</h2>
-    <ul>
-      <li><a href="#sec-1-introduction">1. Introduction</a></li>
-      <li><a href="#sec-2-competition">2. Competition Background</a></li>
-      <li><a href="#sec-3-problem">3. Problem Clarification</a></li>
-      <li><a href="#sec-4-design-thinking">4. Design Thinking Process</a></li>
-      <li><a href="#sec-5-finalised">5. Finalised Main Design</a></li>
-      <li><a href="#sec-6-prototyping">6. Prototyping & Testing</a></li>
-      <li><a href="#sec-7-forward">7. Moving Forward</a></li>
-      <li><a href="#sec-8-conclusion">8. Conclusion</a></li>
-    </ul>
+  <!-- SIDEBAR -->
+  <nav id="sidebar">
+    <h2>Contents</h2>
+    <ul id="toc-root"></ul>
   </nav>
 
-  <!-- ================================================= -->
   <!-- MAIN CONTENT -->
-  <!-- ================================================= -->
   <div class="report-wrapper">
 
-    <!-- FRONT PAGE -->
     <div include-html="Front Page.html"></div>
     <div include-html="../3D Renders.html"></div>
 
-    <!-- MAIN CONTENT SECTIONS -->
+    <div id="sec-1-introduction" include-html="Disclaimer.html"></div>  
     <div id="sec-1-introduction" include-html="1. Introduction.html"></div>
+    
     <div id="sec-2-competition" include-html="2. Competition Background Information.html"></div>
     <div id="sec-3-problem" include-html="3. Problem Clarification.html"></div>
     <div id="sec-4-design-thinking" include-html="4. Design Thinking Process.html"></div>
-    <div id="sec-5-finalised" include-html="5. Finalised Main Design Concept Validation and Prototyping.html"></div>
-    <div id="sec-6-prototyping" include-html="6. Overall Prototyping Testing.html"></div>
-    <div id="sec-7-forward" include-html="7. Moving Forward.html"></div>
-    <div id="sec-8-conclusion" include-html="8. Conclusion.html"></div>
+    <div include-html="5. Finalised Main Design Concept Validation and Prototyping.html" id="sec-5-finalised"></div>
+    <div include-html="6. Overall Prototyping Testing.html" id="sec-6-prototyping"></div>
+    <div include-html="7. Moving Forward.html" id="sec-7-forward"></div>
+    <div include-html="8. Conclusion.html" id="sec-8-conclusion"></div>
     <div include-html="References.html"></div>
 
   </div>
 
 
-  <!-- ================================================= -->
-  <!-- INCLUDE + SCROLLSPY SCRIPT -->
-  <!-- ================================================= -->
+  <!-- JS: Include + TOC Generator + ScrollSpy -->
   <script>
-    // Include HTML
     async function includeHTML() {
-      const els = document.querySelectorAll("[include-html]");
-      for (const el of els) {
+      const elements = document.querySelectorAll("[include-html]");
+      for (const el of elements) {
         const file = el.getAttribute("include-html");
         try {
           const resp = await fetch(file);
-          el.innerHTML = resp.ok ? await resp.text() : "Include error: " + resp.status + " " + file;
-        } catch (e) {
-          el.innerHTML = "Include error: " + e;
+          el.innerHTML = resp.ok ? await resp.text() : "Include error: " + resp.status;
+        } catch (err) {
+          el.innerHTML = "Include error: " + err;
         }
       }
-      initScrollspy();
+      generateTOC();
+      initScrollSpy();
     }
 
-    // Scrollspy
-    function initScrollspy() {
-      const links = document.querySelectorAll(".sidebar a");
-      const sections = [...links].map(link => ({
-        link,
-        section: document.querySelector(link.getAttribute("href"))
-      }));
+    /* ========== AUTO-GENERATE MULTI-LEVEL SIDEBAR ========== */
+    function generateTOC() {
+      const tocRoot = document.getElementById("toc-root");
+
+      const headings = document.querySelectorAll(
+        ".section-title, .subsection-title, .subsubsection-title"
+      );
+
+      let lastLevel1 = null;
+      let lastLevel2 = null;
+
+      headings.forEach(h => {
+        const text = h.textContent.trim();
+        const id = h.closest("section")?.id || ("auto-" + Math.random());
+        h.closest("section").id ||= id;
+
+        let level = 1;
+        if (h.classList.contains("subsection-title")) level = 2;
+        if (h.classList.contains("subsubsection-title")) level = 3;
+
+        const li = document.createElement("li");
+        li.classList.add("toc-item", `toc-level-${level}`);
+
+        const link = document.createElement("a");
+        link.classList.add("toc-link");
+        link.href = "#" + id;
+        link.innerHTML = text;
+
+        li.appendChild(link);
+
+        if (level === 1) {
+          li.classList.add("toc-level-1-item");
+          li.innerHTML += `<ul class="toc-children"></ul>`;
+          tocRoot.appendChild(li);
+          lastLevel1 = li;
+        }
+
+        if (level === 2 && lastLevel1) {
+          lastLevel1.classList.add("toc-expanded");
+          lastLevel1.querySelector(".toc-children").appendChild(li);
+          li.innerHTML += `<ul class="toc-children"></ul>`;
+          lastLevel2 = li;
+        }
+
+        if (level === 3 && lastLevel2) {
+          lastLevel2.classList.add("toc-expanded");
+          lastLevel2.querySelector(".toc-children").appendChild(li);
+        }
+      });
+    }
+
+    /* ========== SCROLLSPY ========== */
+    function initScrollSpy() {
+      const links = document.querySelectorAll(".toc-link");
+
+      const sections = [...links].map(link => {
+        const sec = document.querySelector(link.getAttribute("href"));
+        return { link, sec };
+      });
 
       const observer = new IntersectionObserver(
         entries => {
           entries.forEach(entry => {
-            if (entry.isIntersecting) {
-              links.forEach(l => l.classList.remove("active"));
-              const active = sections.find(s => s.section === entry.target);
-              if (active) active.link.classList.add("active");
+            if (!entry.isIntersecting) return;
+
+            // Clear highlights
+            links.forEach(l => l.classList.remove("active-link"));
+
+            // Highlight this one
+            const active = sections.find(s => s.sec === entry.target);
+            if (active) active.link.classList.add("active-link");
+
+            // Expand parents
+            document.querySelectorAll(".toc-expanded").forEach(e => {
+              e.classList.remove("toc-expanded");
+            });
+            let parent = active.link.closest(".toc-item");
+            while (parent) {
+              parent.classList.add("toc-expanded");
+              parent = parent.parentElement.closest(".toc-item");
             }
           });
         },
-        { threshold: 0.4 }
+        { threshold: 0.45 }
       );
 
-      sections.forEach(s => s.section && observer.observe(s.section));
+      sections.forEach(s => s.sec && observer.observe(s.sec));
     }
 
     includeHTML();
