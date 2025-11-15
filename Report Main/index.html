@@ -12,27 +12,33 @@
 
   <style>
 
-    /* Divider line before all heading levels */
-.section-title,
+    .section-title,
 .subsection-title,
 .subsubsection-title,
 .subsubsubsection-title {
   position: relative;
-  padding-top: 20px;   /* spacing above the heading */
-  margin-top: 30px;    /* spacing between blocks */
+  padding-top: 26px;   
+  margin-top: 40px;
 }
 
+/* Gradient divider */
 .section-title::before,
 .subsection-title::before,
 .subsubsection-title::before,
 .subsubsubsection-title::before {
   content: "";
   position: absolute;
-  top: 0;
+  top: 8px;
   left: 0;
   width: 100%;
-  height: 1px;
-  background: rgba(0, 0, 0, 0.15);  /* subtle grey line */
+  height: 2px;  /* slightly thicker but clean */
+  background: linear-gradient(
+    to right,
+    rgba(0,0,0,0.12),
+    rgba(17, 16, 16, 0.25),
+    rgba(0,0,0,0.12)
+  );
+  border-radius: 2px;
 }
 
 
