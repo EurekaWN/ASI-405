@@ -11,50 +11,11 @@
   </script>
 
   <style>
-
-    .section-title,
-.subsection-title,
-.subsubsection-title,
-.subsubsubsection-title {
-  position: relative;
-  padding-top: 26px;   
-  margin-top: 40px;
-}
-
-/* Gradient divider */
-.section-title::before,
-.subsection-title::before,
-.subsubsection-title::before,
-.subsubsubsection-title::before {
-  content: "";
-  position: absolute;
-  top: 8px;
-  left: 0;
-  width: 100%;
-  height: 2px;  /* slightly thicker but clean */
-  background: linear-gradient(
-    to right,
-    rgba(0,0,0,0.12),
-    rgba(17, 16, 16, 0.25),
-    rgba(0,0,0,0.12)
-  );
-  border-radius: 2px;
-}
-
-
-    p {
-  line-height: 1.5;
-}
-
-.section-title,
-.subsection-title,
-.subsubsection-title,
-.subsubsubsection-title {
-  line-height: 1.5;
-}
-
     html { scroll-behavior: smooth; }
 
+    /* ---------------------------------------------------- */
+    /* GLOBAL FONT + BASE STYLES */
+    /* ---------------------------------------------------- */
     * {
       font-family: "Times New Roman", Times, serif;
       font-size: 12pt;
@@ -67,7 +28,13 @@
       display: flex;
     }
 
+    p, li {
+      line-height: 1.5;
+    }
+
+    /* ---------------------------------------------------- */
     /* SIDEBAR */
+    /* ---------------------------------------------------- */
     #sidebar {
       width: 260px;
       background: #111827;
@@ -85,10 +52,7 @@
       font-size: 14pt;
     }
 
-    .toc-item {
-      list-style: none;
-      margin: 4px 0;
-    }
+    .toc-item { list-style: none; margin: 4px 0; }
 
     .toc-link {
       color: #d1d5db;
@@ -115,7 +79,7 @@
     .toc-level-2 { margin-left: 16px; }
     .toc-level-3 { margin-left: 32px; }
 
-    /* Expandable children */
+    /* Children container */
     .toc-children {
       display: none;
       margin-left: 12px;
@@ -127,7 +91,9 @@
       display: block;
     }
 
+    /* ---------------------------------------------------- */
     /* REPORT WRAPPER */
+    /* ---------------------------------------------------- */
     .report-wrapper {
       max-width: 900px;
       margin: 24px auto;
@@ -135,7 +101,6 @@
       flex-grow: 1;
     }
 
-    /* PAGE BLOCK STYLE */
     [include-html] {
       background: rgba(255, 255, 255, 0.92);
       border-radius: 10px;
@@ -144,11 +109,115 @@
       box-shadow: 0 6px 18px rgba(0,0,0,0.08);
     }
 
+    /* ---------------------------------------------------- */
+    /* TITLES + SECTION DIVIDER LINE */
+    /* ---------------------------------------------------- */
+    .section-title,
+    .subsection-title,
+    .subsubsection-title,
+    .subsubsubsection-title {
+      position: relative;
+      padding-top: 26px;
+      margin-top: 40px;
+      line-height: 1.5;
+    }
+
+    .section-title::before,
+    .subsection-title::before,
+    .subsubsection-title::before,
+    .subsubsubsection-title::before {
+      content: "";
+      position: absolute;
+      top: 8px;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(
+        to right,
+        rgba(0,0,0,0.10),
+        rgba(0,0,0,0.25),
+        rgba(0,0,0,0.10)
+      );
+      border-radius: 2px;
+    }
+
+    /* Title sizes */
     .section-title { font-size: 20pt; font-weight: bold; }
-    .subsection-title { font-size: 16pt; font-weight: bold; margin-top: 24px; }
-    .subsubsection-title { font-size: 12pt; font-weight: bold; font-style: normal; margin-top: 16px; }
-    .subsubsubsection-title { font-size: 12pt; font-weight: bold; text-decoration: underline; margin-top: 12px; }
+    .subsection-title { font-size: 16pt; font-weight: bold; }
+    .subsubsection-title { font-size: 14pt; font-weight: bold; font-style: normal; }
+    .subsubsubsection-title { font-size: 12pt; font-weight: bold; text-decoration: underline; }
+
+    /* ===================================================== */
+/* EXPANDABLE BOX (FULL FINAL VERSION) */
+/* ===================================================== */
+
+details.expand-box {
+  margin: 14px 0 20px 0;
+  padding: 14px 16px;
+  border-radius: 8px;
+  background: rgba(230, 236, 255, 0.55);
+  cursor: pointer;
+  border: 1px solid rgba(140, 160, 220, 0.3);
+  transition: 0.25s ease;
+}
+
+/* SUMMARY — remove ALL browser defaults */
+details.expand-box summary {
+  cursor: pointer;
+  list-style: none;
+  margin: 0;                 /* remove default margin */
+  padding: 0;                /* remove left indent */
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+}
+
+/* Remove default triangles across browsers */
+details.expand-box summary::-webkit-details-marker { display: none; }
+details.expand-box summary::marker { content: ""; }
+
+/* Custom arrow */
+details.expand-box summary::before {
+  content: "▶";
+  font-size: 11pt;
+  margin-right: 6px;
+  transition: transform 0.2s ease;
+}
+
+/* Arrow rotates when opened */
+details.expand-box[open] summary::before {
+  content: "▼";
+}
+
+/* Highlight background when open */
+details.expand-box[open] {
+  background: rgba(210, 220, 255, 0.65);
+  border-color: rgba(90, 110, 200, 0.45);
+}
+
+/* ===================================================== */
+/* FIXED: Remove divider lines inside expandable boxes */
+/* ===================================================== */
+details.expand-box .section-title::before,
+details.expand-box .subsection-title::before,
+details.expand-box .subsubsection-title::before,
+details.expand-box .subsubsubsection-title::before {
+  display: none !important;
+}
+
+/* ===================================================== */
+/* FIXED: Remove extra top spacing when heading is inside <summary> */
+/* ===================================================== */
+details.expand-box summary.section-title,
+details.expand-box summary.subsection-title,
+details.expand-box summary.subsubsection-title,
+details.expand-box summary.subsubsubsection-title {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+}
+
   </style>
+
 </head>
 
 <body>
@@ -165,23 +234,25 @@
     <div include-html="Front Page.html"></div>
     <div include-html="../3D Renders.html"></div>
 
-    <div id="sec-1-introduction" include-html="Disclaimer.html"></div>  
+    <div id="sec-1-introduction" include-html="Disclaimer.html"></div>
     <div id="sec-1-introduction" include-html="1. Introduction.html"></div>
-    
+
     <div id="sec-2-competition" include-html="2. Competition Background Information.html"></div>
     <div id="sec-3-problem" include-html="3. Problem Clarification.html"></div>
     <div id="sec-4-design-thinking" include-html="4. Design Thinking Process.html"></div>
-    <div include-html="5. Finalised Main Design Concept Validation and Prototyping.html" id="sec-5-finalised"></div>
-    <div include-html="6. Overall Prototyping Testing.html" id="sec-6-prototyping"></div>
-    <div include-html="7. Moving Forward.html" id="sec-7-forward"></div>
-    <div include-html="8. Conclusion.html" id="sec-8-conclusion"></div>
+    <div id="sec-5-finalised" include-html="5. Finalised Main Design Concept Validation and Prototyping.html"></div>
+    <div id="sec-6-prototyping" include-html="6. Overall Prototyping Testing.html"></div>
+    <div id="sec-7-forward" include-html="7. Moving Forward.html"></div>
+    <div id="sec-8-conclusion" include-html="8. Conclusion.html"></div>
     <div include-html="References.html"></div>
 
   </div>
 
 
-  <!-- JS: Include + TOC Generator + ScrollSpy -->
+  <!-- JS SECTION -->
   <script>
+
+    /* ========== INCLUDE HTML PARTIALS ========== */
     async function includeHTML() {
       const elements = document.querySelectorAll("[include-html]");
       for (const el of elements) {
@@ -193,11 +264,13 @@
           el.innerHTML = "Include error: " + err;
         }
       }
+
       generateTOC();
       initScrollSpy();
+      initExpandAccordion();   /* accordion enabled */
     }
 
-    /* ========== AUTO-GENERATE MULTI-LEVEL SIDEBAR ========== */
+    /* ========== TOC GENERATOR ========== */
     function generateTOC() {
       const tocRoot = document.getElementById("toc-root");
 
@@ -210,8 +283,11 @@
 
       headings.forEach(h => {
         const text = h.textContent.trim();
-        const id = h.closest("section")?.id || ("auto-" + Math.random());
-        h.closest("section").id ||= id;
+        const sec = h.closest("section");
+        if (!sec) return;
+
+        const id = sec.id;
+        if (!id) return;
 
         let level = 1;
         if (h.classList.contains("subsection-title")) level = 2;
@@ -223,12 +299,10 @@
         const link = document.createElement("a");
         link.classList.add("toc-link");
         link.href = "#" + id;
-        link.innerHTML = text;
-
+        link.textContent = text;
         li.appendChild(link);
 
         if (level === 1) {
-          li.classList.add("toc-level-1-item");
           li.innerHTML += `<ul class="toc-children"></ul>`;
           tocRoot.appendChild(li);
           lastLevel1 = li;
@@ -248,7 +322,7 @@
       });
     }
 
-    /* ========== SCROLLSPY ========== */
+    /* ========== SCROLL SPY ========== */
     function initScrollSpy() {
       const links = document.querySelectorAll(".toc-link");
 
@@ -262,28 +336,31 @@
           entries.forEach(entry => {
             if (!entry.isIntersecting) return;
 
-            // Clear highlights
             links.forEach(l => l.classList.remove("active-link"));
 
-            // Highlight this one
             const active = sections.find(s => s.sec === entry.target);
             if (active) active.link.classList.add("active-link");
-
-            // Expand parents
-            document.querySelectorAll(".toc-expanded").forEach(e => {
-              e.classList.remove("toc-expanded");
-            });
-            let parent = active.link.closest(".toc-item");
-            while (parent) {
-              parent.classList.add("toc-expanded");
-              parent = parent.parentElement.closest(".toc-item");
-            }
           });
         },
         { threshold: 0.45 }
       );
 
       sections.forEach(s => s.sec && observer.observe(s.sec));
+    }
+
+    /* ========== AUTO-CLOSE ACCORDION ========== */
+    function initExpandAccordion() {
+      const boxes = document.querySelectorAll("details.expand-box");
+
+      boxes.forEach(box => {
+        box.addEventListener("toggle", () => {
+          if (box.open) {
+            boxes.forEach(other => {
+              if (other !== box) other.open = false;
+            });
+          }
+        });
+      });
     }
 
     includeHTML();
