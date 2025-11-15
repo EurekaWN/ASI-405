@@ -6,20 +6,21 @@
   <title>Linkage Length Calculations – Static Equilibrium</title>
   <style>
     body {
-      font-family: system-ui, 'Times New Roman', Times, serif, sans-serif;
+      font-family: system-ui, 'Times New Roman', Times, serif;
       background: #f3f5f8;
       margin: 0;
       padding: 40px;
       color: #222;
-      line-height: 1.6;
+      display: flex;
+      justify-content: center;
     }
     .container {
       background: #fff;
       border-radius: 14px;
       box-shadow: 0 6px 20px rgba(0,0,0,0.1);
-      max-width: 900px;
-      margin: 0 auto;
-      padding: 30px;
+      max-width: 1300px;
+      width: 100%;
+      padding: 20px;
     }
     header {
       text-align: center;
@@ -28,6 +29,7 @@
       padding-bottom: 20px;
     }
     h1 {
+      text-align: center;
       margin: 0 0 10px 0;
       color: #0f172a;
     }
@@ -40,6 +42,11 @@
     }
     p {
       margin: 12px 0;
+    }
+    p.sub {
+      text-align: center;
+      margin-bottom: 16px;
+      color: #555;
     }
 
     /* Collapsible section styles */
@@ -96,6 +103,23 @@
     }
 
     /* Code block styling */
+    .code-block {
+      background: #0b1020;
+      color: #e5e7eb;
+      padding: 12px 14px;
+      border-radius: 8px;
+      overflow-x: auto;
+      font-family: "Consolas", "Courier New", monospace;
+      font-size: 11pt;
+      border: 1px solid #1f2937;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+      margin: 10px 0 18px 0;
+      white-space: pre;
+    }
+    .code-block code {
+      font-family: inherit;
+      font-size: inherit;
+    }
     pre {
       background: #0b1120;
       color: #e5e7eb;
@@ -154,6 +178,12 @@
     }
   </style>
 
+  <!-- MathJax for equations -->
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+
+  <!-- Plotly for the linkage contour plot -->
+  <script src="https://cdn.plot.ly/plotly-2.30.0.min.js"></script>
+
   <!-- Highlight.js theme -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
 </head>
@@ -161,7 +191,7 @@
   <div class="container">
     <header>
       <h1>📐 Linkage Length Calculation</h1>
-      <p style="color: #555; margin: 10px 0 0 0;">Static Equilibrium &amp; Force Calculations</p>
+      <p class="sub">Static Equilibrium &amp; Force Calculations</p>
     </header>
 
     <!-- FIRST CLICKABLE SECTION -->
