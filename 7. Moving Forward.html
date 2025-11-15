@@ -1,10 +1,258 @@
 <section id="sec-7-forward">
   <h2 class="section-title">7. Moving Forward</h2>
 
-  <h3 class="subsection-title" id="sec-7-1">7.1 Project Deliverable</h3>
+  <h3 class="subsection-title" id="sec-7-1">7.1 Project Deliverable and Scope</h3>
+
+  <p>
+  As discussed with the team, the project deliverable is a fully functioning robomaster robot by the end of the project timeline. 
+
+Therefore the detailed scope will be set as
+“ Develop a fully functioning step climbing robot with mechanically optimized wheel leg structure, dynamically motion controlled and well tuned robot for Robomaster competition by the end of the project.” 
+
+</p>
+
+  
 
   <h3 class="subsection-title" id="sec-7-2">7.2 Project Planning (Gantt Chart)</h3>
 
+  <p>
+    The project schedule is maintained in an interactive Gantt chart hosted on Google Sheets. 
+    The chart below can be expanded to view the full timeline, task breakdown, and milestones.
+  </p>
+
+  <!-- ==== GANTT CHART WIDGET START ==== -->
+  <div class="gantt-wrapper">
+    <!-- Clickable card -->
+    <div class="gantt-card" onclick="toggleGantt()">
+      <h4>View Project Gantt Chart</h4>
+      <p>Click to show or hide the full interactive timeline.</p>
+    </div>
+
+    <!-- Collapsible iframe -->
+    <div id="ganttContainer" class="gantt-container">
+      <iframe
+        src="https://docs.google.com/spreadsheets/d/e/2PACX-1vSvml8cDX_5cO5DjDrOcen6AXXkJecxPWg5RNKGMvWYhZCIlbzxvQtoZyPz_EDYbRHtUrjZgH6Z7KuV/pubhtml?gid=0&amp;single=true&amp;widget=true&amp;headers=false"
+        loading="lazy"
+        allowfullscreen>
+      </iframe>
+    </div>
+  </div>
+  <!-- ==== GANTT CHART WIDGET END ==== -->
+
+
+
   <h3 class="subsection-title" id="sec-7-3">7.3 Project Timeline Objective</h3>
+
+  <details class="expand-box">
+  <summary><strong>Click to expand: Full Project Timeline Overview</strong></summary>
+
+  <h4 style="margin-top:20px;">Project Timeline Overview</h4>
+
+  <table style="width:100%; border-collapse:collapse; font-size:13px; margin-top:10px;">
+    <thead>
+      <tr style="background:#e6e6e6;">
+        <th style="border:1px solid #ccc; padding:8px;">Phase</th>
+        <th style="border:1px solid #ccc; padding:8px;">Week</th>
+        <th style="border:1px solid #ccc; padding:8px;">Objective</th>
+        <th style="border:1px solid #ccc; padding:8px;">Tasks</th>
+      </tr>
+    </thead>
+
+    <tbody>
+
+      <!-- Semester 1 Overview -->
+      <tr style="background:#d9ecff;">
+        <td colspan="4" style="border:1px solid #ccc; padding:8px;">
+          <strong>Overall Semester 1 Objective:</strong><br>
+          Finish 3D-printed prototype + finalise fabrication drawings for manufacturing.
+        </td>
+      </tr>
+
+      <!-- Phase 1 Row 1 -->
+      <tr>
+        <td style="border:1px solid #ccc; padding:8px;" rowspan="3">
+          <strong>Phase 1</strong><br>Conceptual Design & System Architecture
+        </td>
+        <td style="border:1px solid #ccc; padding:8px;">Week 0 (Holiday)</td>
+        <td style="border:1px solid #ccc; padding:8px;">Conceptual Design</td>
+        <td style="border:1px solid #ccc; padding:8px;">
+          Literature review<br>
+          Define scope & deliverables<br>
+          Mechanism brainstorming<br>
+          Track feasibility check<br>
+          Component selection<br>
+          Initial Simulink setup
+        </td>
+      </tr>
+
+      <!-- Phase 1 Row 2 -->
+      <tr>
+        <td style="border:1px solid #ccc; padding:8px;">Week 1</td>
+        <td style="border:1px solid #ccc; padding:8px;">Kinematics + Actuator Sizing</td>
+        <td style="border:1px solid #ccc; padding:8px;">
+          Base CAD<br>
+          Kinematic verification<br>
+          Actuator sizing<br>
+          Power estimation<br>
+          Clearance/interference review
+        </td>
+      </tr>
+
+      <!-- Phase 1 Row 3 -->
+      <tr>
+        <td style="border:1px solid #ccc; padding:8px;">Week 2–3</td>
+        <td style="border:1px solid #ccc; padding:8px;">CAD + Simulation Validation</td>
+        <td style="border:1px solid #ccc; padding:8px;">
+          Rough CAD assembly<br>
+          Set up FEA<br>
+          Preliminary FEA<br>
+          Update Simulink model
+        </td>
+      </tr>
+
+      <!-- Phase 3 Row 1 -->
+      <tr>
+        <td style="border:1px solid #ccc; padding:8px;" rowspan="2">
+          <strong>Phase 3</strong><br>Detailed CAD + Iterative FEA
+        </td>
+        <td style="border:1px solid #ccc; padding:8px;">Week 4–5</td>
+        <td style="border:1px solid #ccc; padding:8px;">Detailed CAD & FEA</td>
+        <td style="border:1px solid #ccc; padding:8px;">
+          Detailed geometry<br>
+          Motion simulation<br>
+          Structural simulation<br>
+          Layout freeze
+        </td>
+      </tr>
+
+      <!-- Phase 3 Row 2 -->
+      <tr>
+        <td style="border:1px solid #ccc; padding:8px;">Week 6</td>
+        <td style="border:1px solid #ccc; padding:8px;">3D-Printed Prototype</td>
+        <td style="border:1px solid #ccc; padding:8px;">
+          Prepare STL files<br>
+          Print prototype joints<br>
+          Mechanical fit testing
+        </td>
+      </tr>
+
+      <!-- Recess Week -->
+      <tr style="background:#d9ecff;">
+        <td colspan="4" style="border:1px solid #ccc; padding:8px;">
+          <strong>Recess Week:</strong><br>
+          Assembly + functional test of prototype. Redesign failed components.
+        </td>
+      </tr>
+
+      <!-- Phase 5 Row 1 -->
+      <tr>
+        <td style="border:1px solid #ccc; padding:8px;" rowspan="3">
+          <strong>Phase 5</strong><br>Final Design + Manufacturing Prep
+        </td>
+        <td style="border:1px solid #ccc; padding:8px;">Week 7</td>
+        <td style="border:1px solid #ccc; padding:8px;">Final CAD + Verification</td>
+        <td style="border:1px solid #ccc; padding:8px;">
+          Final CAD<br>
+          Final FEA<br>
+          Lock manufacturing geometry
+        </td>
+      </tr>
+
+      <tr>
+        <td style="border:1px solid #ccc; padding:8px;">Week 8</td>
+        <td style="border:1px solid #ccc; padding:8px;">Design Review</td>
+        <td style="border:1px solid #ccc; padding:8px;">
+          Internal review<br>
+          RM rules compliance check<br>
+          Fabrication drawings<br>
+          BOM & sourcing
+        </td>
+      </tr>
+
+      <tr>
+        <td style="border:1px solid #ccc; padding:8px;">Week 9–10</td>
+        <td style="border:1px solid #ccc; padding:8px;">Documentation</td>
+        <td style="border:1px solid #ccc; padding:8px;">
+          Manufacturing pack preparation<br>
+          Send parts for fabrication<br>
+          Interim report & slides
+        </td>
+      </tr>
+
+      <!-- Winter Break -->
+      <tr style="background:#ffe0e0;">
+        <td colspan="4" style="border:1px solid #ccc; padding:8px;">
+          <strong>Winter Break Objective:</strong><br>
+          Full assembly, testing, and iterative redesign.
+        </td>
+      </tr>
+
+      <!-- Winter Weeks -->
+      <tr>
+        <td style="border:1px solid #ccc; padding:8px;">Phase 6</td>
+        <td style="border:1px solid #ccc; padding:8px;">Week 1–3</td>
+        <td style="border:1px solid #ccc; padding:8px;">Testing & Integration</td>
+        <td style="border:1px solid #ccc; padding:8px;">
+          Hardware integration<br>
+          Functional system tests<br>
+          Minor redesigns and reprints
+        </td>
+      </tr>
+
+      <!-- Semester 2 Objective -->
+      <tr style="background:#ddffdd;">
+        <td colspan="4" style="border:1px solid #ccc; padding:8px;">
+          <strong>Overall Semester 2 Objective:</strong><br>
+          Implement motion control + tuning + advanced manoeuvres.
+        </td>
+      </tr>
+
+      <!-- Sem 2 Rows -->
+      <tr>
+        <td style="border:1px solid #ccc; padding:8px;">Phase 1</td>
+        <td style="border:1px solid #ccc; padding:8px;">–</td>
+        <td style="border:1px solid #ccc; padding:8px;">MATLAB Modelling</td>
+        <td style="border:1px solid #ccc; padding:8px;">System identification & modelling</td>
+      </tr>
+
+      <tr>
+        <td style="border:1px solid #ccc; padding:8px;">Phase 2</td>
+        <td style="border:1px solid #ccc; padding:8px;">–</td>
+        <td style="border:1px solid #ccc; padding:8px;">Balancing Control</td>
+        <td style="border:1px solid #ccc; padding:8px;">LQR baseline control</td>
+      </tr>
+
+      <tr>
+        <td style="border:1px solid #ccc; padding:8px;">Phase 3</td>
+        <td style="border:1px solid #ccc; padding:8px;">–</td>
+        <td style="border:1px solid #ccc; padding:8px;">Dynamic Maneuvers</td>
+        <td style="border:1px solid #ccc; padding:8px;">Acceleration & turning behaviours</td>
+      </tr>
+
+      <tr>
+        <td style="border:1px solid #ccc; padding:8px;">Phase 4</td>
+        <td style="border:1px solid #ccc; padding:8px;">–</td>
+        <td style="border:1px solid #ccc; padding:8px;">Advanced Motions</td>
+        <td style="border:1px solid #ccc; padding:8px;">
+          Jumping<br>
+          Step climbing<br>
+          Recovery behaviours
+        </td>
+      </tr>
+
+      <tr>
+        <td style="border:1px solid #ccc; padding:8px;">Phase 5</td>
+        <td style="border:1px solid #ccc; padding:8px;">–</td>
+        <td style="border:1px solid #ccc; padding:8px;">Performance Optimisation</td>
+        <td style="border:1px solid #ccc; padding:8px;">
+          Fine-tuning entire system
+        </td>
+      </tr>
+
+    </tbody>
+  </table>
+
+</details>
+
 
 </section>

@@ -27,14 +27,70 @@
 
   <style>
 
-.small-video {
+    /* Gantt widget wrapper */
+.gantt-wrapper {
+  margin-top: 10px;
+  margin-bottom: 20px;
+}
 
-    width: 640px;
-    /* IMPORTANT: Use height: auto to maintain the original aspect ratio */
+/* Clickable card */
+.gantt-card {
+  margin-top: 10px;
+  padding: 12px 16px;
+  border-radius: 10px;
+  border: 1px solid #fa9090;
+  background: #f9fafc;
+  cursor: pointer;
+  max-width: 380px;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+.gantt-card:hover {
+  box-shadow: 0 4px 15px rgba(0,0,0,0.12);
+  transform: translateY(-1px);
+}
+.gantt-card h4 {
+  margin: 0 0 4px 0;
+  font-size: 1rem;
+}
+.gantt-card p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #555;
+}
+
+/* Collapsible iframe container */
+.gantt-container {
+  display: none;
+  margin-top: 14px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+}
+
+.gantt-container iframe {
+  width: 100%;
+  border: none;
+  height: 600px;
+}
+
+/* Toggle animation */
+@keyframes fadeSlide {
+  from {opacity: 0; transform: translateY(-5px);}
+  to {opacity: 1; transform: translateY(0);}
+}
+.gantt-container.show {
+  display: block;
+  animation: fadeSlide 0.3s ease;
+}
+
+
+.small-video {
+    width: 80%;
     height: auto;
-  
-    width: 100%;
-    /* /* max-width: 400px; */
+    display: block;
+    margin: 0 auto;
 }
 
   .code-block {
@@ -944,6 +1000,20 @@ cards.forEach(card => {
   card.addEventListener("mouseenter", () => updatePreview(card));
 });
     });
+
+
+
+function toggleGantt() {
+  const gantt = document.getElementById("ganttContainer");
+  if (gantt.style.display === "none" || gantt.style.display === "") {
+    gantt.classList.add("show");
+    gantt.style.display = "block";
+  } else {
+    gantt.style.display = "none";
+    gantt.classList.remove("show");
+  }
+}
+
 
 
   </script>
