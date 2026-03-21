@@ -164,16 +164,23 @@ p.sub {
   margin: 0 0 4px 0;
 }
 
+@media (max-width: 1200px) {
+  .preview-panel {
+    flex: 1;
+  }
+}
+
 @media (max-width: 900px) {
   body {
     padding: 16px;
+    padding-top: calc(100vh / 6);
   }
   .container {
     padding: 12px;
     max-width: 100%;
   }
   .layout {
-    flex-direction: column-reverse;
+    flex-direction: column;
   }
   .gallery-window {
     height: auto;
@@ -181,12 +188,17 @@ p.sub {
     overflow-y: auto;
   }
   .preview-panel {
-    width: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: calc(100vh / 6);
     background: #fff;
     border: none;
     border-radius: 0;
-    margin-bottom: 16px;
+    z-index: 10;
     padding: 12px;
+    overflow-y: auto;
   }
 }
 
