@@ -164,6 +164,32 @@ p.sub {
   margin: 0 0 4px 0;
 }
 
+@media (max-width: 900px) {
+  body {
+    padding: 16px;
+  }
+  .container {
+    padding: 12px;
+    max-width: 100%;
+  }
+  .layout {
+    flex-direction: column-reverse;
+  }
+  .gallery-window {
+    height: auto;
+    max-height: 60vh;
+    overflow-y: auto;
+  }
+  .preview-panel {
+    width: 100%;
+    background: #fff;
+    border: none;
+    border-radius: 0;
+    margin-bottom: 16px;
+    padding: 12px;
+  }
+}
+
 /* Parameter grading block */
 .params {
   margin-top: 6px;
