@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Continuous Track Speed Calculation</title>
+
+<style>
+  .calc-section p {
+    line-height: 1.55;
+    margin-bottom: 12px;
+  }
+  .calc-section ul,
+  .calc-section ol {
+    margin-left: 20px;
+    margin-bottom: 14px;
+  }
+  .calc-section h5 {
+    margin-top: 16px;
+    margin-bottom: 6px;
+    font-size: 1rem;
+  }
+  .eq-block {
+    margin-left: 22px;
+    font-family: monospace;
+    background: #f3f3f3;
+    padding: 6px 10px;
+    border-radius: 6px;
+    display: inline-block;
+  }
+</style>
+</head>
+
+<body>
+<div class="calc-section">
+
+  <p>
+    Tracked locomotion systems are widely used in military and agricultural platforms
+    because of their excellent terrain adaptability and traction, and their ability to
+    climb obstacles exceeding twice the roller diameter (Wong, 2001; Liang et al., 2023).
+    However, their higher internal resistance and lower speed generally make them less
+    efficient than wheeled systems (Wong &amp; Huang, 2006; Chołodowski &amp; Dudziński, 2021).
+    Since translational speed is critical in the RoboMaster competition, a preliminary
+    power–speed analysis is carried out to evaluate whether a tracked configuration
+    is feasible.
+  </p>
+
+  <details class="expand-box">
+    <summary><strong>Click to expand: Explanation of calculation and coefficient selection</strong></summary>
+
+    <h5>Steady-state power balance</h5>
+    <p>
+      The robot is designed with a mass of <strong>20 kg</strong> and an available
+      mechanical power of <strong>85 W</strong>. A steady-state conservation of energy
+      approach is used:
+    </p>
+
+    <div class="eq-block">
+      Motor output = Kinetic power + Losses<br>
+      P<sub>motor</sub> = ½ m v² + (F<sub>roll</sub> + F<sub>int</sub> + …) v<br>
+      P = τ · ω
+    </div>
+
+    <p>Resistive forces:</p>
+    <div class="eq-block">
+      F<sub>roll</sub> = C<sub>r</sub> m g<br>
+      F<sub>int</sub> = C<sub>int</sub> m g
+    </div>
+
+    <ul>
+      <li><strong>Rolling resistance:</strong> C<sub>r</sub> = 0.03  
+        <br>Pneumatic wheels ≈ 0.01 (Łukasz, 2018).</li>
+
+      <li><strong>Internal motion resistance:</strong> C<sub>int</sub> = 0.12 (design value)  
+        <br>Includes bending losses, tension losses, bearing losses.
+      </li>
+    </ul>
+
+    <h5>Scaling of internal losses</h5>
+
+    <ol>
+      <li>
+        <strong>Reference:</strong> 2-ton tracked prototype  
+        C<sub>int,h</sub> ≈ 0.09 (SpringerLink)
+      </li>
+
+      <li>
+        <strong>Bending-loss similitude:</strong>  
+        <div class="eq-block">
+          C<sub>bend</sub> ∝ (E B t³) / (R² m g)
+        </div>
+        Downscaling factor  
+        s = (m<sub>r</sub>/m<sub>h</sub>)<sup>1/3</sup> = (20/2000)<sup>1/3</sup> ≈ 0.215  
+        Pure scaling ⇒ multiplier ≈ 1/s ≈ 4.65 (conservative upper bound).
+      </li>
+
+      <li>
+        <strong>Empirical data for smaller platforms:</strong>
+        <ul>
+          <li>720 kg tracked platform: C ≈ 0.14–0.28</li>
+          <li>1.7 t rubber-belt prototype: C ≈ 0.15–0.21</li>
+          <li>Small robots on hard floors: C > 0.20 (MDPI)</li>
+        </ul>
+        Shows losses increase as size decreases.
+      </li>
+    </ol>
+
+    <h5>Final coefficients used</h5>
+
+    <ul>
+      <li>
+        <strong>Internal resistance:</strong>
+        C<sub>int</sub> = 0.12  
+        <br>Valid range: 0.10–0.18 (supported by SpringerLink + scaling)
+      </li>
+
+      <li>
+        <strong>Rolling/interface resistance:</strong>
+        C<sub>roll</sub> = 0.06  
+        <br>Range: 0.04–0.12 (MDPI small-robot data)
+      </li>
+    </ul>
+
+    <p>
+      These values are substituted into the steady-state power equation to estimate
+      the achievable flat-ground speed and evaluate whether a tracked design can
+      satisfy the RoboMaster speed requirements.
+    </p>
+
+  </details>
+
+</div>
+</body>
+</html>
