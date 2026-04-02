@@ -1,0 +1,342 @@
+<style>
+  .modelling-bubbles {
+    --ink: #4d5763;
+    --accent: #d8b79a;
+    --accent-border: #9b7a5f;
+    margin: 12px auto;
+    padding: 12px;
+    max-width: 940px;
+    border: 1px solid #d8dee5;
+    border-radius: 12px;
+    background: #fff;
+  }
+
+  .modelling-bubbles .sub {
+    text-align: center;
+    margin: 4px 0 10px;
+    color: #5b6774;
+    font-size: 0.88rem;
+  }
+
+  .bubble-map {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    min-height: 480px;
+    max-height: 520px;
+    overflow: hidden;
+  }
+
+  .connector-net {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  .connector-net line {
+    stroke: #b4bcc6;
+    stroke-width: 1.2;
+  }
+
+  .center-core {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 172px;
+    height: 172px;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    border: 2px solid var(--accent-border);
+    background: var(--accent);
+    color: #433325;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-weight: 700;
+    line-height: 1.2;
+    padding: 14px;
+    font-size: 0.95rem;
+    box-shadow: 0 4px 14px rgba(155, 122, 95, 0.28);
+    z-index: 3;
+  }
+
+  .bubble-cluster {
+    --core-size: 118px;
+    position: absolute;
+    transform: translate(-50%, -50%);
+    width: 260px;
+    height: 190px;
+    z-index: 3;
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.82);
+    transition: opacity 0.45s ease, transform 0.45s ease;
+  }
+
+  .modelling-bubbles.revealed .bubble-cluster {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+
+  .modelling-bubbles.revealed .bubble-cluster:nth-of-type(1) { transition-delay: 0.02s; }
+  .modelling-bubbles.revealed .bubble-cluster:nth-of-type(2) { transition-delay: 0.08s; }
+  .modelling-bubbles.revealed .bubble-cluster:nth-of-type(3) { transition-delay: 0.14s; }
+  .modelling-bubbles.revealed .bubble-cluster:nth-of-type(4) { transition-delay: 0.20s; }
+  .modelling-bubbles.revealed .bubble-cluster:nth-of-type(5) { transition-delay: 0.26s; }
+
+  .bubble-core {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: var(--core-size);
+    height: var(--core-size);
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    border: 2px solid #63707e;
+    background: #fff;
+    color: var(--ink);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-weight: 700;
+    line-height: 1.15;
+    padding: 8px;
+    font-size: 0.78rem;
+  }
+
+  .bubble-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    counter-reset: bubble-step;
+  }
+
+  .bubble-item {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%) scale(0.3);
+    opacity: 0;
+    border-radius: 999px;
+    border: 1px solid var(--ink);
+    background: #fff;
+    color: var(--ink);
+    white-space: nowrap;
+    padding: 4px 10px 4px 22px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    transition: transform 0.28s ease, opacity 0.28s ease;
+    pointer-events: none;
+    counter-increment: bubble-step;
+  }
+
+  .bubble-item::before {
+    content: counter(bubble-step);
+    position: absolute;
+    left: 6px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 1px solid var(--ink);
+    display: grid;
+    place-items: center;
+    font-size: 0.56rem;
+    font-weight: 700;
+    line-height: 1;
+    background: #fff;
+  }
+
+  .bubble-item.next::after {
+    content: "↓";
+    position: absolute;
+    left: 50%;
+    top: calc(100% + 1px);
+    transform: translateX(-50%);
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #697482;
+  }
+
+  .bubble-cluster:hover .bubble-item,
+  .bubble-cluster:focus-within .bubble-item {
+    opacity: 1;
+    transform: translate(var(--x), var(--y)) scale(1);
+  }
+
+  .cluster-a { left: 30%; top: 30%; }
+  .cluster-b { left: 69%; top: 30%; }
+  .cluster-c { left: 31%; top: 67%; }
+  .cluster-d { left: 50%; top: 84%; }
+  .cluster-e { left: 69%; top: 67%; }
+
+  @media (max-width: 900px) {
+    .bubble-map {
+      min-height: 860px;
+      aspect-ratio: auto;
+    }
+
+    .center-core {
+      top: 14%;
+      width: 154px;
+      height: 154px;
+      font-size: 0.86rem;
+    }
+
+    .cluster-a { left: 28%; top: 34%; }
+    .cluster-b { left: 71%; top: 34%; }
+    .cluster-c { left: 28%; top: 63%; }
+    .cluster-d { left: 50%; top: 88%; }
+    .cluster-e { left: 72%; top: 63%; }
+  }
+
+  @media (hover: none) {
+    .bubble-item {
+      opacity: 1;
+      transform: translate(var(--x), var(--y)) scale(1);
+      pointer-events: auto;
+    }
+  }
+
+  .sequence-net {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 4;
+    pointer-events: none;
+  }
+
+  .sequence-net path {
+    fill: none;
+    stroke: #66717f;
+    stroke-width: 0.4;
+    opacity: 0.8;
+  }
+
+  .sequence-net .seq-line {
+    fill: none;
+    stroke: #66717f;
+    stroke-width: 0.8;
+    stroke-linecap: round;
+  }
+
+  .sequence-net .seq-head {
+    fill: #66717f;
+    stroke: none;
+  }
+</style>
+
+<section class="modelling-bubbles" id="sec-modelling-bubble-index">
+  <h2 class="section-title">System Modelling Index</h2>
+  <p class="sub">Hover each outer bubble to expand its sub-topics.</p>
+
+  <div class="bubble-map">
+    <svg class="connector-net" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+      <line x1="50" y1="50" x2="30" y2="30"></line>
+      <line x1="50" y1="50" x2="70" y2="30"></line>
+      <line x1="50" y1="50" x2="31" y2="67"></line>
+      <line x1="50" y1="50" x2="50" y2="84"></line>
+      <line x1="50" y1="50" x2="69" y2="67"></line>
+    </svg>
+    <svg class="sequence-net" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+      <g transform="translate(31 44) rotate(90) scale(1.8)">
+        <path class="seq-line" d="M 0 0 Q 5 2.2 10 0"></path>
+        <path class="seq-head" d="M 8.3 -1.5 L 11.4 0 L 8.3 1.5 Z"></path>
+      </g>
+      <g transform="translate(39 77) rotate(24) scale(1.6)">
+        <path class="seq-line" d="M 0 0 Q 5 2.2 10 0"></path>
+        <path class="seq-head" d="M 8.3 -1.5 L 11.4 0 L 8.3 1.5 Z"></path>
+      </g>
+      <g transform="translate(62 77) rotate(24) scale(1.6)">
+        <path class="seq-line" d="M 0 0 Q 5 2.2 10 0"></path>
+        <path class="seq-head" d="M 8.3 -1.5 L 11.4 0 L 8.3 1.5 Z"></path>
+      </g>
+      <g transform="translate(69 56) rotate(-90) scale(1.8)">
+        <path class="seq-line" d="M 0 0 Q 5 2.2 10 0"></path>
+        <path class="seq-head" d="M 8.3 -1.5 L 11.4 0 L 8.3 1.5 Z"></path>
+      </g>
+    </svg>
+    <div class="center-core">Control Implementation Process</div>
+
+    <article class="bubble-cluster cluster-a" tabindex="0" aria-label="Kinematic Modelling">
+      <div class="bubble-core">A. Kinematic Modelling</div>
+      <ol class="bubble-list">
+        <li class="bubble-item next" style="--x: -134px; --y: -64px;">Forward kinematics</li>
+        <li class="bubble-item next" style="--x: -134px; --y: -34px;">Inverse kinematics</li>
+        <li class="bubble-item next" style="--x: -134px; --y: -4px;">2D movement validation</li>
+        <li class="bubble-item next" style="--x: -134px; --y: 26px;">Velocity and acceleration</li>
+        <li class="bubble-item next" style="--x: -134px; --y: 56px;">Jacobian derivation</li>
+        <li class="bubble-item" style="--x: -134px; --y: 86px;">Singularity analysis</li>
+      </ol>
+    </article>
+
+    <article class="bubble-cluster cluster-b" tabindex="0" aria-label="Control-Oriented Modelling">
+      <div class="bubble-core">E. Control-Oriented</div>
+      <ol class="bubble-list">
+        <li class="bubble-item next" style="--x: 56px; --y: -46px;">Leg length PD model</li>
+        <li class="bubble-item next" style="--x: 56px; --y: -14px;">Virtual model variables</li>
+        <li class="bubble-item next" style="--x: 56px; --y: 18px;">State estimation model</li>
+        <li class="bubble-item" style="--x: 56px; --y: 50px;">Stability and equilibrium</li>
+      </ol>
+    </article>
+
+    <article class="bubble-cluster cluster-c" tabindex="0" aria-label="Force and Transmission Modelling">
+      <div class="bubble-core">B. Force and Transmission</div>
+      <ol class="bubble-list">
+        <li class="bubble-item next" style="--x: -130px; --y: -16px;">Jacobian torque-force mapping</li>
+        <li class="bubble-item" style="--x: -130px; --y: 16px;">Mechanical advantage</li>
+      </ol>
+    </article>
+
+    <article class="bubble-cluster cluster-d" tabindex="0" aria-label="Dynamic Modelling">
+      <div class="bubble-core">C. Dynamic Modelling</div>
+      <ol class="bubble-list">
+        <li class="bubble-item next" style="--x: -132px; --y: -46px;">Full multibody dynamics</li>
+        <li class="bubble-item next" style="--x: -132px; --y: -14px;">Reduced-order pendulum</li>
+        <li class="bubble-item next" style="--x: -132px; --y: 18px;">State-space representation</li>
+        <li class="bubble-item" style="--x: -132px; --y: 50px;">Linearization at operating point</li>
+      </ol>
+    </article>
+
+    <article class="bubble-cluster cluster-e" tabindex="0" aria-label="Contact and Actuation Modelling">
+      <div class="bubble-core">D. Contact and Actuation</div>
+      <ol class="bubble-list">
+        <li class="bubble-item next" style="--x: 58px; --y: -46px;">Wheel-ground constraint</li>
+        <li class="bubble-item next" style="--x: 58px; --y: -14px;">Friction assumptions</li>
+        <li class="bubble-item next" style="--x: 58px; --y: 18px;">Motor-gear-chain model</li>
+        <li class="bubble-item" style="--x: 58px; --y: 50px;">Saturation and losses</li>
+      </ol>
+    </article>
+  </div>
+</section>
+
+<script>
+  (function () {
+    const section = document.getElementById("sec-modelling-bubble-index");
+    if (!section) return;
+
+    const reveal = () => section.classList.add("revealed");
+
+    if (!("IntersectionObserver" in window)) {
+      reveal();
+      return;
+    }
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          reveal();
+          observer.disconnect();
+        }
+      });
+    }, { threshold: 0.25 });
+
+    observer.observe(section);
+  })();
+</script>
