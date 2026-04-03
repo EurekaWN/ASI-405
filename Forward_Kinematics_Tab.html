@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Forward Kinematics</title>
+
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']]
+      }
+    };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+
+  <style>
+    body {
+      font-family: 'Times New Roman', Times, serif;
+      background: #f3f5f8;
+      margin: 0;
+      padding: 40px 0;
+      color: #222;
+    }
+
+    body, body * {
+      font-family: 'Times New Roman', Times, serif !important;
+    }
+
+    .report-wrapper {
+      max-width: 900px;
+      margin: 24px auto 40px auto;
+      padding: 0 12px;
+    }
+
+    .section-card {
+      background: rgba(255, 255, 255, 0.92);
+      border-radius: 10px;
+      padding: 32px 40px;
+      margin-bottom: 24px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+    }
+
+    .section-title,
+    .subsection-title {
+      position: relative;
+      line-height: 1.5;
+    }
+
+    .section-title {
+      font-size: 20pt;
+      font-weight: bold;
+      margin: 0 0 12px 0;
+      padding-top: 26px;
+    }
+
+    .subsection-title {
+      font-size: 16pt;
+      font-weight: bold;
+      margin: 26px 0 10px 0;
+      padding-top: 26px;
+    }
+
+    .section-title::before,
+    .subsection-title::before {
+      content: "";
+      position: absolute;
+      top: 8px;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(
+        to right,
+        rgba(0,0,0,0.10),
+        rgba(0,0,0,0.25),
+        rgba(0,0,0,0.10)
+      );
+      border-radius: 2px;
+    }
+
+    p {
+      margin: 0 0 12px 0;
+      line-height: 1.65;
+    }
+
+    .h-row {
+      --h1-width: 800px;
+      --h2-width: 200px;
+      --h3-width: 200px;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+      margin: 10px 0 8px 0;
+      text-align: center;
+      font-weight: 700;
+      color: #2f3740;
+      justify-items: center;
+    }
+
+    .h-row-bottom {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(220px, 1fr));
+      gap: 10px;
+      width: min(100%, 1040px);
+      justify-items: center;
+      align-items: start;
+    }
+
+    .h-cell {
+      padding: 6px 8px;
+      border: 1px solid rgba(0, 0, 0, 0.15);
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.85);
+    }
+
+    .h-cell img {
+      width: 100%;
+      max-width: 280px;
+      height: auto;
+      display: block;
+      margin: 0 auto;
+      border-radius: 4px;
+    }
+
+    #h1-img { max-width: var(--h1-width); }
+    #h2-img { max-width: var(--h2-width); }
+    #h3-img { max-width: var(--h3-width); }
+
+    code {
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 0.95em;
+    }
+
+    details.expand-box {
+      margin: 8px 0 0 0;
+      padding: 14px 16px;
+      border-radius: 8px;
+      background: rgba(230, 236, 255, 0.55);
+      border: 1px solid rgba(140, 160, 220, 0.3);
+      transition: 0.25s ease;
+    }
+
+    details.expand-box[open] {
+      background: rgba(210, 220, 255, 0.65);
+      border-color: rgba(90, 110, 200, 0.45);
+    }
+
+    details.expand-box summary {
+      cursor: pointer;
+      list-style: none;
+      display: flex;
+      align-items: center;
+      margin: 0;
+      padding: 0;
+      font-weight: bold;
+    }
+
+    details.expand-box summary::-webkit-details-marker {
+      display: none;
+    }
+
+    details.expand-box summary::before {
+      content: "▶";
+      font-size: 0.95rem;
+      margin-right: 8px;
+      transition: transform 0.2s ease;
+    }
+
+    details.expand-box[open] summary::before {
+      content: "▼";
+    }
+
+    .expand-body {
+      padding-top: 8px;
+    }
+
+    .page-intro-title {
+      font-size: 18pt;
+      font-weight: 700;
+      margin: 0 0 8px 0;
+      color: #1f2833;
+    }
+
+    .page-intro {
+      margin: 0 0 14px 0;
+      line-height: 1.7;
+      color: #2d3640;
+    }
+
+    .intro-video {
+      width: min(100%, 720px);
+      height: auto;
+      display: block;
+      margin: 0 0 14px 0;
+      border-radius: 8px;
+      border: 1px solid rgba(0,0,0,0.14);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+      background: #000;
+    }
+  </style>
+</head>
+<body>
+  <div class="report-wrapper">
+    <section class="section-card">
+      <h2 class="page-intro-title">Kinematic Modelling Overview</h2>
+      <video class="intro-video" controls autoplay muted playsinline loop preload="metadata">
+        <source src="videos_2/FK_Validation_video.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+      </video>
+      <p class="page-intro">
+        This page consolidates the forward and inverse kinematic modelling workflow in expandable sections.
+        The first tab presents the geometric forward map from joint-space inputs to Cartesian output location,
+        while the second tab documents the constrained inverse reconstruction used to recover joint angles from a target end-point.
+      </p>
+
+      <details class="expand-box" id="fk-tab">
+        <summary class="section-title">Forward Kinematics</summary>
+        <div class="expand-body">
+          <p>
+            This section presents the MatLab Version of Forward Kinematics which will later be integrated into the firmware.
+            The implementation is based on the geometric construction outlined in the function
+            <code>FK_G_from_phi1phi2</code> in <code>VMC_WN_FK_Ainimation.m</code>. The mechanism is modeled as a planar
+            linkage with inputs $\phi_1$ and $\phi_2$, and output point $\mathbf{G}$.
+          </p>
+
+          <img src="images_2/Model Dimensions.jpg" alt="Forward Kinematics Diagram" style="width: 550px; height: auto;">
+          <div class="h-row">
+            <div class="h-cell"><img id="h1-img" src="images_2/H1.jpg" alt="H1"></div>
+            <div class="h-row-bottom">
+              <div class="h-cell"><img id="h2-img" src="images_2/H2.jpg" alt="H2"></div>
+              <div class="h-cell"><img id="h3-img" src="images_2/H3.jpg" alt="H3"></div>
+            </div>
+          </div>
+          <p>
+            Forward kinematics was first derived by hand and later transferred to MATLAB for verification. 
+𝜙
+1
+
+	​
+
+ and 
+𝜙
+2
+
+	​
+
+ are the angles directly controlled by the two leg motors, after accounting for the chain and gear reduction ratios. In this report, any angle denoted by 
+𝜙
+ refers to an absolute angle measured with respect to the global horizontal, while any angle denoted by 
+𝜃
+ refers to the relative angle between each joint or link.
+          </p>
+
+          <h3 class="subsection-title">Angle Wrapping and Inputs</h3>
+          <p>To ensure angular consistency, all angles are wrapped to $(-180^\circ, 180^\circ]$:</p>
+          \[
+          \mathcal{W}(\alpha) = \operatorname{mod}(\alpha + 180,\, 360) - 180.
+          \]
+          \[
+          \phi_1 \leftarrow \mathcal{W}(\phi_1), \qquad
+          \phi_2 \leftarrow \mathcal{W}(\phi_2).
+          \]
+          <p>
+            Trigonometric operations are evaluated in degrees, consistent with MATLAB
+            <code>sind</code>, <code>cosd</code>, and <code>asind</code>.
+          </p>
+
+          <h3 class="subsection-title">Intermediate Geometric Angles</h3>
+          \[
+          a_1 = \mathcal{W}\!\left(\frac{\phi_1 + \phi_2}{2}\right), \qquad
+          a_3 = \mathcal{W}\!\left(\frac{180 - (\phi_1 + \phi_2)}{2}\right).
+          \]
+          \[
+          x = \operatorname{sat}_{[-1,1]}\!\left(\frac{L_2}{L_3}\sin(a_3)\right), \qquad
+          a_2 = \mathcal{W}\!\left(\sin^{-1}(x)\right).
+          \]
+          \[
+          \phi_4 = \mathcal{W}(a_3 + \phi_2 - a_2), \qquad
+          \phi_3 = \mathcal{W}(180 - a_2 - a_3 - \phi_2).
+          \]
+          \[
+          a_4 = \mathcal{W}(180 - \phi_1 - \phi_4), \qquad
+          a_5 = \mathcal{W}(180 - a_4 + k_{a5}), \qquad
+          a_6 = \mathcal{W}(a_5 - \phi_1).
+          \]
+
+          <h3 class="subsection-title">Point-Wise Forward Kinematic Chain</h3>
+          \[
+          \mathbf{O} =
+          \begin{bmatrix}
+          0\\0
+          \end{bmatrix},
+          \qquad
+          \mathbf{A} = \mathbf{O} +
+          \begin{bmatrix}
+          L_2\cos\phi_2\\
+          -L_2\sin\phi_2
+          \end{bmatrix}.
+          \]
+          \[
+          \mathbf{B} = \mathbf{A} +
+          \begin{bmatrix}
+          -L_3\cos\phi_3\\
+          -L_3\sin\phi_3
+          \end{bmatrix},
+          \qquad
+          \mathbf{C} = \mathbf{B} +
+          \begin{bmatrix}
+          -L_4\cos\phi_4\\
+          \;\;L_4\sin\phi_4
+          \end{bmatrix}.
+          \]
+          \[
+          \mathbf{D} = \mathbf{C} +
+          \begin{bmatrix}
+          -L_5\cos a_6\\
+          \;\;L_5\sin a_6
+          \end{bmatrix},
+          \qquad
+          \mathbf{E} = \mathbf{D} +
+          \begin{bmatrix}
+          -L_6\cos\phi_1\\
+          -L_6\sin\phi_1
+          \end{bmatrix}.
+          \]
+          \[
+          \mathbf{F} = \mathbf{O} +
+          \begin{bmatrix}
+          -L_1\cos\phi_1\\
+          -L_1\sin\phi_1
+          \end{bmatrix}.
+          \]
+
+          <h3 class="subsection-title">Output Orientation and End-Point</h3>
+          \[
+          \phi_5 =
+          \mathcal{W}\!\Big(
+          k_{163}
+          -\big(180-(\phi_1+a_6)\big)
+          -\phi_1
+          -a_7
+          \Big),
+          \]
+          \[
+          \mathbf{G} = \mathbf{F} +
+          \begin{bmatrix}
+          L_7\cos\phi_5\\
+          -L_7\sin\phi_5
+          \end{bmatrix}.
+          \]
+          <p>
+            Therefore, the forward kinematic map is
+            \[
+            (\phi_1,\phi_2)\mapsto \mathbf{G}(\phi_1,\phi_2),
+            \]
+            with intermediate points
+            $\mathbf{O},\mathbf{A},\mathbf{B},\mathbf{C},\mathbf{D},\mathbf{E},\mathbf{F}$
+            recovered simultaneously.
+          </p>
+        </div>
+      </details>
+
+      <details class="expand-box" id="ik-tab">
+        <summary class="section-title">Inverse Kinematics</summary>
+        <div class="expand-body">
+          <p>
+            The inverse-kinematic module solves for the input angles
+            $(\phi_1,\phi_2)$ such that the forward-kinematic output
+            $\mathbf{G}(\phi_1,\phi_2)$ matches a desired target point
+            $\mathbf{G}_{\mathrm{des}}=[G_x^{\mathrm{des}},G_y^{\mathrm{des}}]^\top$.
+            The implementation follows <code>IK_phi1phi2_from_G</code> in
+            <code>VMC_WN_Cleaned_IK_Function.m</code>.
+          </p>
+
+          <h3 class="subsection-title">State, Target, and Constraints</h3>
+          <p>
+            The optimization variable is the joint-angle vector
+          </p>
+          \[
+          \boldsymbol{\phi}
+          =
+          \begin{bmatrix}
+          \phi_1\\
+          \phi_2
+          \end{bmatrix},
+          \]
+          <p>
+            and the task-space target is
+          </p>
+          \[
+          \mathbf{G}_{\mathrm{des}}
+          =
+          \begin{bmatrix}
+          G_x^{\mathrm{des}}\\
+          G_y^{\mathrm{des}}
+          \end{bmatrix}.
+          \]
+          <p>
+            In the current code, the target is set as
+            $\mathbf{G}_{\mathrm{des}}=[41.56,\,-292.4]^\top$ mm,
+            with box constraints
+            \[
+            \boldsymbol{\phi}_{\mathrm{lb}}=[0,\;0]^\top,\qquad
+            \boldsymbol{\phi}_{\mathrm{ub}}=[140,\;140]^\top \text{ (deg)}.
+            \]
+          </p>
+
+          <h3 class="subsection-title">Problem Formulation</h3>
+          <p>
+            Define the residual vector using the forward map:
+          </p>
+          \[
+          \mathbf{e}(\phi_1,\phi_2)
+          =
+          \mathbf{G}(\phi_1,\phi_2)-\mathbf{G}_{\mathrm{des}}
+          =
+          \begin{bmatrix}
+          G_x(\phi_1,\phi_2)-G_x^{\mathrm{des}}\\
+          G_y(\phi_1,\phi_2)-G_y^{\mathrm{des}}
+          \end{bmatrix}.
+          \]
+          <p>
+            The bounded nonlinear least-squares objective is
+          </p>
+          \[
+          \min_{\phi_1,\phi_2}
+          \; J(\phi_1,\phi_2)
+          =\frac{1}{2}\left\|\mathbf{e}(\phi_1,\phi_2)\right\|_2^2
+          \]
+          subject to
+          \[
+          \boldsymbol{\phi}_{\mathrm{lb}}
+          \le
+          \begin{bmatrix}\phi_1\\\phi_2\end{bmatrix}
+          \le
+          \boldsymbol{\phi}_{\mathrm{ub}}.
+          \]
+          <p>
+            This objective directly minimizes Cartesian end-point mismatch in millimeters.
+          </p>
+
+          <h3 class="subsection-title">Numerical Solver Used in Code</h3>
+          <p>
+            In MATLAB, the solution is obtained via
+            <code>lsqnonlin</code>:
+          </p>
+          \[
+          \begin{bmatrix}\phi_1^\star\\\phi_2^\star\end{bmatrix}
+          =
+          \operatorname{lsqnonlin}
+          \!\left(
+          \mathbf{e}(\phi_1,\phi_2),\;
+          \boldsymbol{\phi}_0,\;
+          \boldsymbol{\phi}_{\mathrm{lb}},\;
+          \boldsymbol{\phi}_{\mathrm{ub}}
+          \right).
+          \]
+          <p>
+            The initial guess is first clamped into feasible bounds:
+          </p>
+          \[
+          \boldsymbol{\phi}_0 \leftarrow
+          \min\!\big(\boldsymbol{\phi}_{\mathrm{ub}},
+          \max(\boldsymbol{\phi}_{\mathrm{lb}},\boldsymbol{\phi}_0)\big).
+          \]
+          <p>
+            Solver options used in the script are:
+            \[
+            \texttt{MaxFunctionEvaluations}=8000,\;
+            \texttt{MaxIterations}=300,\;
+            \texttt{FunctionTolerance}=10^{-12},\;
+            \texttt{StepTolerance}=10^{-12}.
+            \]
+          </p>
+          <p>
+            After optimization, each angle is normalized by
+          </p>
+          \[
+          \mathcal{W}(\alpha)=\operatorname{mod}(\alpha+180,360)-180,
+          \qquad
+          \phi_i^\star \leftarrow \mathcal{W}(\phi_i^\star),\; i\in\{1,2\}.
+          \]
+          <p>
+            The reported solution quality is computed from
+            \[
+            \mathbf{G}_{\mathrm{err}}=
+            \mathbf{G}(\phi_1^\star,\phi_2^\star)-\mathbf{G}_{\mathrm{des}},
+            \qquad
+            \|\mathbf{G}_{\mathrm{err}}\|_2.
+            \]
+          </p>
+
+          <h3 class="subsection-title">Multi-Start Robustification</h3>
+          <p>
+            A grid of initial guesses
+            $\boldsymbol{\phi}_0^{(m,n)}=[\phi_{1,m},\phi_{2,n}]^\top$
+            is evaluated, and the minimum terminal error is selected:
+          </p>
+          \[
+          (\phi_1^\dagger,\phi_2^\dagger)
+          =
+          \arg\min_{m,n}
+          \left\|
+          \mathbf{G}\!\left(\phi_{1,m}^\star,\phi_{2,n}^\star\right)
+          -\mathbf{G}_{\mathrm{des}}
+          \right\|_2.
+          \]
+          <p>
+            In implementation, each axis is sampled with 7 points over the allowed range, giving
+            $7\times7=49$ starting pairs. The candidate with minimum terminal task-space error is retained.
+          </p>
+          <p>
+            This strategy improves reliability against local minima and sensitivity to a single poor initialization.
+          </p>
+
+          <h3 class="subsection-title">Practical Interpretation</h3>
+          <p>
+            The IK routine enforces physically admissible joint ranges while solving directly in Cartesian space.
+            Because the mechanism is nonlinear, multiple joint configurations may produce nearby end-point locations.
+            The bounded least-squares + multi-start structure provides a numerically robust and implementation-ready
+            inverse map for downstream control and firmware integration.
+          </p>
+        </div>
+      </details>
+
+      <details class="expand-box" id="jacobian-tab">
+        <summary class="section-title">Jacobian Torque Mapping</summary>
+        <div class="expand-body">
+          <p>
+            This section is extracted from <code>VMC_WN_Jacobian_Transformation.m</code> and
+            <code>VMC_WN_Jacobian_Transformation_Animation.m</code>. The Jacobian is computed numerically from the
+            forward map $\mathbf{G}(\phi_1,\phi_2)$ and is then used for velocity, acceleration, and force-to-torque conversion.
+          </p>
+
+          <h3 class="subsection-title">Numerical Jacobian Construction</h3>
+          <p>
+            Let
+            \[
+            \mathbf{q}=\begin{bmatrix}\phi_1\\\phi_2\end{bmatrix},\qquad
+            \mathbf{G}(\mathbf{q})=\begin{bmatrix}G_x(\mathbf{q})\\G_y(\mathbf{q})\end{bmatrix}.
+            \]
+            In the code, central differences are evaluated in degrees using step size $h=10^{-3}$ deg:
+          </p>
+          \[
+          \frac{\partial \mathbf{G}}{\partial \phi_1}\Big|_{\deg}
+          \approx
+          \frac{\mathbf{G}(\phi_1+h,\phi_2)-\mathbf{G}(\phi_1-h,\phi_2)}{2h},
+          \]
+          \[
+          \frac{\partial \mathbf{G}}{\partial \phi_2}\Big|_{\deg}
+          \approx
+          \frac{\mathbf{G}(\phi_1,\phi_2+h)-\mathbf{G}(\phi_1,\phi_2-h)}{2h}.
+          \]
+          \[
+          J_{\deg}=
+          \begin{bmatrix}
+          \frac{\partial G_x}{\partial \phi_1} & \frac{\partial G_x}{\partial \phi_2}\\
+          \frac{\partial G_y}{\partial \phi_1} & \frac{\partial G_y}{\partial \phi_2}
+          \end{bmatrix}_{\deg},
+          \qquad
+          J_{\mathrm{rad}}=J_{\deg}\left(\frac{180}{\pi}\right).
+          \]
+          <p>
+            Units: $J_{\deg}$ in mm/deg and $J_{\mathrm{rad}}$ in mm/rad.
+          </p>
+
+          <h3 class="subsection-title">Velocity and Acceleration Kinematics</h3>
+          <p>
+            For joint-rate vector $\dot{\mathbf{q}}=[\dot{\phi}_1,\dot{\phi}_2]^\top$:
+          </p>
+          \[
+          \dot{\mathbf{G}}=J_{\mathrm{rad}}(\mathbf{q})\,\dot{\mathbf{q}}.
+          \]
+          <p>
+            The MATLAB verification computes a finite-difference velocity:
+          </p>
+          \[
+          \dot{\mathbf{G}}_{\mathrm{FD}}
+          \approx
+          \frac{\mathbf{G}(t+\Delta t)-\mathbf{G}(t)}{\Delta t}.
+          \]
+          <p>
+            Acceleration follows the standard differential kinematics relation:
+          </p>
+          \[
+          \ddot{\mathbf{G}}
+          =
+          J_{\mathrm{rad}}(\mathbf{q})\,\ddot{\mathbf{q}}
+          +
+          \dot{J}_{\mathrm{rad}}(\mathbf{q},\dot{\mathbf{q}})\,\dot{\mathbf{q}}.
+          \]
+          <p>
+            A numerical acceleration estimate consistent with FK finite differences is
+          </p>
+          \[
+          \ddot{\mathbf{G}}_{\mathrm{FD}}
+          \approx
+          \frac{\mathbf{G}(t+\Delta t)-2\mathbf{G}(t)+\mathbf{G}(t-\Delta t)}{\Delta t^2}.
+          \]
+
+          <h3 class="subsection-title">Torque-Force Mapping (Virtual Work)</h3>
+          <p>
+            Using end-effector force $\mathbf{F}=[F_x,F_y]^\top$ in the same global frame:
+          </p>
+          \[
+          \boldsymbol{\tau}
+          =
+          J_{\mathrm{rad}}^\top(\mathbf{q})\,\mathbf{F},
+          \]
+          where
+          \[
+          \boldsymbol{\tau}=
+          \begin{bmatrix}\tau_1\\\tau_2\end{bmatrix}
+          \quad\text{(N$\cdot$mm in the current implementation)}.
+          \]
+          <p>
+            Conversion to SI motor torque is
+            \[
+            \boldsymbol{\tau}_{\mathrm{N\cdot m}}=\frac{\boldsymbol{\tau}_{\mathrm{N\cdot mm}}}{1000}.
+            \]
+          </p>
+
+          <h3 class="subsection-title">Manipulability and Singular Behaviour</h3>
+          <p>
+            The velocity ellipse in code uses
+            \[
+            \dot{\mathbf{G}}=J_{\mathrm{rad}}\dot{\mathbf{q}},\quad \|\dot{\mathbf{q}}\|_2=1.
+            \]
+            A scalar manipulability indicator is
+            \[
+            w=\left|\det\!\left(J_{\mathrm{rad}}\right)\right|.
+            \]
+            Small $w$ indicates reduced directional mobility and typically larger required joint torques for certain force directions.
+          </p>
+        </div>
+      </details>
+    </section>
+  </div>
+  <script>
+  (function () {
+      const tabs = document.querySelectorAll("details.expand-box");
+      if (!tabs.length) return;
+
+      async function typesetMath(target) {
+        if (!window.MathJax) return;
+        try {
+          if (window.MathJax.startup && window.MathJax.startup.promise) {
+            await window.MathJax.startup.promise;
+          }
+          if (typeof window.MathJax.typesetPromise === "function") {
+            await window.MathJax.typesetPromise(target ? [target] : undefined);
+          }
+        } catch (e) {
+          console.warn("MathJax typeset failed:", e);
+        }
+      }
+
+      tabs.forEach((tab) => {
+        tab.addEventListener("toggle", () => {
+          if (tab.open) typesetMath(tab);
+        });
+      });
+    })();
+  </script>
+</body>
+</html>
+
+
+
