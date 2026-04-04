@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 
@@ -453,11 +453,16 @@ p.sub {
       font-family: "Times New Roman", Times, serif !important;
     }
 
+    :root {
+      --sidebar-w: clamp(190px, 22vw, 260px);
+      --sidebar-gap: 20px;
+    }
+
     body {
       margin: 0;
       background: #dfe4f0;
       /* reserve space for fixed sidebar so content can still be centered */
-      padding-left: 260px;
+      padding-left: calc(var(--sidebar-w) + var(--sidebar-gap));
     }
 
     p, li {
@@ -468,7 +473,7 @@ p.sub {
     /* SIDEBAR (FIXED, ALWAYS VISIBLE) */
     /* ---------------------------------------------------- */
     #sidebar {
-      width: 260px;
+      width: var(--sidebar-w);
       background: #111827;
       color: #ddd;
       padding: 20px 16px;
@@ -478,6 +483,15 @@ p.sub {
       height: 100vh;
       overflow-y: auto;
       z-index: 10;
+    }
+
+    #sidebar::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    #sidebar::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.28);
+      border-radius: 8px;
     }
 
     #sidebar h2 {
@@ -544,6 +558,41 @@ p.sub {
       padding: 32px 40px;
       margin-bottom: 24px;
       box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+      position: relative;
+      padding-bottom: 26px;
+    }
+
+    /* section-end divider line */
+    [include-html]::after {
+      content: "";
+      position: absolute;
+      left: 24px;
+      right: 24px;
+      bottom: 10px;
+      height: 2px;
+      background: linear-gradient(
+        to right,
+        rgba(0,0,0,0.08),
+        rgba(0,0,0,0.18),
+        rgba(0,0,0,0.08)
+      );
+      border-radius: 2px;
+    }
+
+    .report-wrapper > [include-html]:last-child::after {
+      display: none;
+    }
+
+    .auto-section-divider {
+      height: 2px;
+      margin: 16px 0 14px 0;
+      border-radius: 2px;
+      background: linear-gradient(
+        to right,
+        rgba(0,0,0,0.08),
+        rgba(0,0,0,0.18),
+        rgba(0,0,0,0.08)
+      );
     }
 
     /* ---------------------------------------------------- */
@@ -554,8 +603,8 @@ p.sub {
     .subsubsection-title,
     .subsubsubsection-title {
       position: relative;
-      padding-top: 26px;
-      margin-top: 40px;
+      padding-top: 0;
+      margin-top: 18px;
       line-height: 1.5;
     }
 
@@ -563,19 +612,7 @@ p.sub {
     .subsection-title::before,
     .subsubsection-title::before,
     .subsubsubsection-title::before {
-      content: "";
-      position: absolute;
-      top: 8px;
-      left: 0;
-      width: 100%;
-      height: 2px;
-      background: linear-gradient(
-        to right,
-        rgba(0,0,0,0.10),
-        rgba(0,0,0,0.25),
-        rgba(0,0,0,0.10)
-      );
-      border-radius: 2px;
+      display: none !important;
     }
 
     /* Title sizes */
@@ -646,6 +683,44 @@ p.sub {
       margin-top: 0 !important;
       padding-top: 0 !important;
     }
+
+    /* ---------------------------------------------------- */
+    /* RESPONSIVE OVERFLOW / SCROLL FIXES */
+    /* ---------------------------------------------------- */
+    html, body {
+      max-width: 100%;
+      overflow-x: hidden;
+    }
+
+    @media (max-width: 640px) {
+      body {
+        padding-left: 0 !important;
+      }
+
+      #sidebar {
+        position: static !important;
+        width: 100% !important;
+        height: auto !important;
+        max-height: none !important;
+        overflow: visible !important;
+      }
+
+      .report-wrapper {
+        margin-top: 12px !important;
+      }
+    }
+
+    @media (max-width: 768px) {
+      body {
+        padding-top: 0 !important;
+      }
+
+      .preview-panel {
+        position: static !important;
+        height: auto !important;
+        overflow: visible !important;
+      }
+    }
   </style>
 
 
@@ -670,21 +745,21 @@ p.sub {
   <!-- MAIN CONTENT -->
   <div class="report-wrapper">
 
-    <div include-html="Front Page.html"></div>
-    <div include-html="3D Renders.html"></div>
+    <div include-html="Front Page_2.html"></div>
+    <div include-html="3D Renders_2.html"></div>
 
     <!-- Disclaimer with its own ID -->
-    <div id="sec-0-disclaimer" include-html="Disclaimer.html"></div>
+    <div id="sec-0-disclaimer" include-html="Disclaimer_2.html"></div>
 
-    <div include-html="1. Introduction.html"></div>
-    <div include-html="2. Competition Background Information.html"></div>
-    <div include-html="3. Problem Clarification.html"></div>
-    <div include-html="4. Design Thinking Process.html"></div>
-    <div include-html="5. Finalised Main Design Concept Validation and Prototyping.html"></div>
-    <div include-html="6. Overall Prototyping Testing.html"></div>
-    <div include-html="7. Moving Forward.html"></div>
-    <div include-html="8. Conclusion.html"></div>
-    <div include-html="References.html"></div>
+    <div include-html="1. Introduction_2.html"></div>
+    <div include-html="2. Competition Background Information_2.html"></div>
+    <div include-html="3. Modelling Bubble Segment.html"></div>
+    <div include-html="4. Design Thinking Process_2.html"></div>
+    <div include-html="5. Finalised Main Design Concept Validation and Prototyping_2.html"></div>
+    <div include-html="6. Overall Prototyping Testing_2.html"></div>
+    <div include-html="7. Moving Forward_2.html"></div>
+    <div include-html="8. Conclusion_2.html"></div>
+    <div include-html="References_2.html"></div>
 
   </div>
 
@@ -692,21 +767,63 @@ p.sub {
   <!-- JS SECTION -->
   <script>
     /* ========== INCLUDE HTML PARTIALS ========== */
+    function executeIncludedScripts(container) {
+      const scripts = container.querySelectorAll("script");
+      scripts.forEach((oldScript) => {
+        const newScript = document.createElement("script");
+        for (const attr of oldScript.attributes) {
+          newScript.setAttribute(attr.name, attr.value);
+        }
+        if (oldScript.textContent) {
+          newScript.textContent = oldScript.textContent;
+        }
+        oldScript.parentNode.replaceChild(newScript, oldScript);
+      });
+    }
+
     async function includeHTML() {
       const elements = document.querySelectorAll("[include-html]");
       for (const el of elements) {
         const file = el.getAttribute("include-html");
+        const candidates = [file, encodeURI(file)];
         try {
-          const resp = await fetch(file);
-          el.innerHTML = resp.ok ? await resp.text() : "Include error: " + resp.status;
+          let loaded = false;
+          for (const c of candidates) {
+            const resp = await fetch(c);
+            if (resp.ok) {
+              el.innerHTML = await resp.text();
+              executeIncludedScripts(el);
+              loaded = true;
+              break;
+            }
+          }
+          if (!loaded) {
+            el.innerHTML = "Include error (404): " + file;
+          }
         } catch (err) {
-          el.innerHTML = "Include error: " + err;
+          el.innerHTML = "Include error: " + file + " | " + err;
         }
       }
 
+      insertSectionDividers();
       generateTOC();
       initScrollSpy();
       initExpandAccordion();
+    }
+
+    function insertSectionDividers() {
+      document.querySelectorAll(".auto-section-divider").forEach(el => el.remove());
+
+      const headings = Array.from(document.querySelectorAll(
+        ".report-wrapper .section-title, .report-wrapper .subsection-title, .report-wrapper .subsubsection-title"
+      )).filter(h => !h.closest("summary"));
+
+      for (let i = 0; i < headings.length - 1; i++) {
+        const nextHeading = headings[i + 1];
+        const divider = document.createElement("div");
+        divider.className = "auto-section-divider";
+        nextHeading.parentNode.insertBefore(divider, nextHeading);
+      }
     }
 
     /* ========== TOC GENERATOR (uses headings directly) ========== */
@@ -1074,4 +1191,6 @@ function toggleGantt() {
 
 </body>
 </html>
+
+
 
