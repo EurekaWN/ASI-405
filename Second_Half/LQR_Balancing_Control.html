@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LQR Balancing Control</title>
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']]
+      }
+    };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-matlab.min.js"></script>
+  <style>
+    body {
+      font-family: "Times New Roman", Times, serif;
+      background: #f3f5f8;
+      margin: 0;
+      padding: 40px 0;
+      color: #222;
+    }
+
+    .report-wrapper {
+      max-width: 900px;
+      margin: 24px auto 40px auto;
+      padding: 0 12px;
+    }
+
+    .section-card {
+      background: rgba(255, 255, 255, 0.92);
+      border-radius: 10px;
+      padding: 32px 40px;
+      margin-bottom: 24px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+    }
+
+    .page-title {
+      font-size: 20pt;
+      font-weight: bold;
+      margin: 0 0 14px 0;
+    }
+
+    p {
+      margin: 0 0 12px 0;
+      line-height: 1.65;
+    }
+
+    details.expand-box {
+      margin: 10px 0;
+      padding: 14px 16px;
+      border-radius: 8px;
+      background: rgba(230, 236, 255, 0.55);
+      border: 1px solid rgba(140, 160, 220, 0.3);
+      transition: 0.25s ease;
+    }
+
+    details.expand-box[open] {
+      background: rgba(210, 220, 255, 0.65);
+      border-color: rgba(90, 110, 200, 0.45);
+    }
+
+    details.expand-box summary {
+      cursor: pointer;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      font-size: 15pt;
+    }
+
+    details.expand-box summary::-webkit-details-marker {
+      display: none;
+    }
+
+    details.expand-box summary::before {
+      content: "▶";
+      font-size: 0.95rem;
+      margin-right: 8px;
+    }
+
+    details.expand-box[open] summary::before {
+      content: "▼";
+    }
+
+    .tab-body {
+      padding-top: 8px;
+    }
+
+    .tab-body mjx-container[display="true"] {
+      display: block;
+      overflow-x: auto;
+      overflow-y: hidden;
+      max-width: 100%;
+      padding-bottom: 2px;
+    }
+
+    .matlab-link {
+      color: #0b3d91;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .code-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.45);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      padding: 20px;
+    }
+
+    .code-modal.open {
+      display: flex;
+    }
+
+    .code-modal-box {
+      width: min(980px, 96vw);
+      max-height: 88vh;
+      background: #fff;
+      border-radius: 10px;
+      border: 1px solid rgba(0, 0, 0, 0.15);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .code-modal-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 14px;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+      background: #f6f8fc;
+    }
+
+    .code-modal-title {
+      font-weight: 700;
+      font-size: 12pt;
+    }
+
+    .code-close-btn {
+      border: 1px solid rgba(0, 0, 0, 0.18);
+      background: #fff;
+      border-radius: 6px;
+      padding: 4px 10px;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    .code-modal pre {
+      margin: 0;
+      padding: 14px;
+      background: #111827 !important;
+      color: #e5e7eb !important;
+      overflow: auto;
+      font-family: Consolas, "Courier New", monospace !important;
+      font-size: 10.5pt;
+      line-height: 1.45;
+      white-space: pre;
+      max-height: 78vh;
+    }
+  </style>
+</head>
+<body>
+  <div class="report-wrapper">
+    <section class="section-card">
+      <h1 class="page-title">LQR Balancing Control</h1>
+      <p>
+        This page is a structured draft for the LQR balancing-control section. Replace the sample text in each foldable tab with the final report content.
+      </p>
+
+      <details class="expand-box">
+        <summary>1. Control Theory</summary>
+        <div class="tab-body">
+          <p><strong>LQR Model</strong></p>
+          <img src="images_2/LQR_Model.jpg" alt="LQR Model" style="width: 200; height: auto; display: block; margin: 0 auto 12px auto; border-radius: 8px; border: 1px solid rgba(0,0,0,0.14);">
+          <p>
+            The balancing plant is represented by a reduced-order inverted-pendulum model, where the chassis and upper-body dynamics are approximated as a pendulum-like mode mounted on a wheel-supported base.
+            Around the upright operating point, the nonlinear equations are linearized into
+            \( \dot{\mathbf{x}} = A\mathbf{x} + B\mathbf{u} \),
+            using state vector
+            \( \mathbf{x} = [\theta,\dot{\theta},x,\dot{x},\phi,\dot{\phi}]^T \)
+            and generalized input
+            \( \mathbf{u} = [T,\;T_p]^T \).
+            This model retains the dominant coupling between translation and pitch required for balance control, while remaining sufficiently compact for LQR gain synthesis and real-time firmware implementation.
+          </p>
+          <p>
+            The LQR control model is defined by the linear state-space system
+          </p>
+          \[
+          \dot{\mathbf{x}} = A\mathbf{x} + B\mathbf{u},
+          \]
+          <p>
+            with quadratic performance index
+          </p>
+          \[
+          J = \int_0^\infty \left(\mathbf{x}^T Q \mathbf{x} + \mathbf{u}^T R \mathbf{u}\right)\,dt.
+          \]
+          <p>
+            The optimal state-feedback law is
+          </p>
+          \[
+          \mathbf{u} = -K\mathbf{x}.
+          \]
+
+          <p>
+            In LQR design, the four core matrices are \(A\), \(B\), \(Q\), and \(R\):
+            \[
+            \dot{\mathbf{x}} = A\mathbf{x} + B\mathbf{u}, \qquad
+            J = \int_0^\infty \left(\mathbf{x}^T Q \mathbf{x} + \mathbf{u}^T R \mathbf{u}\right)\,dt.
+            \]
+          </p>
+          <p>
+            Matrix \(A\) is the state-dynamics matrix and captures how the state evolves without control input.
+            Matrix \(B\) is the input matrix and captures how actuator commands influence state-rate evolution.
+          </p>
+          <p>
+            Matrix \(Q\) is the state-error weighting matrix in the performance index.
+            Larger entries in \(Q\) impose stronger penalties on corresponding state deviations
+            (for example, pitch-angle and pitch-rate errors in balancing tasks).
+          </p>
+          <p>
+            Matrix \(R\) is the control-effort weighting matrix.
+            Larger entries in \(R\) penalize actuator usage more strongly, typically yielding smoother but slower responses.
+          </p>
+          <p>
+            Given \((A,B,Q,R)\), the LQR solution produces a feedback gain \(K\), and the controller is implemented as
+            \[
+            \mathbf{u} = -K\mathbf{x}.
+            \]
+            Therefore, \(A\) and \(B\) are model-derived quantities, whereas \(Q\) and \(R\) are design selections that define the performance-versus-effort tradeoff.
+          </p>
+
+          <p>
+            The balancing controller is formulated as a linear state-feedback problem around the upright operating point.
+            In the reduced model, the state vector is
+            \( \mathbf{x} = [\theta,\dot{\theta},x,\dot{x},\phi,\dot{\phi}]^T \),
+            where wheel translation and body/leg pitch dynamics are coupled.
+          </p>
+          <p>
+            The local linearized dynamics are written as
+            \( \dot{\mathbf{x}} = A\mathbf{x} + B\mathbf{u} \),
+            with generalized input
+            \( \mathbf{u} = [T,\;T_p]^T \).
+            Here, \(T\) is the generalized wheel torque channel and \(T_p\) is the generalized body/leg torque channel.
+            The implemented control law uses state-error feedback:
+            \( \mathbf{u} = -K\mathbf{x}_{err} \).
+          </p>
+          <p>
+            The LQR objective is to minimize a quadratic cost over time:
+            \[
+            J = \int_0^\infty \left(\mathbf{x}^T Q \mathbf{x} + \mathbf{u}^T R \mathbf{u}\right)\,dt.
+            \]
+            Matrix \(Q\) penalizes balancing errors (especially pitch/attitude states), while \(R\) penalizes control effort.
+            In the implementation, this is solved by \( \mathrm{lqr}(A,B,Q,R) \) to obtain \(K_{\text{model}}\).
+          </p>
+          <p>
+            To match firmware sign convention, the pipeline applies a pitch-sign correction before export:
+            the model uses forward tilt as positive \(\phi\), while firmware uses forward tilt as negative pitch.
+            Therefore, columns corresponding to \(\phi\) and \(\dot{\phi}\) are flipped:
+            \(K(:,5\!:\!6)=-K(:,5\!:\!6)\).
+            This produces \(K_{\text{firmware}}\) consistent with runtime sensing signs.
+          </p>
+          <p>
+            Physically, LQR works by generating restoring torque commands that drive all balancing states back to zero together,
+            instead of tuning each state independently. This gives coordinated correction (wheel positioning + body stabilization),
+            better transient behavior, and a systematic tradeoff between stability speed and actuator effort through \(Q\) and \(R\).
+          </p>
+        </div>
+      </details>
+
+      <details class="expand-box">
+        <summary>2. K-Matrix (Gain) Computation</summary>
+        <div class="tab-body">
+          <p>
+            The feedback gain matrix \(K\) is computed through the reduced-order pipeline in
+            <a class="matlab-link" data-file="build_reduced_model.m">build_reduced_model.m</a>.
+            The process is executed in the following sequence.
+          </p>
+
+          <p><strong>Step 1: Define physical parameters \(p\)</strong></p>
+          <p>
+            The model constants from
+            <a class="matlab-link" data-file="build_reduced_model.m">build_reduced_model.m</a>
+            are:
+          </p>
+          <ul class="param-list">
+            <li>Gravitational acceleration<span class="param-val">\(g = 9.81\ \mathrm{m/s^2}\)</span></li>
+            <li>Wheel radius<span class="param-val">\(R = 0.166\ \mathrm{m}\)</span></li>
+            <li>Body/chassis mass<span class="param-val">\(M = 8.7\ \mathrm{kg}\)</span></li>
+            <li>Wheel center to leg COM distance<span class="param-val">\(L = 0.11635\ \mathrm{m}\)</span></li>
+            <li>Leg COM to body-joint equivalent distance<span class="param-val">\(L_M = 0.12769\ \mathrm{m}\)</span></li>
+            <li>Body COM offset<span class="param-val">\(l = 0.04672\ \mathrm{m}\)</span></li>
+            <li>Wheel inertia<span class="param-val">\(I_w = 0.01602\ \mathrm{kg\cdot m^2}\)</span></li>
+            <li>Leg inertia<span class="param-val">\(I_p = 0.03468\ \mathrm{kg\cdot m^2}\)</span></li>
+            <li>Body pitch inertia<span class="param-val">\(I_M = 0.13421\ \mathrm{kg\cdot m^2}\)</span></li>
+          </ul>
+          <p>
+            Equivalent masses are calculated directly from the CAD mass aggregation in the MATLAB file:
+          </p>
+          <p>
+            \[
+            m_w = \frac{2\left(\sum m_{\mathrm{wheel\ assembly}}\right)}{1000}
+            \]
+            \[
+            \begin{aligned}
+            m_w &= \frac{2\left(259.36 + 2(151.64) + 113.6 + 4(25.73) + 15\right)}{1000}\\
+                &= \frac{2(794.16)}{1000}\\
+                &= 1.58832\ \mathrm{kg}
+            \end{aligned}
+            \]
+            \[
+            m_p = \frac{2\left(\sum m_{\mathrm{leg/pole\ assembly}}\right)}{1000}
+            \]
+            \[
+            \begin{aligned}
+            m_p &= \frac{2\left(471.98 + 70.62 + 44.28 + 105.83 + 44.98 + 472.93 + 58.26 + 126.12\right)}{1000}\\
+                &\quad + \frac{2\left(146.57 + 22.03 + 33.58 + 336.4 + 12(15) + 50\right)}{1000}\\
+                &= \frac{2(2163.58)}{1000}\\
+                &= 4.32716\ \mathrm{kg}
+            \end{aligned}
+            \]
+          </p>
+          <p>
+            These parameters define the reduced balancing plant used for linearization.
+          </p>
+
+          <p><strong>Step 2: Build nonlinear reduced dynamics</strong></p>
+          <p>
+            Symbolic dynamics are written as
+            \[
+            \dot{\mathbf{x}} = f(\mathbf{x},\mathbf{u},p),
+            \]
+            where
+            \[
+            \mathbf{x} = [\theta,\dot{\theta},x,\dot{x},\phi,\dot{\phi}]^T,\quad
+            \mathbf{u} = [T,\;T_p]^T.
+            \]
+            The symbolic source function used is
+            <a class="matlab-link" data-file="reduced_dynamics_symbolic.m">reduced_dynamics_symbolic.m</a>.
+          </p>
+
+          <p><strong>Step 3: Linearize at upright equilibrium</strong></p>
+          <p>
+            Jacobian linearization is performed at
+            \(\mathbf{x}_0=\mathbf{0}\), \(\mathbf{u}_0=\mathbf{0}\):
+            \[
+            A = \left.\frac{\partial f}{\partial \mathbf{x}}\right|_{(\mathbf{x}_0,\mathbf{u}_0)},
+            \qquad
+            B = \left.\frac{\partial f}{\partial \mathbf{u}}\right|_{(\mathbf{x}_0,\mathbf{u}_0)},
+            \qquad
+            \dot{\mathbf{x}} = A\mathbf{x}+B\mathbf{u}.
+            \]
+            Matrix dimensions are
+            \[
+            A\in\mathbb{R}^{6\times6},\qquad B\in\mathbb{R}^{6\times2}.
+            \]
+            Expanded structure:
+            \[
+            A=
+            \begin{bmatrix}
+            a_{11}&a_{12}&a_{13}&a_{14}&a_{15}&a_{16}\\
+            a_{21}&a_{22}&a_{23}&a_{24}&a_{25}&a_{26}\\
+            a_{31}&a_{32}&a_{33}&a_{34}&a_{35}&a_{36}\\
+            a_{41}&a_{42}&a_{43}&a_{44}&a_{45}&a_{46}\\
+            a_{51}&a_{52}&a_{53}&a_{54}&a_{55}&a_{56}\\
+            a_{61}&a_{62}&a_{63}&a_{64}&a_{65}&a_{66}
+            \end{bmatrix},\quad
+            B=
+            \begin{bmatrix}
+            b_{11}&b_{12}\\
+            b_{21}&b_{22}\\
+            b_{31}&b_{32}\\
+            b_{41}&b_{42}\\
+            b_{51}&b_{52}\\
+            b_{61}&b_{62}
+            \end{bmatrix}.
+          </p>
+
+          <p><strong>Step 4: Choose weighting matrices \(Q,R\)</strong></p>
+          <p>
+            In the script, the selected LQR weights are:
+            \[
+            Q = \mathrm{diag}(100,\;10,\;5,\;5,\;300,\;20)
+            =
+            \begin{bmatrix}
+            100&0&0&0&0&0\\
+            0&10&0&0&0&0\\
+            0&0&5&0&0&0\\
+            0&0&0&5&0&0\\
+            0&0&0&0&300&0\\
+            0&0&0&0&0&20
+            \end{bmatrix},
+            \]
+            \[
+            R = \mathrm{diag}(1,\;1)
+            =
+            \begin{bmatrix}
+            1&0\\
+            0&1
+            \end{bmatrix}.
+            \]
+            Higher \(Q\) entries increase state-regulation priority; higher \(R\) entries reduce control aggressiveness.
+          </p>
+
+          <p><strong>Step 5: Compute \(K\) from LQR</strong></p>
+          <p>
+            The gain is computed via
+            \[
+            K_{\mathrm{model}}=\mathrm{lqr}(A,B,Q,R).
+            \]
+            Its expanded form is
+            \[
+            K_{\mathrm{model}}=
+            \begin{bmatrix}
+            k_{11}&k_{12}&k_{13}&k_{14}&k_{15}&k_{16}\\
+            k_{21}&k_{22}&k_{23}&k_{24}&k_{25}&k_{26}
+            \end{bmatrix}
+            \in\mathbb{R}^{2\times6}.
+            \]
+            The implemented law is
+            \[
+            \mathbf{u}=-K\mathbf{x}_{err}.
+            \]
+          </p>
+          <p>
+            Substituting the model identified in the script gives:
+            \[
+            K_{\mathrm{model}}=
+            \begin{bmatrix}
+            -4.0359 & -2.2919 & 2.0117 & 3.9655 & -7.1648 & -1.6510\\
+            -7.6219 & -0.6497 & 0.9763 & 1.9702 & 21.2174 & 4.9853
+            \end{bmatrix}.
+            \]
+          </p>
+
+          <p><strong>Step 6: Apply firmware sign convention</strong></p>
+          <p>
+            To match firmware pitch sign convention, columns corresponding to \(\phi\) and \(\dot{\phi}\) are negated:
+            \[
+            K_{\mathrm{firmware}}(:,5:6) = -K_{\mathrm{model}}(:,5:6).
+            \]
+            Therefore:
+            \[
+            K_{\mathrm{firmware}}=
+            \begin{bmatrix}
+            -4.0359 & -2.2919 & 2.0117 & 3.9655 & 7.1648 & 1.6510\\
+            -7.6219 & -0.6497 & 0.9763 & 1.9702 & -21.2174 & -4.9853
+            \end{bmatrix}.
+            \]
+            This is the runtime-ready \(K\) used by firmware.
+          </p>
+
+          <p><strong>Step 7: Validate closed-loop response and export</strong></p>
+          <p>
+            Closed-loop check is performed in
+            <a class="matlab-link" data-file="test_lqr_linear.m">test_lqr_linear.m</a>
+            using \(A_{cl}=A-BK\), then the matrices are exported through
+            <code>save('reduced_model_ABK.mat', 'A', 'B', 'K', 'K_model', 'p', 'ff')</code>,
+            where \(K\) corresponds to the firmware-ready gain and \(K_{\mathrm{model}}\) preserves the original model sign convention.
+          </p>
+        </div>
+      </details>
+
+      <details class="expand-box">
+        <summary>3. LQR State-Feedback Design</summary>
+        <div class="tab-body">
+          <p>Sample text: Present the quadratic cost function and explain the design intent of the Q and R weighting matrices.</p>
+        </div>
+      </details>
+
+      <details class="expand-box">
+        <summary>4. VMC Torque Mapping</summary>
+        <div class="tab-body">
+          <p>
+            This section defines the virtual-model-control (VMC) force-to-torque transformation based on the Jacobian
+            obtained from the forward kinematic chain. The implementation corresponds to
+            <a class="matlab-link" data-file="VMC_WN_Jacobian_Transformation.m">VMC_WN_Jacobian_Transformation.m</a>
+            and
+            <a class="matlab-link" data-file="VMC_WN_Jacobian_Transformation_Animation.m">VMC_WN_Jacobian_Transformation_Animation.m</a>.
+          </p>
+          <p>
+            For generalized joint coordinates \(q=[\phi_1,\phi_2]^T\) and endpoint position
+            \(\mathbf{G}(q)=[x(q),y(q)]^T\), the velocity mapping is
+            \[
+            \dot{\mathbf{G}} = J(q)\dot{q},\qquad
+            J(q)=
+            \begin{bmatrix}
+            \frac{\partial x}{\partial \phi_1} & \frac{\partial x}{\partial \phi_2}\\
+            \frac{\partial y}{\partial \phi_1} & \frac{\partial y}{\partial \phi_2}
+            \end{bmatrix}.
+            \]
+            In the MATLAB implementation, \(J\) is computed numerically by central difference in degrees and converted to
+            \(\mathrm{mm/rad}\):
+            \[
+            \frac{\partial \mathbf{G}}{\partial \phi_i}\bigg|_{\deg}
+            \approx
+            \frac{\mathbf{G}(\phi_i+h)-\mathbf{G}(\phi_i-h)}{2h},
+            \qquad
+            J_{\mathrm{rad}} = J_{\mathrm{deg}}\frac{180}{\pi}.
+            \]
+          </p>
+          <p>
+            The force-to-torque mapping follows virtual work:
+            \[
+            \tau = J^T \mathbf{F},\qquad
+            \mathbf{F}=[F_x,F_y]^T,\qquad
+            \tau=[\tau_1,\tau_2]^T.
+            \]
+            With \(\mathbf{F}\) in \(\mathrm{N}\) and \(J\) in \(\mathrm{mm/rad}\), the output is
+            \(\tau\) in \(\mathrm{N\cdot mm}\), then converted by
+            \[
+            \tau_{\mathrm{N\cdot m}} = \tau_{\mathrm{N\cdot mm}}/1000.
+            \]
+          </p>
+          <p>
+            The mapping quality is evaluated by two complementary analyses:
+          </p>
+          <ul>
+            <li>Velocity manipulability: \( \mathbf{v}=J\dot{q},\ \|\dot{q}\|=1 \), producing a velocity ellipse.</li>
+            <li>Force-direction torque demand: \( \mathbf{F}=[\cos\theta_F,\sin\theta_F]^T,\ \tau=J^T\mathbf{F} \), sweeping \(\theta_F\in[-180^\circ,180^\circ]\).</li>
+          </ul>
+          <p>
+            Large \(|\det(J)|\) indicates stronger local 2D motion capability, while peaks in
+            \(\|\tau\|\) versus \(\theta_F\) indicate poor leverage directions and near-singular behavior.
+          </p>
+        </div>
+      </details>
+
+      <details class="expand-box">
+        <summary>5. Torque Output Sequencing</summary>
+        <div class="tab-body">
+          <p>
+            The control output pipeline is executed in a deterministic sequence from state error to actuator command.
+            Using the reduced-order model, the generalized control input is
+            \[
+            \mathbf{u}=
+            \begin{bmatrix}
+            T\\T_p
+            \end{bmatrix}
+            =
+            -K\mathbf{x}_{err},
+            \]
+            where \(T\) is the wheel-torque channel and \(T_p\) is the body/leg torque channel
+            (see
+            <a class="matlab-link" data-file="test_lqr_linear.m">test_lqr_linear.m</a>).
+          </p>
+          <p><strong>Output sequence used in implementation:</strong></p>
+          <ol>
+            <li>Acquire and preprocess states \( \mathbf{x}=[\theta,\dot{\theta},x,\dot{x},\phi,\dot{\phi}]^T \).</li>
+            <li>Compute state error \( \mathbf{x}_{err}=\mathbf{x}-\mathbf{x}_{ref} \).</li>
+            <li>Compute model-level feedback \( \mathbf{u}=-K\mathbf{x}_{err} \).</li>
+            <li>Apply sign conventions and axis mapping between model and runtime channels.</li>
+            <li>Distribute generalized channels to left/right wheel and left/right leg actuators.</li>
+            <li>Apply magnitude/rate limits and publish final motor commands.</li>
+          </ol>
+          <p>
+            For contact-force driven operation, the endpoint-force command can be inserted before final actuator mapping:
+            \[
+            \tau_q = J^T\mathbf{F}_{des},
+            \]
+            then combined with balance channels as required by architecture:
+            \[
+            \tau_{\mathrm{cmd}} = \tau_{\mathrm{LQR}} + \tau_{\mathrm{VMC}}.
+            \]
+            This combination preserves posture stabilization while adding explicit force regulation.
+          </p>
+          <p>
+            In linear verification, closed-loop dynamics are checked using
+            \[
+            A_{cl}=A-BK,\qquad \dot{\mathbf{x}}=A_{cl}\mathbf{x},
+            \]
+            and corresponding generalized effort traces are reported from
+            \(\mathbf{u}(t)=-(K\mathbf{x}(t))\).
+          </p>
+        </div>
+      </details>
+
+      <details class="expand-box">
+        <summary>6. Implementation Notes and Limitations</summary>
+        <div class="tab-body">
+          <p>
+            This subsection summarizes practical implementation constraints for translating the model-level controller into
+            embedded execution.
+          </p>
+          <p><strong>Notes for implementation:</strong></p>
+          <ul>
+            <li>Coordinate consistency is mandatory: \(\phi\), pitch sign, and force-axis definitions must match the exported \(K\) and Jacobian convention.</li>
+            <li>Unit consistency must be enforced end-to-end (\(\mathrm{rad}\), \(\mathrm{m}\), \(\mathrm{N\cdot m}\)); Jacobian scripts that use \(\mathrm{mm}\) require explicit conversion.</li>
+            <li>Sampling period should satisfy a bandwidth margin for the fastest mode in \(A_{cl}\) to avoid discrete-time degradation.</li>
+            <li>Torque commands should include anti-windup-compatible clamping and optional slew-rate limiting for motor protection.</li>
+            <li>Sensor pipelines should include bias handling and filtered derivatives to reduce \(\dot{\theta}\), \(\dot{x}\), and \(\dot{\phi}\) noise injection.</li>
+          </ul>
+          <p>
+            A generic saturation operator used in deployment can be expressed as:
+            \[
+            u_i^{sat}=\mathrm{clip}(u_i,\,-u_{i,\max},\,u_{i,\max}),
+            \]
+            and, with rate limiting,
+            \[
+            \dot{u}_i^{sat}=\mathrm{clip}\!\left(\frac{u_i^{sat}(k)-u_i^{sat}(k-1)}{T_s},\,-\dot{u}_{i,\max},\,\dot{u}_{i,\max}\right).
+            \]
+          </p>
+          <p><strong>Current model limitations:</strong></p>
+          <ul>
+            <li>The reduced model is not the full multibody five-bar model; high-frequency flexible effects are not represented.</li>
+            <li>Linearization around upright equilibrium does not fully capture large-angle transient behavior.</li>
+            <li>Ground contact and friction are represented implicitly; discontinuous contact transitions are not explicitly modeled here.</li>
+            <li>Jacobian-based force mapping degrades near singular configurations and requires posture-aware gain/safety scheduling.</li>
+            <li>Actuator dead-zone, transmission backlash, and unmodeled delay can shift the effective closed-loop poles from prediction.</li>
+          </ul>
+        </div>
+      </details>
+    </section>
+  </div>
+  <div id="code-modal" class="code-modal" aria-hidden="true">
+    <div class="code-modal-box">
+      <div class="code-modal-head">
+        <div id="code-modal-title" class="code-modal-title">MATLAB File</div>
+        <button id="code-close-btn" class="code-close-btn" type="button">Close</button>
+      </div>
+      <pre><code id="code-modal-content" class="language-matlab">Loading...</code></pre>
+    </div>
+  </div>
+  <script>
+    (function () {
+      const modal = document.getElementById("code-modal");
+      const modalTitle = document.getElementById("code-modal-title");
+      const modalContent = document.getElementById("code-modal-content");
+      const closeBtn = document.getElementById("code-close-btn");
+      const links = document.querySelectorAll(".matlab-link[data-file]");
+
+      async function openCode(fileName) {
+        modal.classList.add("open");
+        modal.setAttribute("aria-hidden", "false");
+        modalTitle.textContent = fileName;
+        modalContent.textContent = "Loading...";
+        try {
+          const candidates = ["MatLab_Files/" + fileName, "Second_Half/MatLab_Files/" + fileName];
+          let loaded = false;
+          for (const url of candidates) {
+            const resp = await fetch(url);
+            if (resp.ok) {
+              modalContent.textContent = await resp.text();
+              if (window.Prism && typeof window.Prism.highlightElement === "function") {
+                window.Prism.highlightElement(modalContent);
+              }
+              loaded = true;
+              break;
+            }
+          }
+          if (!loaded) throw new Error("File not found in MatLab_Files");
+        } catch (err) {
+          modalContent.textContent = "Failed to load " + fileName + "\n" + err;
+        }
+      }
+
+      function closeCode() {
+        modal.classList.remove("open");
+        modal.setAttribute("aria-hidden", "true");
+      }
+
+      links.forEach((a) => {
+        a.addEventListener("click", (e) => {
+          e.preventDefault();
+          openCode(a.getAttribute("data-file"));
+        });
+      });
+
+      closeBtn.addEventListener("click", closeCode);
+      modal.addEventListener("click", (e) => {
+        if (e.target === modal) closeCode();
+      });
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") closeCode();
+      });
+    })();
+  </script>
+</body>
+</html>

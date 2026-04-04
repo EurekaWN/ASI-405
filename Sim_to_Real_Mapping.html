@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sim to Real Mapping</title>
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']]
+      }
+    };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
+  <style>
+    body {
+      font-family: "Times New Roman", Times, serif;
+      background: #f3f5f8;
+      margin: 0;
+      padding: 40px 0;
+      color: #222;
+    }
+
+    .report-wrapper {
+      max-width: 900px;
+      margin: 24px auto 40px auto;
+      padding: 0 12px;
+    }
+
+    .section-card {
+      background: rgba(255, 255, 255, 0.92);
+      border-radius: 10px;
+      padding: 32px 40px;
+      margin-bottom: 24px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+    }
+
+    .page-title {
+      font-size: 20pt;
+      font-weight: bold;
+      margin: 0 0 14px 0;
+    }
+
+    p {
+      margin: 0 0 12px 0;
+      line-height: 1.65;
+    }
+
+    details.expand-box {
+      margin: 10px 0;
+      padding: 14px 16px;
+      border-radius: 8px;
+      background: rgba(230, 236, 255, 0.55);
+      border: 1px solid rgba(140, 160, 220, 0.3);
+      transition: 0.25s ease;
+    }
+
+    details.expand-box[open] {
+      background: rgba(210, 220, 255, 0.65);
+      border-color: rgba(90, 110, 200, 0.45);
+    }
+
+    details.expand-box summary {
+      cursor: pointer;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      font-size: 15pt;
+    }
+
+    details.expand-box summary::-webkit-details-marker {
+      display: none;
+    }
+
+    details.expand-box summary::before {
+      content: "▶";
+      font-size: 0.95rem;
+      margin-right: 8px;
+    }
+
+    details.expand-box[open] summary::before {
+      content: "▼";
+    }
+
+    .tab-body {
+      padding-top: 8px;
+    }
+
+    ul {
+      margin: 6px 0 10px 20px;
+    }
+
+    .plain-block {
+      margin: 14px 0 10px 0;
+      padding: 14px 16px;
+      border-radius: 8px;
+      background: rgba(230, 236, 255, 0.55);
+      border: 1px solid rgba(140, 160, 220, 0.3);
+    }
+
+    .plain-block h3 {
+      margin: 0 0 8px 0;
+      font-size: 15pt;
+    }
+
+    .media-placeholder {
+      margin-top: 10px;
+      border: 1.5px dashed rgba(80, 100, 170, 0.6);
+      background: #fff;
+      border-radius: 8px;
+      min-height: 140px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: #3c4d87;
+      padding: 12px;
+      font-weight: 600;
+    }
+
+    .firmware-link {
+      color: #0b3d91;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .offset-table-wrap {
+      overflow-x: auto;
+      margin-top: 8px;
+    }
+
+    table.offset-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+      min-width: 560px;
+    }
+
+    .offset-table th,
+    .offset-table td {
+      border: 1px solid rgba(0, 0, 0, 0.18);
+      padding: 8px 10px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .offset-table th {
+      background: #eef2ff;
+      font-weight: 700;
+    }
+
+    .code-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.45);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      padding: 20px;
+    }
+
+    .code-modal.open {
+      display: flex;
+    }
+
+    .code-modal-box {
+      width: min(980px, 96vw);
+      max-height: 88vh;
+      background: #fff;
+      border-radius: 10px;
+      border: 1px solid rgba(0, 0, 0, 0.15);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .code-modal-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 14px;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+      background: #f6f8fc;
+    }
+
+    .code-modal-title {
+      font-weight: 700;
+      color: #1b2a57;
+    }
+
+    .code-close-btn {
+      border: 1px solid #b9c3e6;
+      background: #fff;
+      color: #1d2e66;
+      border-radius: 6px;
+      padding: 6px 10px;
+      cursor: pointer;
+      font-family: "Times New Roman", Times, serif;
+      font-size: 11pt;
+    }
+
+    .code-close-btn:hover {
+      background: #f0f4ff;
+    }
+
+    .code-modal pre {
+      margin: 0;
+      padding: 0;
+      overflow: auto;
+      background: #2d2d2d;
+    }
+
+    .code-modal code {
+      font-size: 10.5pt;
+      line-height: 1.45;
+      display: block;
+      min-height: 120px;
+      font-family: Consolas, "Courier New", monospace;
+    }
+  </style>
+</head>
+<body>
+  <div class="report-wrapper">
+    <section class="section-card">
+      <h1 class="page-title">5. Sim to Real Mapping</h1>
+      <p>
+        This section demonstrates how the theoretical system is translated into the real mechanical robot. Multiple stages of calibration and tuning are required to ensure the robot behaves as intended, while safety features are implemented to prevent potential incidents. A step-by-step calibration process is presented in this section, with the ultimate goal of ensuring that the real-world robot is accurately represented in software so that its commanded behavior can be executed reliably.
+      </p>
+
+      <details class="expand-box">
+        <summary>Startup calibration procedure</summary>
+        <div class="tab-body">
+          <p>
+            Startup calibration is implemented as a gated state machine to establish a deterministic and safe initial condition
+            before any hold-mode or balancing controller is enabled.
+          </p>
+          <p>
+            Preconditions: the robot is mechanically supported in startup posture (or jig condition), emergency-stop (over tilt E-Stop and E-Stop coded onto controller)
+            and power
+            rails are healthy, and CAN motor communication is online.
+          </p>
+          <p><strong>Startup sequence</strong></p>
+          <div class="offset-table-wrap">
+            <table class="offset-table">
+              <thead>
+                <tr>
+                  <th>Step</th>
+                  <th>What happens</th>
+                  <th>Why this matters</th>
+                  <th>Reference code</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>1</td>
+                  <td>Clear startup flags, set motor outputs to zero, and lock controller in calibration mode.</td>
+                  <td>Guarantees known-safe initialization and prevents unintended motion from stale state.</td>
+                  <td><a class="firmware-link" data-file="startup_calibration_sequence.c">startup_calibration_sequence.c</a></td>
+                </tr>
+                <tr>
+                  <td>2</td>
+                  <td>Capture IMU stationary window and estimate gyro/accelerometer bias.</td>
+                  <td>Removes startup drift and provides reliable attitude/rate channels for control.</td>
+                  <td><a class="firmware-link" data-file="imu_bias_capture.c">imu_bias_capture.c</a></td>
+                </tr>
+                <tr>
+                  <td>3</td>
+                  <td>Verify encoder channels are online, fresh, and within plausibility bounds.</td>
+                  <td>Prevents FK/IK/state estimation from using stale or corrupted encoder data.</td>
+                  <td><a class="firmware-link" data-file="encoder_startup_check.c">encoder_startup_check.c</a></td>
+                </tr>
+                <tr>
+                  <td>4</td>
+                  <td>Issue low-amplitude actuator test commands and check measured direction.</td>
+                  <td>Confirms driver health and polarity/sign correctness before high-gain control.</td>
+                  <td><a class="firmware-link" data-file="actuator_readiness_gate.c">actuator_readiness_gate.c</a></td>
+                </tr>
+                <tr>
+                  <td>5</td>
+                  <td>Evaluate readiness flags and transition mode only when all checks pass.</td>
+                  <td>Enforces safe sequence: calibration \(\rightarrow\) leg-length hold \(\rightarrow\) LQR balancing.</td>
+                  <td><a class="firmware-link" data-file="controller_mode_transition.c">controller_mode_transition.c</a></td>
+                </tr>
+                <tr>
+                  <td>6</td>
+                  <td>Apply over-tilt protection and immediately cut off torque output when pitch exceeds safety threshold.</td>
+                  <td>Prevents tip-over escalation and protects hardware/operator during abnormal posture events.</td>
+                  <td><a class="firmware-link" data-file="over_tilt_safety_cutoff.c">over_tilt_safety_cutoff.c</a></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p>
+            Pass/fail rule: any sensor timeout, invalid offset, or actuator fault keeps balancing disabled and forces recalibration or safe hold.
+          </p>
+          <p>
+            Startup outputs: <code>imu_bias_ready</code>, <code>encoder_ready</code>, <code>actuator_ready</code>,
+            <code>calib_ready</code>, and <code>system_ready</code>.
+          </p>
+        </div>
+      </details>
+
+      <details class="expand-box">
+        <summary>Runtime offset calculation for joint zero positions</summary>
+        <div class="tab-body">
+          <p>
+            Runtime offset calibration is implemented to align encoder-reported joint angles with the mechanical zero
+            reference used by the control model. The corrected joint angle is defined as:
+            \[
+            \theta_{\mathrm{true}} = \theta_{\mathrm{encoder}} - \theta_{\mathrm{offset}}.
+            \]
+            The offset term is obtained from a known reference pose (e.g., jig-based hold pose):
+            \[
+            \theta_{\mathrm{offset}}=\theta_{\mathrm{encoder,ref}}-\theta_{\mathrm{ref,true}}.
+            \]
+          </p>
+          <p>
+            This compensation is required because startup encoder origin, assembly tolerance, and sensor mounting variation
+            introduce a persistent angular bias. Without offset correction, forward/inverse kinematics, Jacobian mapping,
+            and LQR/VMC control allocation may become sign-inconsistent with hardware behavior.
+          </p>
+          <p>
+            Firmware implementation reference:
+            <a class="firmware-link" data-file="runtime_joint_zero_offset.c">runtime_joint_zero_offset.c</a>
+          </p>
+          <p><strong>Calibration and runtime procedure</strong></p>
+          <ul>
+            <li>Set the mechanism to the designated reference pose and capture \( \theta_{\mathrm{encoder,ref}} \).</li>
+            <li>Assign \( \theta_{\mathrm{ref,true}} \) from calibration geometry definition.</li>
+            <li>Compute and store \( \theta_{\mathrm{offset}} \) for each joint channel.</li>
+            <li>Apply offset correction to every encoder sample before state-vector construction.</li>
+          </ul>
+          <p><strong>Joint zero-offset table (editable)</strong></p>
+          <div class="offset-table-wrap">
+            <table class="offset-table">
+              <thead>
+                <tr>
+                  <th>Joint</th>
+                  <th>Reference Angle \(\theta_{\mathrm{ref,true}}\) (deg)</th>
+                  <th>Encoder at Capture \(\theta_{\mathrm{encoder,ref}}\) (deg)</th>
+                  <th>Offset \(\theta_{\mathrm{offset}}\) (deg)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Left Hip</td>
+                  <td>0.00</td>
+                  <td>12.40</td>
+                  <td>12.40</td>
+                </tr>
+                <tr>
+                  <td>Left Knee</td>
+                  <td>0.00</td>
+                  <td>-8.15</td>
+                  <td>-8.15</td>
+                </tr>
+                <tr>
+                  <td>Right Hip</td>
+                  <td>0.00</td>
+                  <td>11.90</td>
+                  <td>11.90</td>
+                </tr>
+                <tr>
+                  <td>Right Knee</td>
+                  <td>0.00</td>
+                  <td>-7.80</td>
+                  <td>-7.80</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p>
+            Table values should be updated using the most recent calibration session and version-controlled prior to deployment.
+          </p>
+        </div>
+      </details>
+
+      <details class="expand-box">
+        <summary>Gear ratio and chain ratio conversion</summary>
+        <div class="tab-body">
+          <img
+            src="images_2/Gear_Ratio.jpg"
+            alt="Gear Ratio and Chain Ratio Conversion"
+            style="width: 100%; max-width: 760px; height: auto; display: block; margin: 6px auto 12px auto; border-radius: 8px;">
+          <p>
+            The leg mechanism is designed with mechanical advantage through the chain transmission linking the motor output
+            to the central cascaded sprocket that drives leg-joint angles \(\phi_1\) and \(\phi_2\). Therefore, motor encoder
+            variation cannot be used directly as joint-angle variation. A conversion model must include both:
+            motor internal gearbox ratio and external chain/sprocket ratio.
+          </p>
+          <p>
+            Let \(N_g\) denote the motor gearbox ratio (motor-rotor turns per gearbox-output turn), and let
+            \(N_c\) denote the chain ratio (driver sprocket teeth divided by driven sprocket teeth).
+            The equivalent kinematic conversion from motor-rotor angle to joint angle is:
+            \[
+            \theta_{\mathrm{joint}} = s\cdot\frac{\theta_{\mathrm{motor}}}{N_g}\cdot N_c + \theta_0,
+            \]
+            where \(s\in\{-1,+1\}\) represents sign convention and \(\theta_0\) is the calibrated zero offset.
+          </p>
+          <p>
+            If encoder output is in counts \(c\) with encoder resolution \(C_{\mathrm{rev}}\) (counts/rev), then
+            \[
+            \theta_{\mathrm{motor}} = 2\pi \frac{c}{C_{\mathrm{rev}}},
+            \qquad
+            \Delta\theta_{\mathrm{joint}} = s\cdot\frac{2\pi}{C_{\mathrm{rev}}}\cdot\frac{N_c}{N_g}\cdot \Delta c.
+            \]
+            This directly gives the change in \(\phi_1\) or \(\phi_2\) for a measured encoder increment.
+          </p>
+          <p><strong>Numerical substitution (current prototype ratios)</strong></p>
+          <p>
+            Using the documented transmission values:
+            \(N_g=6\) (motor internal reduction \(1{:}6\)) and
+            chain stage ratio \(115/75\) as torque step-up, hence
+            \(N_c = 75/115\) in the speed-conversion equation (driver/driven).
+          </p>
+          <p>
+            \[
+            \frac{\Delta\theta_{\mathrm{joint}}}{\Delta\theta_{\mathrm{motor}}}
+            = \frac{N_c}{N_g}
+            = \frac{75/115}{6}
+            = 0.1086957.
+            \]
+            Therefore, for one motor revolution:
+            \[
+            \Delta\theta_{\mathrm{joint}}
+            = 360^\circ \times 0.1086957
+            = 39.13^\circ.
+            \]
+          </p>
+          <p>
+            Final conversion result:
+            <strong>1 motor revolution corresponds to approximately \(39.13^\circ\) joint-angle change</strong>
+            (before sign \(s\) and zero-offset \(\theta_0\) application).
+          </p>
+          <p>
+            In encoder-count form:
+            \[
+            \Delta\theta_{\mathrm{joint}}(\deg/\mathrm{count})
+            = \frac{360^\circ}{C_{\mathrm{rev}}}\cdot\frac{75/115}{6}
+            = \frac{39.13^\circ}{C_{\mathrm{rev}}}.
+            \]
+          </p>
+          <p><strong>Implementation requirements</strong></p>
+          <ul>
+            <li>Use separate conversion constants for each joint channel if sprocket sizes differ.</li>
+            <li>Apply sign mapping before controller-state construction to maintain consistency with model coordinates.</li>
+            <li>Apply zero-offset correction after ratio conversion to preserve physical reference alignment.</li>
+            <li>Maintain a versioned ratio table for gearbox and sprocket updates in mechanical revisions.</li>
+          </ul>
+        </div>
+      </details>
+
+      <section class="plain-block">
+        <h3>Jig-based zero capture / hold pose initialization</h3>
+        <p>
+          This section demonstrates the initial calibration process, followed by the transition of the motors into a “leg length” hold state.
+          Once this state is established, the robot can then proceed into the LQR balancing sequence.
+        </p>
+        <div class="media-placeholder">[Image Placeholder: Jig Setup / Zero-Capture Geometry]</div>
+        <div class="media-placeholder">[Video Placeholder: Hold-Pose Initialization Procedure]</div>
+      </section>
+
+      <details class="expand-box">
+        <summary>Coordinate/sign convention alignment between hardware and software</summary>
+        <div class="tab-body">
+          <p>
+            Coordinate and sign-convention alignment was executed as a dedicated integration task to ensure that model equations,
+            exported gains, runtime sensor signs, and actuator directions were mathematically consistent. The critical mismatch
+            identified during integration was the body-pitch sign definition between model and firmware.
+          </p>
+          <p>
+            In the reduced model pipeline, forward body tilt is defined as \(+\phi\). In firmware, forward tilt is represented as
+            negative pitch. Therefore, the exported LQR gain matrix requires a sign conversion on the pitch states:
+            \[
+            K_{\mathrm{firmware}}(:,5:6) = -K_{\mathrm{model}}(:,5:6).
+            \]
+            This correction was applied before deployment so that
+            \(\mathbf{u}=-K\mathbf{x}_{err}\) preserves the intended restoring direction in runtime.
+          </p>
+          <p>
+            Firmware implementation reference:
+            <a class="firmware-link" data-file="sign_convention_alignment_check.c">sign_convention_alignment_check.c</a>
+          </p>
+          <p><strong>Sign-alignment process used during bring-up</strong></p>
+          <ol>
+            <li>Define reference directions for \(\phi,\dot{\phi},x,\dot{x}\), joint angles, and motor torque channels.</li>
+            <li>Compare model sign definitions against firmware variables (IMU pitch, gyro axis, encoder direction).</li>
+            <li>Apply explicit sign mapping in software where mismatch is observed (notably pitch-state columns in \(K\)).</li>
+            <li>Run live-expression monitoring under single-axis excitation to verify polarity.</li>
+            <li>Lock final mapping into control-state construction and torque output interfaces.</li>
+          </ol>
+          <p><strong>Live-expression verification records (integration summary)</strong></p>
+          <div class="offset-table-wrap">
+            <table class="offset-table">
+              <thead>
+                <tr>
+                  <th>Signal Channel</th>
+                  <th>Excitation / Observation</th>
+                  <th>Live Expression Reading</th>
+                  <th>Applied Correction</th>
+                  <th>Final Runtime Mapping</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Body pitch</td>
+                  <td>Manual forward tilt of chassis</td>
+                  <td><code>imu_heading.pit</code> decreased</td>
+                  <td>Pitch-state sign inversion in exported gain</td>
+                  <td>\(\phi_{\mathrm{model}}=-\mathrm{pitch}_{\mathrm{fw}}\)</td>
+                </tr>
+                <tr>
+                  <td>Body pitch rate</td>
+                  <td>Forward pitch impulse / release</td>
+                  <td><code>gyro_y</code> sign opposite to model \(+\dot{\phi}\)</td>
+                  <td>Derivative term and state mapping aligned with negative sign</td>
+                  <td>\(\dot{\phi}_{\mathrm{model}}=-\omega_{y,\mathrm{fw}}\)</td>
+                </tr>
+                <tr>
+                  <td>Wheel velocity</td>
+                  <td>Forward drive command at low amplitude</td>
+                  <td>Left/right raw RPM signs differ by motor mounting</td>
+                  <td>Channel-specific sign mapping before averaging</td>
+                  <td>\(\dot{x}_{\mathrm{fw}}=(v_L+v_R)/2\) with corrected wheel signs</td>
+                </tr>
+                <tr>
+                  <td>Joint encoder angle</td>
+                  <td>Positive commanded joint motion</td>
+                  <td>One mirrored side produced opposite encoder polarity</td>
+                  <td>Per-joint sign coefficient \(s_i\in\{-1,+1\}\)</td>
+                  <td>\(\theta_{i,\mathrm{true}}=s_i(\theta_{i,\mathrm{enc}}-\theta_{i,\mathrm{offset}})\)</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p>
+            Outcome: after applying these mappings, the observed hardware response matched model expectations for disturbance rejection,
+            and the LQR/VMC command directions remained consistent through the full sensing-to-actuation path.
+          </p>
+        </div>
+      </details>
+
+      <section class="plain-block">
+        <h3>Validation process from simulation to test</h3>
+        <video
+          src="videos_2/FK_Validation_real.mp4"
+          autoplay
+          loop
+          muted
+          playsinline
+          controls
+          style="width: 100%; max-width: 760px; display: block; margin: 10px auto 12px auto; border-radius: 8px; background: #000;">
+        </video>
+        <p>
+          This section documents the validation workflow from simulation to hardware testing.
+          Validation is executed in staged progression to reduce commissioning risk and to isolate model-controller mismatch prior to full deployment.
+          In the demonstrated test sequence, the controller mapping is verified for both positive and negative increments under manual excitation
+          (up/down and left/right disturbance directions). The objective is to command the motors to shift the wheel-center of the leg assembly
+          (the forward-kinematics point \(\mathbf{G}\)) in discrete increments of \(20\,\mathrm{mm}\) per command step.
+          This procedure is used to verify both forward-kinematic consistency and sign-convention correctness across sensing, state mapping,
+          and actuation channels. The corresponding implementation code is
+          <a class="firmware-link" data-file="validation_sim_to_hw_sequence.c">validation_sim_to_hw_sequence.c</a>.
+          During this validation stage, leg length is maintained by a leg-length PD loop, which is intentionally kept in a preliminary
+          (not fully tuned) state because it is used only for testing support.
+        </p>
+      </section>
+    </section>
+  </div>
+  <div id="code-modal" class="code-modal" aria-hidden="true">
+    <div class="code-modal-box">
+      <div class="code-modal-head">
+        <div id="code-modal-title" class="code-modal-title">Firmware File</div>
+        <button id="code-close-btn" class="code-close-btn" type="button">Close</button>
+      </div>
+      <pre><code id="code-modal-content" class="language-c">Loading...</code></pre>
+    </div>
+  </div>
+  <script>
+    (function () {
+      const modal = document.getElementById("code-modal");
+      const modalTitle = document.getElementById("code-modal-title");
+      const modalContent = document.getElementById("code-modal-content");
+      const closeBtn = document.getElementById("code-close-btn");
+      const links = document.querySelectorAll(".firmware-link[data-file]");
+
+      async function openCode(fileName) {
+        modal.classList.add("open");
+        modal.setAttribute("aria-hidden", "false");
+        modalTitle.textContent = fileName;
+        modalContent.textContent = "Loading...";
+
+        try {
+          const candidates = [
+            "Firmware_Files/" + fileName,
+            "Second_Half/Firmware_Files/" + fileName
+          ];
+          let loaded = false;
+
+          for (const url of candidates) {
+            const resp = await fetch(url);
+            if (resp.ok) {
+              modalContent.textContent = await resp.text();
+              if (window.Prism && typeof window.Prism.highlightElement === "function") {
+                window.Prism.highlightElement(modalContent);
+              }
+              loaded = true;
+              break;
+            }
+          }
+
+          if (!loaded) {
+            modalContent.textContent = "Unable to load file: " + fileName;
+          }
+        } catch (err) {
+          modalContent.textContent = "Error loading file: " + err.message;
+        }
+      }
+
+      function closeCode() {
+        modal.classList.remove("open");
+        modal.setAttribute("aria-hidden", "true");
+      }
+
+      links.forEach(link => {
+        link.addEventListener("click", function (e) {
+          e.preventDefault();
+          openCode(link.getAttribute("data-file"));
+        });
+      });
+
+      closeBtn.addEventListener("click", closeCode);
+      modal.addEventListener("click", function (e) {
+        if (e.target === modal) closeCode();
+      });
+      document.addEventListener("keydown", function (e) {
+        if (e.key === "Escape") closeCode();
+      });
+    })();
+  </script>
+</body>
+</html>

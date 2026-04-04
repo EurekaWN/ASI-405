@@ -453,11 +453,16 @@ p.sub {
       font-family: "Times New Roman", Times, serif !important;
     }
 
+    :root {
+      --sidebar-w: clamp(190px, 22vw, 260px);
+      --sidebar-gap: 20px;
+    }
+
     body {
       margin: 0;
       background: #dfe4f0;
       /* reserve space for fixed sidebar so content can still be centered */
-      padding-left: 260px;
+      padding-left: calc(var(--sidebar-w) + var(--sidebar-gap));
     }
 
     p, li {
@@ -468,7 +473,7 @@ p.sub {
     /* SIDEBAR (FIXED, ALWAYS VISIBLE) */
     /* ---------------------------------------------------- */
     #sidebar {
-      width: 260px;
+      width: var(--sidebar-w);
       background: #111827;
       color: #ddd;
       padding: 20px 16px;
@@ -478,6 +483,15 @@ p.sub {
       height: 100vh;
       overflow-y: auto;
       z-index: 10;
+    }
+
+    #sidebar::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    #sidebar::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.28);
+      border-radius: 8px;
     }
 
     #sidebar h2 {
@@ -645,6 +659,44 @@ p.sub {
     details.expand-box summary.subsubsubsection-title {
       margin-top: 0 !important;
       padding-top: 0 !important;
+    }
+
+    /* ---------------------------------------------------- */
+    /* RESPONSIVE OVERFLOW / SCROLL FIXES */
+    /* ---------------------------------------------------- */
+    html, body {
+      max-width: 100%;
+      overflow-x: hidden;
+    }
+
+    @media (max-width: 640px) {
+      body {
+        padding-left: 0 !important;
+      }
+
+      #sidebar {
+        position: static !important;
+        width: 100% !important;
+        height: auto !important;
+        max-height: none !important;
+        overflow: visible !important;
+      }
+
+      .report-wrapper {
+        margin-top: 12px !important;
+      }
+    }
+
+    @media (max-width: 768px) {
+      body {
+        padding-top: 0 !important;
+      }
+
+      .preview-panel {
+        position: static !important;
+        height: auto !important;
+        overflow: visible !important;
+      }
     }
   </style>
 

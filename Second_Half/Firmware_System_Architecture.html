@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Firmware System Architecture</title>
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']]
+      }
+    };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
+  <style>
+    body {
+      font-family: "Times New Roman", Times, serif;
+      background: #f3f5f8;
+      margin: 0;
+      padding: 40px 0;
+      color: #222;
+    }
+
+    .report-wrapper {
+      max-width: 980px;
+      margin: 24px auto 40px auto;
+      padding: 0 12px;
+    }
+
+    .section-card {
+      background: rgba(255, 255, 255, 0.92);
+      border-radius: 10px;
+      padding: 32px 40px;
+      margin-bottom: 24px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+    }
+
+    .page-title {
+      font-size: 20pt;
+      font-weight: bold;
+      margin: 0 0 14px 0;
+    }
+
+    p {
+      margin: 0 0 12px 0;
+      line-height: 1.65;
+    }
+
+    details.expand-box {
+      margin: 10px 0;
+      padding: 14px 16px;
+      border-radius: 8px;
+      background: rgba(230, 236, 255, 0.55);
+      border: 1px solid rgba(140, 160, 220, 0.3);
+      transition: 0.25s ease;
+    }
+
+    details.expand-box[open] {
+      background: rgba(210, 220, 255, 0.65);
+      border-color: rgba(90, 110, 200, 0.45);
+    }
+
+    details.expand-box summary {
+      cursor: pointer;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      font-size: 15pt;
+    }
+
+    details.expand-box summary::-webkit-details-marker { display: none; }
+    details.expand-box summary::before {
+      content: "▶";
+      font-size: 0.95rem;
+      margin-right: 8px;
+    }
+    details.expand-box[open] summary::before { content: "▼"; }
+
+    .tab-body { padding-top: 8px; }
+    ul, ol { margin: 6px 0 10px 20px; }
+
+    .firmware-link {
+      color: #0b3d91;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      margin-top: 8px;
+    }
+
+    table.report-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+      min-width: 760px;
+    }
+
+    .report-table th,
+    .report-table td {
+      border: 1px solid rgba(0, 0, 0, 0.18);
+      padding: 8px 10px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .report-table th {
+      background: #eef2ff;
+      font-weight: 700;
+    }
+
+    .code-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.45);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      padding: 20px;
+    }
+    .code-modal.open { display: flex; }
+
+    .code-modal-box {
+      width: min(980px, 96vw);
+      max-height: 88vh;
+      background: #fff;
+      border-radius: 10px;
+      border: 1px solid rgba(0, 0, 0, 0.15);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .code-modal-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 14px;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+      background: #f6f8fc;
+    }
+
+    .code-modal-title { font-weight: 700; color: #1b2a57; }
+
+    .code-close-btn {
+      border: 1px solid #b9c3e6;
+      background: #fff;
+      color: #1d2e66;
+      border-radius: 6px;
+      padding: 6px 10px;
+      cursor: pointer;
+      font-family: "Times New Roman", Times, serif;
+      font-size: 11pt;
+    }
+
+    .code-modal pre {
+      margin: 0;
+      padding: 0;
+      overflow: auto;
+      background: #2d2d2d;
+    }
+
+    .code-modal code {
+      font-size: 10.5pt;
+      line-height: 1.45;
+      display: block;
+      min-height: 120px;
+      font-family: Consolas, "Courier New", monospace;
+    }
+  </style>
+</head>
+<body>
+  <div class="report-wrapper">
+    <section class="section-card">
+      <h1 class="page-title">7. Firmware System Architecture</h1>
+      <p>
+        This section documents the runtime firmware architecture from sensing to estimation, control allocation, actuator interfacing,
+        and output safety limiting. The structure is written as implementation-oriented documentation to support tuning, debugging,
+        and future maintenance.
+      </p>
+
+      <details class="expand-box">
+        <summary>System Structure</summary>
+        <div class="tab-body">
+          <p>
+            The firmware is organized as a deterministic pipeline:
+            \[
+            \text{Acquire} \rightarrow \text{Estimate} \rightarrow \text{Control} \rightarrow \text{Map/Limit} \rightarrow \text{Actuate}.
+            \]
+            The design objective is to guarantee signal validity and sign consistency before control commands are issued.
+          </p>
+          <div class="table-wrap">
+            <table class="report-table">
+              <thead>
+                <tr>
+                  <th>Layer</th>
+                  <th>Function</th>
+                  <th>Typical outputs</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Acquisition</td>
+                  <td>IMU, encoder, and motor telemetry ingestion with freshness checks.</td>
+                  <td>\(pitch,\ \dot{pitch},\ rpm,\ encoder\ angle\)</td>
+                </tr>
+                <tr>
+                  <td>Estimation</td>
+                  <td>Bias-corrected attitude and translational state reconstruction.</td>
+                  <td>\(x,\dot{x},\theta,\dot{\theta},\phi,\dot{\phi}\)</td>
+                </tr>
+                <tr>
+                  <td>Control</td>
+                  <td>LQR/VMC/PD calculations in model-consistent coordinates.</td>
+                  <td>\(u=[T,\ T_p]^T\)</td>
+                </tr>
+                <tr>
+                  <td>Mapping + Safety</td>
+                  <td>Driver command mapping, saturation, rate limiting, interlocks.</td>
+                  <td>Safe actuator command packets</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p>
+            Reference code:
+            <a class="firmware-link" data-file="firmware_system_structure.c">firmware_system_structure.c</a>
+          </p>
+        </div>
+      </details>
+
+      <details class="expand-box">
+        <summary>IMU Processing</summary>
+        <div class="tab-body">
+          <p>
+            IMU processing includes startup bias capture, runtime bias compensation, filtering, and sign-convention alignment.
+            A key integration constraint from the prior process is that firmware pitch sign is opposite to model \(+\phi\), therefore
+            a mapping step is explicitly applied before state-vector assembly.
+          </p>
+          <ol>
+            <li>Read raw gyroscope and accelerometer channels.</li>
+            <li>Subtract startup-estimated bias terms.</li>
+            <li>Apply low-pass/complementary filtering.</li>
+            <li>Map to model sign convention for controller input channels.</li>
+          </ol>
+          <p>
+            Reference codes:
+            <a class="firmware-link" data-file="imu_processing_pipeline.c">imu_processing_pipeline.c</a>,
+            <a class="firmware-link" data-file="sign_convention_alignment_check.c">sign_convention_alignment_check.c</a>
+          </p>
+        </div>
+      </details>
+
+      <details class="expand-box">
+        <summary>Kalman Filter for Body speed/position Estimation</summary>
+        <div class="tab-body">
+          <p>
+            Translational state estimation is implemented as a linear Kalman filter using discrete prediction-correction form:
+            \[
+            \mathbf{x}_{k|k-1}=A_d\mathbf{x}_{k-1|k-1}+B_d\mathbf{u}_{k-1},\qquad
+            P_{k|k-1}=A_dP_{k-1|k-1}A_d^T+Q
+            \]
+            \[
+            K_k=P_{k|k-1}H^T(HP_{k|k-1}H^T+R)^{-1},\qquad
+            \mathbf{x}_{k|k}=\mathbf{x}_{k|k-1}+K_k(\mathbf{z}_k-H\mathbf{x}_{k|k-1}).
+            \]
+          </p>
+          <p>
+            The filter is tuned to balance responsiveness and noise immunity. In this project workflow, the filter also serves
+            as a stabilizing bridge between noisy wheel telemetry and control-state requirements.
+          </p>
+          <p>
+            Reference code:
+            <a class="firmware-link" data-file="kalman_body_state_estimator.c">kalman_body_state_estimator.c</a>
+          </p>
+        </div>
+      </details>
+
+      <details class="expand-box">
+        <summary>HT8108 joint motor control interface</summary>
+        <div class="tab-body">
+          <p>
+            The HT8108 interface performs command packing, communication transmission, and telemetry monitoring for joint channels.
+            Commands are converted from physical units into protocol-specific packed integers with strict min/max clamping.
+          </p>
+          <p>
+            Practical issues encountered during integration include sign mismatch, parameter-limit clipping, and communication timeout handling.
+            Therefore, the interface includes both command validation and readback consistency checks before high-level control trust.
+          </p>
+          <p>
+            Reference codes:
+            <a class="firmware-link" data-file="ht8108_interface_flow.c">ht8108_interface_flow.c</a>,
+            <a class="firmware-link" data-file="actuator_readiness_gate.c">actuator_readiness_gate.c</a>
+          </p>
+        </div>
+      </details>
+
+      <details class="expand-box">
+        <summary>M3508 wheel motor control interface</summary>
+        <div class="tab-body">
+          <p>
+            The M3508 interface maps generalized wheel-channel commands to left/right motors and reconstructs wheel speed/position
+            from encoder telemetry for estimation and feedback closure.
+          </p>
+          <p>
+            Because mirrored wheel installation can invert observed direction, per-channel sign correction is applied before computing:
+            \[
+            \dot{x}_{fw}=\frac{v_L+v_R}{2}.
+            \]
+            This was necessary to prevent directional inversion in speed feedback loops.
+          </p>
+          <p>
+            Reference code:
+            <a class="firmware-link" data-file="m3508_interface_flow.c">m3508_interface_flow.c</a>
+          </p>
+        </div>
+      </details>
+
+      <details class="expand-box">
+        <summary>Torque command saturation and output limiting</summary>
+        <div class="tab-body">
+          <p>
+            Output limiting is implemented to ensure motor commands remain within electrical, thermal, and stability-safe envelopes.
+            Hard magnitude clipping and optional slew-rate limits are applied before command transmission.
+          </p>
+          <p>
+            \[
+            u_i^{sat}=\mathrm{clip}(u_i,\,-u_{i,\max},\,u_{i,\max}),
+            \qquad
+            \dot{u}_i^{sat}=\mathrm{clip}\!\left(\frac{u_i(k)-u_i(k-1)}{T_s},-\dot{u}_{i,\max},\dot{u}_{i,\max}\right).
+            \]
+          </p>
+          <p>
+            Over-tilt cut-off is treated as a higher-priority safety interlock: if \(|pitch|>pitch_{lim}\), torque output is forced to zero.
+          </p>
+          <p>
+            Reference codes:
+            <a class="firmware-link" data-file="torque_saturation_output_limit.c">torque_saturation_output_limit.c</a>,
+            <a class="firmware-link" data-file="over_tilt_safety_cutoff.c">over_tilt_safety_cutoff.c</a>
+          </p>
+        </div>
+      </details>
+    </section>
+  </div>
+
+  <div id="code-modal" class="code-modal" aria-hidden="true">
+    <div class="code-modal-box">
+      <div class="code-modal-head">
+        <div id="code-modal-title" class="code-modal-title">Firmware File</div>
+        <button id="code-close-btn" class="code-close-btn" type="button">Close</button>
+      </div>
+      <pre><code id="code-modal-content" class="language-c">Loading...</code></pre>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const modal = document.getElementById("code-modal");
+      const modalTitle = document.getElementById("code-modal-title");
+      const modalContent = document.getElementById("code-modal-content");
+      const closeBtn = document.getElementById("code-close-btn");
+      const links = document.querySelectorAll(".firmware-link[data-file]");
+
+      async function openCode(fileName) {
+        modal.classList.add("open");
+        modal.setAttribute("aria-hidden", "false");
+        modalTitle.textContent = fileName;
+        modalContent.textContent = "Loading...";
+        try {
+          const candidates = ["Firmware_Files/" + fileName, "Second_Half/Firmware_Files/" + fileName];
+          let loaded = false;
+          for (const url of candidates) {
+            const resp = await fetch(url);
+            if (resp.ok) {
+              modalContent.textContent = await resp.text();
+              if (window.Prism && typeof window.Prism.highlightElement === "function") {
+                window.Prism.highlightElement(modalContent);
+              }
+              loaded = true;
+              break;
+            }
+          }
+          if (!loaded) modalContent.textContent = "Unable to load file: " + fileName;
+        } catch (err) {
+          modalContent.textContent = "Error loading file: " + err.message;
+        }
+      }
+
+      function closeCode() {
+        modal.classList.remove("open");
+        modal.setAttribute("aria-hidden", "true");
+      }
+
+      links.forEach(link => {
+        link.addEventListener("click", function (e) {
+          e.preventDefault();
+          openCode(link.getAttribute("data-file"));
+        });
+      });
+
+      closeBtn.addEventListener("click", closeCode);
+      modal.addEventListener("click", function (e) { if (e.target === modal) closeCode(); });
+      document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeCode(); });
+    })();
+  </script>
+</body>
+</html>

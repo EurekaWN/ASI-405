@@ -14,6 +14,9 @@
     };
   </script>
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-matlab.min.js"></script>
 
   <style>
     body {
@@ -85,9 +88,8 @@
     }
 
     .h-row {
-      --h1-width: 800px;
-      --h2-width: 200px;
-      --h3-width: 200px;
+      --h1-width: 600px;
+      --h2-width: 1000px;
       display: grid;
       grid-template-columns: 1fr;
       gap: 10px;
@@ -99,12 +101,11 @@
     }
 
     .h-row-bottom {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(220px, 1fr));
+      display: flex;
+      justify-content: center;
+      align-items: start;
       gap: 10px;
       width: min(100%, 1040px);
-      justify-items: center;
-      align-items: start;
     }
 
     .h-cell {
@@ -125,7 +126,6 @@
 
     #h1-img { max-width: var(--h1-width); }
     #h2-img { max-width: var(--h2-width); }
-    #h3-img { max-width: var(--h3-width); }
 
     code {
       font-family: Consolas, "Courier New", monospace;
@@ -167,6 +167,17 @@
       transition: transform 0.2s ease;
     }
 
+    /* Remove heading divider line when title is used as foldable summary */
+    details.expand-box > summary.section-title::before {
+      display: none !important;
+      content: none !important;
+    }
+
+    details.expand-box > summary.section-title {
+      padding-top: 0 !important;
+      margin-top: 0 !important;
+    }
+
     details.expand-box[open] summary::before {
       content: "▼";
     }
@@ -198,6 +209,77 @@
       box-shadow: 0 4px 12px rgba(0,0,0,0.12);
       background: #000;
     }
+
+    .matlab-link {
+      color: #0b3d91;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .code-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.45);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      padding: 20px;
+    }
+
+    .code-modal.open {
+      display: flex;
+    }
+
+    .code-modal-box {
+      width: min(980px, 96vw);
+      max-height: 88vh;
+      background: #fff;
+      border-radius: 10px;
+      border: 1px solid rgba(0, 0, 0, 0.15);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .code-modal-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 14px;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+      background: #f6f8fc;
+    }
+
+    .code-modal-title {
+      font-weight: 700;
+      font-size: 12pt;
+    }
+
+    .code-close-btn {
+      border: 1px solid rgba(0, 0, 0, 0.18);
+      background: #fff;
+      border-radius: 6px;
+      padding: 4px 10px;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    .code-modal pre {
+      margin: 0;
+      padding: 14px;
+      background: #111827 !important;
+      color: #e5e7eb !important;
+      overflow: auto;
+      font-family: Consolas, "Courier New", monospace !important;
+      font-size: 10.5pt;
+      line-height: 1.45;
+      white-space: pre;
+      max-height: 78vh;
+    }
   </style>
 </head>
 <body>
@@ -220,16 +302,18 @@
           <p>
             This section presents the MatLab Version of Forward Kinematics which will later be integrated into the firmware.
             The implementation is based on the geometric construction outlined in the function
-            <code>FK_G_from_phi1phi2</code> in <code>VMC_WN_FK_Ainimation.m</code>. The mechanism is modeled as a planar
+            <code>FK_G_from_phi1phi2</code> in
+            <a class="matlab-link" data-file="VMC_WN_FK_Ainimation.m">VMC_WN_FK_Ainimation.m</a>.
+            The mechanism is modeled as a planar
             linkage with inputs $\phi_1$ and $\phi_2$, and output point $\mathbf{G}$.
           </p>
 
-          <img src="images_2/Model Dimensions.jpg" alt="Forward Kinematics Diagram" style="width: 550px; height: auto;">
+          <img src="images_2/Model Dimensions.jpg" alt="Forward Kinematics Diagram" style="width: 550px; height: auto; display: block; margin: 0 auto;">
           <div class="h-row">
             <div class="h-cell"><img id="h1-img" src="images_2/H1.png" alt="H1"></div>
             <div class="h-row-bottom">
-              <div class="h-cell"><img id="h2-img" src="images_2/H2.jpg" alt="H2"></div>
-              <div class="h-cell"><img id="h3-img" src="images_2/H3.jpg" alt="H3"></div>
+              <div class="h-cell"><img id="h2-img" src="images_2/H2.png" alt="H2"></div>
+            
             </div>
           </div>
           <p>
@@ -370,7 +454,7 @@
             $\mathbf{G}(\phi_1,\phi_2)$ matches a desired target point
             $\mathbf{G}_{\mathrm{des}}=[G_x^{\mathrm{des}},G_y^{\mathrm{des}}]^\top$.
             The implementation follows <code>IK_phi1phi2_from_G</code> in
-            <code>VMC_WN_Cleaned_IK_Function.m</code>.
+            <a class="matlab-link" data-file="VMC_WN_Cleaned_IK_Function.m">VMC_WN_Cleaned_IK_Function.m</a>.
           </p>
 
           <h3 class="subsection-title">State, Target, and Constraints</h3>
@@ -528,19 +612,54 @@
         <summary class="section-title">Jacobian Torque Mapping</summary>
         <div class="expand-body">
           <p>
-            This section is extracted from <code>VMC_WN_Jacobian_Transformation.m</code> and
-            <code>VMC_WN_Jacobian_Transformation_Animation.m</code>. The Jacobian is computed numerically from the
-            forward map $\mathbf{G}(\phi_1,\phi_2)$ and is then used for velocity, acceleration, and force-to-torque conversion.
+            This section explains the Jacobian-based kinematic and force transmission framework implemented in
+            <a class="matlab-link" data-file="VMC_WN_Jacobian_Transformation.m">VMC_WN_Jacobian_Transformation.m</a>
+            and
+            <a class="matlab-link" data-file="VMC_WN_Jacobian_Transformation_Animation.m">VMC_WN_Jacobian_Transformation_Animation.m</a>.
+            The model uses two actuated inputs
+            $(\phi_1,\phi_2)$ and a planar output point
+            \[
+            \mathbf{G}=\begin{bmatrix}x\\y\end{bmatrix}.
+            \]
           </p>
 
-          <h3 class="subsection-title">Numerical Jacobian Construction</h3>
+          <h3 class="subsection-title">1. Role of the Jacobian</h3>
           <p>
-            Let
+            The instantaneous velocity relation is
             \[
-            \mathbf{q}=\begin{bmatrix}\phi_1\\\phi_2\end{bmatrix},\qquad
-            \mathbf{G}(\mathbf{q})=\begin{bmatrix}G_x(\mathbf{q})\\G_y(\mathbf{q})\end{bmatrix}.
+            \dot{\mathbf{G}}=
+            \begin{bmatrix}\dot{x}\\\dot{y}\end{bmatrix}
+            =
+            J(\mathbf{q})
+            \begin{bmatrix}\dot{\phi}_1\\\dot{\phi}_2\end{bmatrix},
+            \qquad
+            \mathbf{q}=\begin{bmatrix}\phi_1\\\phi_2\end{bmatrix}.
             \]
-            In the code, central differences are evaluated in degrees using step size $h=10^{-3}$ deg:
+            Therefore, joint angular velocities map directly to end-point linear velocity.
+            Physically, the Jacobian is the local transmission operator between actuator space and Cartesian space.
+          </p>
+
+          <h3 class="subsection-title">2. Physical Meaning of the Matrix Columns</h3>
+          <p>
+            For the 2D, 2-DOF system:
+          </p>
+          \[
+          J=
+          \begin{bmatrix}
+          \dfrac{\partial x}{\partial \phi_1} & \dfrac{\partial x}{\partial \phi_2}\\
+          \dfrac{\partial y}{\partial \phi_1} & \dfrac{\partial y}{\partial \phi_2}
+          \end{bmatrix}.
+          \]
+          <p>
+            Column 1 represents the velocity of $\mathbf{G}$ caused by unit speed at joint 1
+            with joint 2 fixed; column 2 represents the same for joint 2.
+            This is exactly how the code visualizes Jacobian vectors at point $G$.
+          </p>
+
+          <h3 class="subsection-title">3. Numerical Jacobian Used in MATLAB</h3>
+          <p>
+            The implementation computes $J$ numerically via central differences in degrees
+            with step $h=10^{-3}$:
           </p>
           \[
           \frac{\partial \mathbf{G}}{\partial \phi_1}\Big|_{\deg}
@@ -553,27 +672,23 @@
           \frac{\mathbf{G}(\phi_1,\phi_2+h)-\mathbf{G}(\phi_1,\phi_2-h)}{2h}.
           \]
           \[
-          J_{\deg}=
-          \begin{bmatrix}
-          \frac{\partial G_x}{\partial \phi_1} & \frac{\partial G_x}{\partial \phi_2}\\
-          \frac{\partial G_y}{\partial \phi_1} & \frac{\partial G_y}{\partial \phi_2}
-          \end{bmatrix}_{\deg},
+          J_{\deg}=\left[\frac{\partial \mathbf{G}}{\partial \phi_1}\;\;\frac{\partial \mathbf{G}}{\partial \phi_2}\right]_{\deg},
           \qquad
           J_{\mathrm{rad}}=J_{\deg}\left(\frac{180}{\pi}\right).
           \]
           <p>
-            Units: $J_{\deg}$ in mm/deg and $J_{\mathrm{rad}}$ in mm/rad.
+            Hence, $J_{\deg}$ is in mm/deg and $J_{\mathrm{rad}}$ is in mm/rad.
           </p>
 
-          <h3 class="subsection-title">Velocity and Acceleration Kinematics</h3>
+          <h3 class="subsection-title">4. Velocity and Acceleration Mapping</h3>
           <p>
-            For joint-rate vector $\dot{\mathbf{q}}=[\dot{\phi}_1,\dot{\phi}_2]^\top$:
+            Velocity kinematics:
           </p>
           \[
           \dot{\mathbf{G}}=J_{\mathrm{rad}}(\mathbf{q})\,\dot{\mathbf{q}}.
           \]
           <p>
-            The MATLAB verification computes a finite-difference velocity:
+            The code verifies this numerically by finite-difference velocity:
           </p>
           \[
           \dot{\mathbf{G}}_{\mathrm{FD}}
@@ -581,7 +696,7 @@
           \frac{\mathbf{G}(t+\Delta t)-\mathbf{G}(t)}{\Delta t}.
           \]
           <p>
-            Acceleration follows the standard differential kinematics relation:
+            Acceleration kinematics:
           </p>
           \[
           \ddot{\mathbf{G}}
@@ -591,7 +706,7 @@
           \dot{J}_{\mathrm{rad}}(\mathbf{q},\dot{\mathbf{q}})\,\dot{\mathbf{q}}.
           \]
           <p>
-            A numerical acceleration estimate consistent with FK finite differences is
+            A corresponding finite-difference estimate is
           </p>
           \[
           \ddot{\mathbf{G}}_{\mathrm{FD}}
@@ -599,43 +714,86 @@
           \frac{\mathbf{G}(t+\Delta t)-2\mathbf{G}(t)+\mathbf{G}(t-\Delta t)}{\Delta t^2}.
           \]
 
-          <h3 class="subsection-title">Torque-Force Mapping (Virtual Work)</h3>
+          <h3 class="subsection-title">5. Jacobian Transpose Torque Mapping</h3>
           <p>
-            Using end-effector force $\mathbf{F}=[F_x,F_y]^\top$ in the same global frame:
+            For end-point force $\mathbf{F}=[F_x,F_y]^\top$ (same global frame as FK), the required joint torques are:
           </p>
           \[
           \boldsymbol{\tau}
           =
-          J_{\mathrm{rad}}^\top(\mathbf{q})\,\mathbf{F},
-          \]
-          where
-          \[
-          \boldsymbol{\tau}=
-          \begin{bmatrix}\tau_1\\\tau_2\end{bmatrix}
-          \quad\text{(N$\cdot$mm in the current implementation)}.
+          J_{\mathrm{rad}}^\top(\mathbf{q})\,\mathbf{F}.
           \]
           <p>
-            Conversion to SI motor torque is
+            This follows from power/virtual-work consistency:
+          </p>
+          \[
+          \boldsymbol{\tau}^\top\dot{\mathbf{q}}
+          =
+          \mathbf{F}^\top\dot{\mathbf{G}}
+          =
+          \mathbf{F}^\top J\dot{\mathbf{q}}
+          \;\Rightarrow\;
+          \boldsymbol{\tau}=J^\top\mathbf{F}.
+          \]
+          <p>
+            In the current script, torque is obtained in N$\cdot$mm and converted by:
             \[
             \boldsymbol{\tau}_{\mathrm{N\cdot m}}=\frac{\boldsymbol{\tau}_{\mathrm{N\cdot mm}}}{1000}.
             \]
           </p>
 
-          <h3 class="subsection-title">Manipulability and Singular Behaviour</h3>
+          <h3 class="subsection-title">6. Interpretation of Force-Direction Sweep in Code</h3>
           <p>
-            The velocity ellipse in code uses
+            The script sweeps unit-force direction
+            $\theta_F\in[-180^\circ,180^\circ]$:
+          </p>
+          \[
+          F_x=\cos\theta_F,\qquad F_y=\sin\theta_F,\qquad \|\mathbf{F}\|_2=1,
+          \]
+          \[
+          \boldsymbol{\tau}(\theta_F)=J^\top\mathbf{F}(\theta_F).
+          \]
+          <p>
+            It then plots $\|\boldsymbol{\tau}\|$, $|\tau_1|$, and $|\tau_2|$ versus force direction.
+            Peaks indicate poor mechanical leverage directions requiring large motor torque.
+          </p>
+
+          <h3 class="subsection-title">7. Singularity and Manipulability</h3>
+          <p>
+            The velocity ellipse is generated by
             \[
-            \dot{\mathbf{G}}=J_{\mathrm{rad}}\dot{\mathbf{q}},\quad \|\dot{\mathbf{q}}\|_2=1.
+            \dot{\mathbf{G}}=J_{\mathrm{rad}}\dot{\mathbf{q}},\qquad \|\dot{\mathbf{q}}\|_2=1.
             \]
-            A scalar manipulability indicator is
+            A scalar indicator used in the script is
             \[
             w=\left|\det\!\left(J_{\mathrm{rad}}\right)\right|.
             \]
-            Small $w$ indicates reduced directional mobility and typically larger required joint torques for certain force directions.
+            Small $w$ corresponds to near-singular behavior: motion capability collapses in one direction and
+            torque demand spikes for certain Cartesian force directions.
+          </p>
+
+          <h3 class="subsection-title">8. Control Relevance</h3>
+          <p>
+            In virtual-model or force-based control, a desired Cartesian force
+            $\mathbf{F}_{\mathrm{des}}$ is first generated from task objectives
+            (e.g., support, compliance, or disturbance rejection), then mapped to actuator commands by
+            \[
+            \boldsymbol{\tau}_{\mathrm{des}}=J^\top\mathbf{F}_{\mathrm{des}}.
+            \]
+            Thus, Jacobian transpose mapping is the key bridge between endpoint force objectives and motor torque actuation.
           </p>
         </div>
       </details>
     </section>
+  </div>
+  <div id="code-modal" class="code-modal" aria-hidden="true">
+    <div class="code-modal-box">
+      <div class="code-modal-head">
+        <div id="code-modal-title" class="code-modal-title">MATLAB File</div>
+        <button id="code-close-btn" class="code-close-btn" type="button">Close</button>
+      </div>
+      <pre><code id="code-modal-content" class="language-matlab">Loading...</code></pre>
+    </div>
   </div>
   <script>
   (function () {
@@ -661,10 +819,58 @@
           if (tab.open) typesetMath(tab);
         });
       });
+
+      const modal = document.getElementById("code-modal");
+      const modalTitle = document.getElementById("code-modal-title");
+      const modalContent = document.getElementById("code-modal-content");
+      const closeBtn = document.getElementById("code-close-btn");
+      const links = document.querySelectorAll(".matlab-link[data-file]");
+
+      async function openCode(fileName) {
+        modal.classList.add("open");
+        modal.setAttribute("aria-hidden", "false");
+        modalTitle.textContent = fileName;
+        modalContent.textContent = "Loading...";
+        try {
+          const candidates = ["MatLab_Files/" + fileName, "Second_Half/MatLab_Files/" + fileName];
+          let loaded = false;
+          for (const url of candidates) {
+            const resp = await fetch(url);
+            if (resp.ok) {
+              modalContent.textContent = await resp.text();
+              if (window.Prism && typeof window.Prism.highlightElement === "function") {
+                window.Prism.highlightElement(modalContent);
+              }
+              loaded = true;
+              break;
+            }
+          }
+          if (!loaded) throw new Error("File not found in MatLab_Files");
+        } catch (err) {
+          modalContent.textContent = "Failed to load " + fileName + "\\n" + err;
+        }
+      }
+
+      function closeCode() {
+        modal.classList.remove("open");
+        modal.setAttribute("aria-hidden", "true");
+      }
+
+      links.forEach((a) => {
+        a.addEventListener("click", (e) => {
+          e.preventDefault();
+          openCode(a.getAttribute("data-file"));
+        });
+      });
+
+      closeBtn.addEventListener("click", closeCode);
+      modal.addEventListener("click", (e) => {
+        if (e.target === modal) closeCode();
+      });
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") closeCode();
+      });
     })();
   </script>
 </body>
 </html>
-
-
-
