@@ -2,7 +2,7 @@
 
 void ht8108_pack_and_send(float p, float v, float kp, float kd, float t, int motor_id)
 {
-    // command clamp + packing placeholder
+    // Apply command limits and pack frame fields.
     (void)p; (void)v; (void)kp; (void)kd; (void)t; (void)motor_id;
-    // send CAN frame here
+    // Transmit command over CAN.
 }

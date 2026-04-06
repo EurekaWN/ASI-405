@@ -9,7 +9,7 @@ typedef struct {
     float v_right_mps;
 } live_expr_t;
 
-// Example per-joint sign map for mirrored assembly
+// Per-joint sign map for mirrored assembly.
 static const int8_t joint_sign[4] = { +1, +1, -1, -1 };
 static float joint_offset_deg[4] = { 12.40f, -8.15f, 11.90f, -7.80f };
 
@@ -35,7 +35,7 @@ void sign_alignment_live_check(const live_expr_t *x)
     float phi_model = phi_model_from_fw(x->pitch_fw_deg);
     float dphi_model = dphi_model_from_fw(x->gyro_y_dps);
 
-    // Example: corrected average forward speed channel
+    // Corrected average forward-speed channel.
     float xdot_model = 0.5f * (x->v_left_mps + x->v_right_mps);
 
     printf("[LiveExpr] pitch_fw=%.3f deg -> phi_model=%.3f deg\n", x->pitch_fw_deg, phi_model);

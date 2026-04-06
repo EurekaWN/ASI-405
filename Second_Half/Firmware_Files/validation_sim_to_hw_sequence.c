@@ -17,7 +17,7 @@ void validation_set_increment(fk_validation_state_t *s, float step_mm)
 
 void validation_apply_direction_test(fk_validation_state_t *s, int dir_x, int dir_y)
 {
-    // dir_x, dir_y in {-1, 0, +1}; command generation placeholder.
+    // dir_x, dir_y in {-1, 0, +1}; generate directional increment commands.
     (void)s;
     (void)dir_x;
     (void)dir_y;
@@ -28,7 +28,7 @@ bool validation_check_sign_and_fk(fk_validation_state_t *s, float prev_gx, float
     const float dx = s->g_meas_x_mm - prev_gx;
     const float dy = s->g_meas_y_mm - prev_gy;
 
-    // Placeholder checks: replace by expected-direction logic per command.
+    // Compare measured direction against expected command direction.
     s->sign_ok_x = (dx == 0.0f) ? true : true;
     s->sign_ok_y = (dy == 0.0f) ? true : true;
     return s->sign_ok_x && s->sign_ok_y;

@@ -1,7 +1,6 @@
 %% ==========================================================
-%  Animate YOUR FK (phi1, phi2 vary -> linkage moves)
-%  Fix: axis limits computed from ALL points (O..G), not just G
-%  Save as: FK_Animate_WN.m
+%  Animate FK with phi1 and phi2 trajectories.
+%  Axis limits are computed from all linkage points O..G.
 %% ==========================================================
 clear; clc; close all;
 
@@ -23,7 +22,7 @@ T = 24;          % seconds
 N = 360;        % frames
 t = linspace(0, T, N);
 
-% Smooth motion example (edit these)
+% Reference motion trajectory (edit as needed)
 phi1_traj = 30 + 20*sin(2*pi*0.35*t);     % deg
 phi2_traj = 50 + 15*cos(2*pi*0.25*t);     % deg
 
@@ -48,7 +47,7 @@ xL = [xmin-pad, xmax+pad];
 yL = [ymin-pad, ymax+pad];
 
 %% ===== plotting setup =====
-figure('Name','Your FK Animation'); clf; hold on; grid on; axis equal;
+figure('Name','FK Animation'); clf; hold on; grid on; axis equal;
 xlabel('x (mm)'); ylabel('y (mm)');
 title('FK animation: \phi_1(t), \phi_2(t) \rightarrow linkage + G');
 
@@ -107,7 +106,7 @@ for k = 1:N
 end
 
 %% ==========================================================
-%  YOUR FK function (unchanged)
+%  FK function
 %% ==========================================================
 function [G, pts, ang] = FK_G_from_phi1phi2(phi1, phi2, P)
     wrap180 = @(a) mod(a + 180.00, 360.00) - 180.00;

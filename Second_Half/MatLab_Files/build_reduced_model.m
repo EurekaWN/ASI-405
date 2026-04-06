@@ -1,6 +1,6 @@
 clear; clc;
 
-%% ===== nominal parameters (replace with your values) =====
+%% ===== nominal parameters =====
 p = struct();
 
 p.g  = 9.81;        % gravity
@@ -48,11 +48,8 @@ fprintf('  Off-ground FF per leg   : %.4f N\n', ff.force_per_leg_air_N);
 fprintf('\n');
 
 %% ===== symbolic linearization =====
-% IMPORTANT:
-% reduced_dynamics_symbolic.m must contain the actual reduced equations
-% derived from your wheel-leg model around the nominal stance.
-% The current version is only a compact placeholder structure and should be
-% replaced by equations obtained from the full model / symbolic derivation.
+% reduced_dynamics_symbolic.m defines the reduced-order equations used for
+% linearization around the nominal stance.
 syms theta dtheta x dx phi dphi T Tp real
 
 xs = [theta; dtheta; x; dx; phi; dphi];
@@ -81,11 +78,11 @@ disp(A);
 disp('B = ');
 disp(B);
 
-%% ===== quick controllability check =====
+%% ===== controllability check =====
 Co = ctrb(A,B);
 fprintf('rank(ctrb) = %d\n', rank(Co));
 
-%% ===== example LQR =====
+%% ===== LQR design =====
 Q = diag([100, 10, 5, 5, 300, 20]);
 R = diag([1, 1]);
 

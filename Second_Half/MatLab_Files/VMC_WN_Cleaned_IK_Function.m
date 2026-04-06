@@ -1,10 +1,6 @@
 %% ==========================================================
-%  One-file Inverse Kinematics demo (uses YOUR FK equations)
-%  - Put this entire file as: IK_FK_OneFile.m
-%  - Press Run
-%
-%  Requires: Optimization Toolbox (lsqnonlin).
-%  If you don't have it, tell me and I'll swap to fminsearch.
+%  One-file inverse kinematics script using project FK equations.
+%  Requires Optimization Toolbox (lsqnonlin).
 %% ==========================================================
 clear; clc; close all;
 
@@ -24,7 +20,7 @@ P.k163 = 163.51;  % deg
 %% ===== Target G (edit this) =====
 G_des = [41.56; -292.4];   % [Gx; Gy]
 
-%% ===== Joint limits (edit to your real limits) =====
+%% ===== Joint limits (deg) =====
 bounds.lb = [0; 0];         % [phi1_min; phi2_min] deg
 bounds.ub = [140; 140];     % [phi1_max; phi2_max] deg
 
@@ -69,7 +65,7 @@ xlabel('x (mm)'); ylabel('y (mm)');
 title('Solved IK configuration (blue) and desired G (red x)');
 
 %% ==========================================================
-%  LOCAL FUNCTIONS (everything in this one file)
+%  Local functions
 %% ==========================================================
 
 function [phi_sol, info] = IK_phi1phi2_from_G(G_des, P, phi_init, bounds)
@@ -129,7 +125,7 @@ function [best_phi, best_info] = IK_multistart(G_des, P, bounds)
                     best_info = info;
                 end
             catch
-                % ignore failures
+                % Skip failed initializations and continue searching.
             end
         end
     end
@@ -137,7 +133,7 @@ end
 
 function [G, pts] = FK_only(phi1, phi2, P)
 
-  %Forward kinematics equations packaged as a function
+    % Forward-kinematics equations packaged as a function.
     wrap180 = @(a) mod(a + 180.00, 360.00) - 180.00;
 
     phi1 = wrap180(phi1);

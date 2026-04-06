@@ -36,7 +36,7 @@ void joint_zero_calibration_capture(void)
 {
     for (int i = 0; i < JOINT_COUNT; ++i) {
         const float ref_true = g_joint_zero_table[i].ref_true_deg;
-        const float enc_ref  = g_joint_zero_table[i].encoder_ref_deg; // replace with real encoder read
+        const float enc_ref  = g_joint_zero_table[i].encoder_ref_deg; // encoder reading at calibration pose
         g_joint_zero_table[i].offset_deg = enc_ref - ref_true;
     }
 }

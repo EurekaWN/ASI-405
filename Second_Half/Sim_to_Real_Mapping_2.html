@@ -391,22 +391,20 @@
         }
       </style>
       <p>
-        This section demonstrates how the theoretical system is translated into the real mechanical robot. Multiple stages of calibration and tuning are required to ensure the robot behaves as intended, while safety features are implemented to prevent potential incidents. A step-by-step calibration process is presented in this section, with the ultimate goal of ensuring that the real-world robot is accurately represented in software so that its commanded behavior can be executed reliably.
+          This section explains how the model is mapped to the real robot. Calibration and tuning are done in stages so the robot responds as expected, while safety functions are kept active throughout setup. The process is documented step by step so software states and hardware motion stay aligned.
       </p>
 
       <details class="expand-box">
-        <summary><strong>Startup calibration procedure</strong></summary>
+        <summary><strong>5.1 Startup calibration procedure</strong></summary>
         <div class="tab-body">
           <p>
-            Startup calibration is implemented as a gated state machine to establish a deterministic and safe initial condition
-            before any hold-mode or balancing controller is enabled. It is also required to accommodate the single-encoder
-            actuation setup, where absolute joint position is not directly observable at power-on; therefore, a mechanical jig
-            reference is used so the motor can identify and register its initial position correctly.
+            Startup calibration runs in a fixed gate sequence to set a safe initial state before hold mode or balancing is enabled.
+            Because the system uses single-encoder actuation, the absolute joint position is unknown at power-on. A mechanical jig
+            reference is used so each motor can register its initial joint position correctly.
           </p>
           <p>
-            Preconditions: the robot is mechanically supported in startup posture (or jig condition), emergency-stop (over tilt E-Stop and E-Stop coded onto controller)
-            and power
-            rails are healthy, and CAN motor communication is online.
+            Preconditions: the robot is mechanically supported in startup posture (jig condition), emergency-stop paths are active
+            (hardware and controller), power rails are healthy, and CAN motor communication is online.
           </p>
           <p><strong>Startup sequence</strong></p>
           <div class="offset-table-wrap">
@@ -434,7 +432,7 @@
                 </tr>
                 <tr>
                   <td>3</td>
-                  <td>Verify encoder channels are online, fresh, and within plausibility bounds.</td>
+                  <td>Verify encoder channels are online, updating, and within the expected range.</td>
                   <td>Prevents FK/IK/state estimation from using stale or corrupted encoder data.</td>
                   <td><a class="firmware-link" data-file="encoder_startup_check.c">encoder_startup_check.c</a></td>
                 </tr>
@@ -470,7 +468,7 @@
       </details>
 
       <details class="expand-box">
-        <summary><strong>Gear ratio and chain ratio conversion</strong></summary>
+        <summary><strong>5.2 Gear ratio and chain ratio conversion</strong></summary>
         <div class="tab-body">
           <img
             src="images_2/Gear_Ratio.jpg"
@@ -478,14 +476,14 @@
             style="width: 100%; max-width: 760px; height: auto; display: block; margin: 6px auto 12px auto; border-radius: 8px;">
           <p>
             The leg mechanism is designed with mechanical advantage through the chain transmission linking the motor output
-            to the central cascaded sprocket that drives leg-joint angles \(\phi_1\) and \(\phi_2\). Therefore, motor encoder
+            to the central cascaded sprocket that drives leg-joint angles \(\phi_1\) and \(\phi_2\). So, motor encoder
             variation cannot be used directly as joint-angle variation. A conversion model must include both:
             motor internal gearbox ratio and external chain/sprocket ratio.
           </p>
           <p>
             Let \(N_g\) denote the motor gearbox ratio (motor-rotor turns per gearbox-output turn), and let
             \(N_c\) denote the chain ratio (driver sprocket teeth divided by driven sprocket teeth).
-            The equivalent kinematic conversion from motor-rotor angle to joint angle is:
+            The angle conversion from motor rotor to joint angle is:
             \[
             \theta_{\mathrm{joint}} = s\cdot\frac{\theta_{\mathrm{motor}}}{N_g}\cdot N_c + \theta_0,
             \]
@@ -504,7 +502,7 @@
           <p>
             Using the documented transmission values:
             \(N_g=6\) (motor internal reduction \(1{:}6\)) and
-            chain stage ratio \(115/75\) as torque step-up, hence
+            chain stage ratio \(115/75\) as torque step-up, so
             \(N_c = 75/115\) in the speed-conversion equation (driver/driven).
           </p>
           <p>
@@ -514,7 +512,7 @@
             = \frac{75/115}{6}
             = 0.1086957.
             \]
-            Therefore, for one motor revolution:
+            For one motor revolution:
             \[
             \Delta\theta_{\mathrm{joint}}
             = 360^\circ \times 0.1086957
@@ -545,7 +543,7 @@
       </details>
 
       <details class="expand-box">
-        <summary><strong>Runtime offset calculation for joint zero positions</strong></summary>
+        <summary><strong>5.3 Runtime offset calculation for joint zero positions</strong></summary>
         <div class="tab-body">
           <p>
             Runtime offset calibration is implemented to align encoder-reported joint angles with the mechanical zero
@@ -614,13 +612,13 @@
             </table>
           </div>
           <p>
-            Table values should be updated using the most recent calibration session and version-controlled prior to deployment.
+            Table values should be updated from the latest calibration session and saved with the current firmware revision before hardware testing.
           </p>
         </div>
       </details>
 
       <section class="plain-block">
-        <h3>Jig-based zero capture / hold pose initialization</h3>
+        <h3>5.4 Jig-based zero capture / hold pose initialization</h3>
         <video
           src="videos_2/calibration%20video.mp4"
           playsinline
@@ -629,27 +627,26 @@
           style="width: 100%; max-width: 760px; display: block; margin: 6px auto 12px auto; border-radius: 8px; background: #000;">
         </video>
         <p>
-          This section demonstrates the initial calibration process, followed by the transition of the motors into a “leg length” hold state.
+          This section presents the initial calibration process, followed by transition of the motors into a “leg length” hold state.
           Once this state is established, the robot can then proceed into the LQR balancing sequence.
         </p>
       </section>
 
       <details class="expand-box">
-        <summary><strong>Coordinate/sign convention alignment between hardware and software</strong></summary>
+        <summary><strong>5.5 Coordinate/sign convention alignment between hardware and software</strong></summary>
         <div class="tab-body">
           <p>
-            Coordinate and sign-convention alignment was executed as a dedicated integration task to ensure that model equations,
-            exported gains, runtime sensor signs, and actuator directions were mathematically consistent. The critical mismatch
-            identified during integration was the body-pitch sign definition between model and firmware.
+            Coordinate and sign alignment was done during integration so model equations, gain signs, sensor signs, and actuator directions stayed consistent.
+            The main mismatch found was the body-pitch sign definition between model and firmware.
           </p>
           <p>
-            In the reduced model pipeline, forward body tilt is defined as \(+\phi\). In firmware, forward tilt is represented as
-            negative pitch. Therefore, the exported LQR gain matrix requires a sign conversion on the pitch states:
+            In the reduced model, forward body tilt is defined as \(+\phi\). In firmware, forward tilt appears as negative pitch.
+            So the exported LQR gain matrix requires a sign conversion on the pitch states:
             \[
             K_{\mathrm{firmware}}(:,5:6) = -K_{\mathrm{model}}(:,5:6).
             \]
-            This correction was applied before deployment so that
-            \(\mathbf{u}=-K\mathbf{x}_{err}\) preserves the intended restoring direction in runtime.
+            This correction is applied before hardware testing so that
+            \(\mathbf{u}=-K\mathbf{x}_{err}\) keeps the restoring direction correct during control.
           </p>
           <p>
             Firmware implementation reference:
@@ -715,7 +712,7 @@
       </details>
 
       <section class="plain-block">
-        <h3>Validation process from simulation to test</h3>
+        <h3>5.6 Validation process from simulation to test</h3>
         <video
           src="videos_2/FK_Validation_real.mp4"
           autoplay
@@ -727,8 +724,8 @@
         </video>
         <p>
           This section presents the validation flow from simulation to hardware.
-          The validation is carried out in stages so commissioning risk is reduced and any model-controller mismatch can be identified early, before full deployment.
-          In this demonstrated sequence, manual disturbances are applied (up/down and left/right) while verifying that the controller mapping responds correctly
+          The validation is carried out in stages to reduce setup risk and catch model-controller mismatch early, before full hardware testing.
+          In this sequence, manual disturbances are applied (up/down and left/right) while checking that the controller mapping responds correctly
           for both positive and negative command increments.
           The motors are commanded to shift the wheel-center of the leg assembly, i.e., the forward-kinematics point \(\mathbf{G}\),
           in discrete steps of \(20\,\mathrm{mm}\) per increment.

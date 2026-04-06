@@ -242,7 +242,7 @@
 <section class="fk-tab-scope" id="sec-forward-kinematics-tab">
   <div class="report-wrapper">
     <section class="section-card">
-      <h2 class="page-intro-title">Kinematic Modelling Overview</h2>
+      <h2 class="page-intro-title">4.1 Kinematic Modelling Overview</h2>
       <video class="intro-video" controls autoplay muted playsinline loop preload="metadata">
         <source src="videos_2/FK_Validation_video.mp4" type="video/mp4">
         Your browser does not support the video tag.
@@ -254,7 +254,7 @@
       </p>
 
       <details class="expand-box" id="fk-tab" data-keep-open="true" open>
-        <summary><strong>Forward Kinematics</strong></summary>
+        <summary><strong>4.1.1 Forward Kinematics</strong></summary>
         <div class="expand-body">
           <p>
             This section presents the MatLab Version of Forward Kinematics which will later be integrated into the firmware.
@@ -280,7 +280,7 @@
             while symbols of the form $\theta$ denote relative inter-link or inter-joint angles.
           </p>
 
-          <h3 class="subsection-title">Angle Wrapping and Inputs</h3>
+          <h3 class="subsection-title">4.1.1.1 Angle Wrapping and Inputs</h3>
           <p>To ensure angular consistency, all angles are wrapped to $(-180^\circ, 180^\circ]$:</p>
           \[
           \mathcal{W}(\alpha) = \operatorname{mod}(\alpha + 180,\, 360) - 180.
@@ -294,7 +294,7 @@
             <code>sind</code>, <code>cosd</code>, and <code>asind</code>.
           </p>
 
-          <h3 class="subsection-title">Intermediate Geometric Angles</h3>
+          <h3 class="subsection-title">4.1.1.2 Intermediate Geometric Angles</h3>
           \[
           a_1 = \mathcal{W}\!\left(\frac{\phi_1 + \phi_2}{2}\right), \qquad
           a_3 = \mathcal{W}\!\left(\frac{180 - (\phi_1 + \phi_2)}{2}\right).
@@ -313,7 +313,7 @@
           a_6 = \mathcal{W}(a_5 - \phi_1).
           \]
 
-          <h3 class="subsection-title">Point-Wise Forward Kinematic Chain</h3>
+          <h3 class="subsection-title">4.1.1.3 Point-Wise Forward Kinematic Chain</h3>
           \[
           \mathbf{O} =
           \begin{bmatrix}
@@ -360,7 +360,7 @@
           \end{bmatrix}.
           \]
 
-          <h3 class="subsection-title">Output Orientation and End-Point</h3>
+          <h3 class="subsection-title">4.1.1.4 Output Orientation and End-Point</h3>
           \[
           \phi_5 =
           \mathcal{W}\!\Big(
@@ -378,7 +378,7 @@
           \end{bmatrix}.
           \]
           <p>
-            Therefore, the forward kinematic map is
+            So, the forward kinematic map is
             \[
             (\phi_1,\phi_2)\mapsto \mathbf{G}(\phi_1,\phi_2),
             \]
@@ -390,7 +390,7 @@
       </details>
 
       <details class="expand-box" id="ik-tab">
-        <summary><strong>Inverse Kinematics</strong></summary>
+        <summary><strong>4.1.2 Inverse Kinematics</strong></summary>
         <div class="expand-body">
           <p>
             The inverse-kinematic module solves for the input angles
@@ -401,7 +401,7 @@
             <a href="#" class="matlab-link" data-file="VMC_WN_Cleaned_IK_Function.m">VMC_WN_Cleaned_IK_Function.m</a>.
           </p>
 
-          <h3 class="subsection-title">State, Target, and Constraints</h3>
+          <h3 class="subsection-title">4.1.2.1 State, Target, and Constraints</h3>
           <p>
             The optimization variable is the joint-angle vector
           </p>
@@ -434,7 +434,7 @@
             \]
           </p>
 
-          <h3 class="subsection-title">Problem Formulation</h3>
+          <h3 class="subsection-title">4.1.2.2 Problem Formulation</h3>
           <p>
             Define the residual vector using the forward map:
           </p>
@@ -468,7 +468,7 @@
             This objective directly minimizes Cartesian end-point mismatch in millimeters.
           </p>
 
-          <h3 class="subsection-title">Numerical Solver Used in Code</h3>
+          <h3 class="subsection-title">4.1.2.3 Numerical Solver Used in Code</h3>
           <p>
             In MATLAB, the solution is obtained via
             <code>lsqnonlin</code>:
@@ -485,7 +485,7 @@
           \right).
           \]
           <p>
-            The initial guess is first clamped into feasible bounds:
+            The initial guess is first limited to the allowed range:
           </p>
           \[
           \boldsymbol{\phi}_0 \leftarrow
@@ -519,7 +519,7 @@
             \]
           </p>
 
-          <h3 class="subsection-title">Multi-Start Robustification</h3>
+          <h3 class="subsection-title">4.1.2.4 Multi-Start Search</h3>
           <p>
             A grid of initial guesses
             $\boldsymbol{\phi}_0^{(m,n)}=[\phi_{1,m},\phi_{2,n}]^\top$
@@ -539,21 +539,21 @@
             $7\times7=49$ starting pairs. The candidate with minimum terminal task-space error is retained.
           </p>
           <p>
-            This strategy improves reliability against local minima and sensitivity to a single poor initialization.
+            This strategy improves stability against local minima and reduces sensitivity to one poor initial guess.
           </p>
 
-          <h3 class="subsection-title">Practical Interpretation</h3>
+          <h3 class="subsection-title">4.1.2.5 Practical Interpretation</h3>
           <p>
             The IK routine enforces physically admissible joint ranges while solving directly in Cartesian space.
             Because the mechanism is nonlinear, multiple joint configurations may produce nearby end-point locations.
-            The bounded least-squares + multi-start structure provides a numerically robust and implementation-ready
-            inverse map for downstream control and firmware integration.
+            The bounded least-squares + multi-start structure provides a stable and implementation-ready
+            inverse map for later control and firmware integration.
           </p>
         </div>
       </details>
 
       <details class="expand-box" id="jacobian-tab">
-        <summary><strong>Jacobian Torque Mapping</strong></summary>
+        <summary><strong>4.1.3 Jacobian Torque Mapping</strong></summary>
         <div class="expand-body">
           <p>
             This section explains the Jacobian-based kinematic and force transmission framework implemented in
@@ -567,7 +567,7 @@
             \]
           </p>
 
-          <h3 class="subsection-title">1. Role of the Jacobian</h3>
+          <h3 class="subsection-title">4.1.3.1 Role of the Jacobian</h3>
           <p>
             The instantaneous velocity relation is
             \[
@@ -579,11 +579,11 @@
             \qquad
             \mathbf{q}=\begin{bmatrix}\phi_1\\\phi_2\end{bmatrix}.
             \]
-            Therefore, joint angular velocities map directly to end-point linear velocity.
+            So joint angular velocities map directly to end-point linear velocity.
             Physically, the Jacobian is the local transmission operator between actuator space and Cartesian space.
           </p>
 
-          <h3 class="subsection-title">2. Physical Meaning of the Matrix Columns</h3>
+          <h3 class="subsection-title">4.1.3.2 Physical Meaning of the Matrix Columns</h3>
           <p>
             For the 2D, 2-DOF system:
           </p>
@@ -600,7 +600,7 @@
             This is exactly how the code visualizes Jacobian vectors at point $G$.
           </p>
 
-          <h3 class="subsection-title">3. Numerical Jacobian Used in MATLAB</h3>
+          <h3 class="subsection-title">4.1.3.3 Numerical Jacobian Used in MATLAB</h3>
           <p>
             The implementation computes $J$ numerically via central differences in degrees
             with step $h=10^{-3}$:
@@ -621,10 +621,10 @@
           J_{\mathrm{rad}}=J_{\deg}\left(\frac{180}{\pi}\right).
           \]
           <p>
-            Hence, $J_{\deg}$ is in mm/deg and $J_{\mathrm{rad}}$ is in mm/rad.
+            So $J_{\deg}$ is in mm/deg and $J_{\mathrm{rad}}$ is in mm/rad.
           </p>
 
-          <h3 class="subsection-title">4. Velocity and Acceleration Mapping</h3>
+          <h3 class="subsection-title">4.1.3.4 Velocity and Acceleration Mapping</h3>
           <p>
             Velocity kinematics:
           </p>
@@ -658,7 +658,7 @@
           \frac{\mathbf{G}(t+\Delta t)-2\mathbf{G}(t)+\mathbf{G}(t-\Delta t)}{\Delta t^2}.
           \]
 
-          <h3 class="subsection-title">5. Jacobian Transpose Torque Mapping</h3>
+          <h3 class="subsection-title">4.1.3.5 Jacobian Transpose Torque Mapping</h3>
           <p>
             For end-point force $\mathbf{F}=[F_x,F_y]^\top$ (same global frame as FK), the required joint torques are:
           </p>
@@ -686,7 +686,7 @@
             \]
           </p>
 
-          <h3 class="subsection-title">6. Interpretation of Force-Direction Sweep in Code</h3>
+          <h3 class="subsection-title">4.1.3.6 Interpretation of Force-Direction Sweep in Code</h3>
           <p>
             The script sweeps unit-force direction
             $\theta_F\in[-180^\circ,180^\circ]$:
@@ -702,7 +702,7 @@
             Peaks indicate poor mechanical leverage directions requiring large motor torque.
           </p>
 
-          <h3 class="subsection-title">7. Singularity and Manipulability</h3>
+          <h3 class="subsection-title">4.1.3.7 Singularity and Manipulability</h3>
           <p>
             The velocity ellipse is generated by
             \[
@@ -716,7 +716,7 @@
             torque demand spikes for certain Cartesian force directions.
           </p>
 
-          <h3 class="subsection-title">8. Control Relevance</h3>
+          <h3 class="subsection-title">4.1.3.8 Control Relevance</h3>
           <p>
             In virtual-model or force-based control, a desired Cartesian force
             $\mathbf{F}_{\mathrm{des}}$ is first generated from task objectives

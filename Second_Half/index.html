@@ -629,6 +629,21 @@ p.sub {
       padding: 0 12px !important;
     }
 
+    /* Normalize standalone-included pages so headings align with other sections */
+    [include-html] > .report-wrapper {
+      max-width: none !important;
+      margin: 0 !important;
+      padding: 0 !important;
+    }
+
+    [include-html] > .report-wrapper > .section-card {
+      background: transparent !important;
+      border-radius: 0 !important;
+      box-shadow: none !important;
+      margin: 0 !important;
+      padding: 0 !important;
+    }
+
     [include-html] {
       background: rgba(255, 255, 255, 0.92);
       border-radius: 10px;
@@ -693,6 +708,20 @@ p.sub {
     }
 
     /* Title sizes */
+    .page-title {
+      font-size: 20pt;
+      font-weight: bold;
+      margin-top: 18px;
+      margin-bottom: 12px;
+    }
+
+    .report-wrapper .page-title,
+    .report-wrapper .section-title {
+      text-align: left !important;
+      margin-left: 0 !important;
+      padding-left: 0 !important;
+    }
+
     .section-title    { font-size: 20pt; font-weight: bold; }
     .subsection-title { font-size: 16pt; font-weight: bold; }
     .subsubsection-title { font-size: 14pt; font-weight: bold; font-style: normal; }
@@ -976,6 +1005,57 @@ p.sub {
       color: #0b3d91;
     }
 
+    #sec-7-firmware-system-architecture .firmware-link {
+      color: #0b3d91;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+      text-decoration-thickness: 1.5px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    #sec-7-firmware-system-architecture .firmware-link:visited,
+    #sec-7-firmware-system-architecture .firmware-link:hover,
+    #sec-7-firmware-system-architecture .firmware-link:active,
+    #sec-7-firmware-system-architecture .firmware-link:focus {
+      color: #0b3d91;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+      text-decoration-thickness: 1.5px;
+    }
+
+    #sec-7-firmware-system-architecture .table-wrap {
+      overflow-x: auto;
+      margin-top: 8px;
+    }
+
+    #sec-7-firmware-system-architecture .table-caption {
+      margin: 8px 0 6px 0;
+      text-align: center;
+      font-size: 10.5pt;
+    }
+
+    #sec-7-firmware-system-architecture table.report-table {
+      width: 100%;
+      min-width: 760px;
+      border-collapse: collapse;
+      background: #fff;
+      border: 2px solid #1f1f1f;
+    }
+
+    #sec-7-firmware-system-architecture .report-table th,
+    #sec-7-firmware-system-architecture .report-table td {
+      border: 1px solid #1f1f1f;
+      padding: 8px 10px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    #sec-7-firmware-system-architecture .report-table th {
+      background: #eef2ff;
+      font-weight: 700;
+    }
+
     #sec-3-mechanical-design-final-iteration .code-modal {
       position: fixed;
       inset: 0;
@@ -1147,9 +1227,11 @@ p.sub {
     <div include-html="Sim_to_Real_Mapping_2.html"></div>
     <div include-html="LQR_Balancing_Control_2.html"></div>
     <div include-html="Firmware_System_Architecture_2.html"></div>
-    <div include-html="8. Moving Forward_2.html"></div>
-    <div include-html="9. Conclusion_2.html"></div>
-    <div include-html="References_2.html"></div>
+    <div include-html="8. Major Problem Encountered and Testing_2.html"></div>
+    <div include-html="9. Project Value and Moving Forward_2.html"></div>
+    <div include-html="10. Conclusion_2.html"></div>
+    <div include-html="11. List of Figures, Tables and Videos_2.html"></div>
+    <div include-html="12. References_2.html"></div>
 
   </div>
 

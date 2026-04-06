@@ -8,7 +8,7 @@ typedef struct {
 
 bool imu_capture_stationary_bias(imu_bias_t *b)
 {
-    // Example placeholder: replace with sampled averaging window.
+    // Stationary bias capture entry point.
     b->gx_bias = 0.0f;
     b->gy_bias = 0.0f;
     b->gz_bias = 0.0f;

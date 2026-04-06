@@ -1,11 +1,11 @@
 %% ==========================================================
-% Jacobian + Torque mapping from YOUR FK
+% Jacobian + torque mapping from FK
 % - Compute J(q) numerically from FK_G_from_phi1phi2
 % - Use tau = J^T * F (virtual work)
 % - Includes a Jacobian verification test
 %
 % Units:
-% - FK outputs G in mm (your lengths are mm)
+% - FK outputs G in mm
 % - Force F in N
 % - tau result in N*mm (convert to N*m by /1000)
 %% ==========================================================
@@ -29,9 +29,9 @@ phi1 = 62.43;
 phi2 = 53.22;
 
 %% ===== End-effector force at point G (N) =====
-% Make sure Fx,Fy is in the SAME x-y frame as your FK.
+% Use Fx,Fy in the same coordinate frame as FK.
 Fx = 0;
-Fy = 100;  % example: upward/downward depends on your y convention
+Fy = 100;  % sign follows the chosen y-axis convention
 
 %% ===== Compute Jacobian and torque =====
 [Jdeg, Jrad] = jacobian_numeric_deg(phi1, phi2, P);
@@ -109,7 +109,7 @@ function [Jdeg, Jrad] = jacobian_numeric_deg(phi1_deg, phi2_deg, P)
 end
 
 %% ==========================================================
-% Part 2: Quick plot helper (so you can see the linkage)
+% Part 2: Plot helper
 %% ==========================================================
 function plot_linkage(phi1, phi2, P)
     [~, pts, ~] = FK_G_from_phi1phi2(phi1, phi2, P);
@@ -130,7 +130,7 @@ function plot_linkage(phi1, phi2, P)
 end
 
 %% ==========================================================
-% Part 3: YOUR FK function (unchanged)
+% Part 3: FK function
 % Notes:
 % - returns G as 2x1 vector [Gx;Gy]
 % - pts contains O..G points

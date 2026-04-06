@@ -3,8 +3,6 @@
 % 1) Columns of J as velocity arrows at G
 % 2) Velocity ellipse: v = J*qdot, ||qdot||=1
 % 3) Torque vs force direction: tau = J^T*F
-%
-% Save as: Jacobian_Visualize_WN.m
 %% ==========================================================
 clear; clc; close all;
 
@@ -145,7 +143,7 @@ function [Jdeg, Jrad] = jacobian_numeric_deg(phi1_deg, phi2_deg, P)
 end
 
 %% ==========================================================
-% YOUR FK (unchanged)
+% FK function
 %% ==========================================================
 function [G, pts, ang] = FK_G_from_phi1phi2(phi1, phi2, P)
     wrap180 = @(a) mod(a + 180.00, 360.00) - 180.00;

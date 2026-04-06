@@ -186,13 +186,17 @@
         \( \mathbf{u}=-K\mathbf{x}_{err} \) that simultaneously shapes stability, response speed, and control effort through \(Q\) and \(R\), giving a
         more systematic and repeatable tuning workflow for this project.
       </p>
+      <img src="images_2/LQR_Control_Block_Diagram.svg" alt="Integrated LQR nested control block diagram" style="width: 100%; max-width: 860px; height: auto; display: block; margin: 12px auto 8px auto; border-radius: 8px; border: 1px solid rgba(0,0,0,0.14); background: #fff;">
+      <p style="text-align:center; font-size: 10.5pt; margin-bottom: 12px;">
+        <strong>Figure 6.1.</strong> Integrated nested control-loop architecture for LQR balance, VMC force control, leg-length PD support, and torque output sequencing.
+      </p>
 
       <details class="expand-box" data-keep-open="true">
-        <summary>1. Control Theory</summary>
+        <summary>6.1 Control Theory</summary>
         <div class="tab-body">
-          <p><strong>LQR Model</strong></p>
+          <p><strong>6.1.1 LQR Model</strong></p>
           <img src="images_2/LQR_Model.jpg" alt="LQR Model" style="width: 33.33%; max-width: 100%; height: auto; display: block; margin: 0 auto 12px auto; border-radius: 8px; border: 1px solid rgba(0,0,0,0.14);">
-          <p><strong>1.1 Reduced-Order Model and State Definition</strong></p>
+          <p><strong>6.1.2 Reduced-Order Model and State Definition</strong></p>
           <p>
             The balancing dynamics are modeled using a reduced-order inverted-pendulum formulation around the upright operating point.
             The linearized model is
@@ -204,7 +208,7 @@
             This representation captures the dominant coupling between wheel translation and body pitch while remaining practical for real-time control synthesis.
           </p>
 
-          <p><strong>1.2 LQR Objective and Control Law</strong></p>
+          <p><strong>6.1.3 LQR Objective and Control Law</strong></p>
           <p>
             The controller minimizes the quadratic performance index
           </p>
@@ -221,7 +225,7 @@
             Compared with tuning multiple independent loops, this gives one coordinated control action across all coupled states.
           </p>
 
-          <p><strong>1.3 Physical Meaning of \(A\), \(B\), \(Q\), and \(R\)</strong></p>
+          <p><strong>6.1.4 Physical Meaning of \(A\), \(B\), \(Q\), and \(R\)</strong></p>
           <ul>
             <li>\(A\): open-loop state dynamics from the linearized model.</li>
             <li>\(B\): actuator influence on state-rate evolution.</li>
@@ -232,43 +236,43 @@
             In this project, \(A\) and \(B\) come from model linearization, while \(Q\) and \(R\) are design selections used to trade off damping quality against control effort.
           </p>
 
-          <p><strong>1.4 Firmware Sign Convention and Exported Gain</strong></p>
+          <p><strong>6.1.5 Firmware Sign Convention and Exported Gain</strong></p>
           <p>
             The model uses forward tilt as positive \(\phi\), while firmware uses the opposite pitch sign.
-            Therefore, the exported gain applies
+            So the exported gain applies
             \(K(:,5\!:\!6)=-K(:,5\!:\!6)\)
-            so that runtime control direction remains consistent with sensor mapping and motor command polarity.
+            so control direction stays consistent with sensor mapping and motor command polarity.
           </p>
 
-          <p><strong>1.5 Integration in the Full Control Stack</strong></p>
+          <p><strong>6.1.6 Integration in the Full Control Stack</strong></p>
           <p>
             LQR is implemented as one layer inside the full wheel-leg system rather than as a standalone block.
-            During deployment, LQR output is combined with supporting subsystems:
+            During hardware testing, LQR output is combined with supporting subsystems:
           </p>
           <ul>
             <li><a class="matlab-link" data-file="leg_length_pd_feedforward_tuning.c">leg-length PD</a> for posture support.</li>
-            <li>IMU and drivetrain estimation pipeline for \(\mathbf{x}_{err}\) construction.</li>
+            <li>IMU and drivetrain estimation path for \(\mathbf{x}_{err}\) construction.</li>
             <li>Transmission mapping, saturation, and safety gating before final motor output.</li>
           </ul>
 
-          <p><strong>1.6 Validation Scope and Current Status</strong></p>
+          <p><strong>6.1.7 Validation Scope and Current Status</strong></p>
           <p>
-            Validation is performed progressively from simulation to bench testing, focusing on sign consistency, response directionality, and closed-loop convergence trend.
-            The LQR pipeline is functionally validated, while final high-performance balancing remains limited by non-ideal actuator condition in the reused motor.
+            Validation is performed in stages from simulation to bench testing, focusing on sign consistency, response direction, and closed-loop convergence trend.
+            The LQR control path is functionally validated, while final high-performance balancing remains limited by the reused faulty motor condition.
           </p>
         </div>
       </details>
 
       <details class="expand-box">
-        <summary>2. K-Matrix (Gain) Computation</summary>
+        <summary>6.2 K-Matrix (Gain) Computation</summary>
         <div class="tab-body">
           <p>
-            The feedback gain matrix \(K\) is computed through the reduced-order pipeline in
+            The feedback gain matrix \(K\) is computed through the reduced-order workflow in
             <a class="matlab-link" data-file="build_reduced_model.m">build_reduced_model.m</a>.
             The process is executed in the following sequence.
           </p>
 
-          <p><strong>Step 1: Define physical parameters \(p\)</strong></p>
+          <p><strong>6.2.1 Step 1: Define physical parameters \(p\)</strong></p>
           <p>
             The model constants from
             <a class="matlab-link" data-file="build_reduced_model.m">build_reduced_model.m</a>
@@ -286,7 +290,7 @@
             <li>Body pitch inertia<span class="param-val">\(I_M = 0.13421\ \mathrm{kg\cdot m^2}\)</span></li>
           </ul>
           <p>
-            Equivalent masses are calculated directly from the CAD mass aggregation in the MATLAB file:
+            Lumped masses are calculated directly from CAD mass aggregation in the MATLAB file:
           </p>
           <p>
             \[
@@ -315,7 +319,7 @@
             These parameters define the reduced balancing model used for linearization.
           </p>
 
-          <p><strong>Step 2: Build nonlinear reduced dynamics</strong></p>
+          <p><strong>6.2.2 Step 2: Build nonlinear reduced dynamics</strong></p>
           <p>
             Symbolic dynamics are written as
             \[
@@ -330,7 +334,7 @@
             <a class="matlab-link" data-file="reduced_dynamics_symbolic.m">reduced_dynamics_symbolic.m</a>.
           </p>
 
-          <p><strong>Step 3: Linearize at upright equilibrium</strong></p>
+          <p><strong>6.2.3 Step 3: Linearize at upright equilibrium</strong></p>
           <p>
             Jacobian linearization is performed at
             \(\mathbf{x}_0=\mathbf{0}\), \(\mathbf{u}_0=\mathbf{0}\):
@@ -367,7 +371,7 @@
             \end{bmatrix}.
           </p>
 
-          <p><strong>Step 4: Choose weighting matrices \(Q,R\)</strong></p>
+          <p><strong>6.2.4 Step 4: Choose weighting matrices \(Q,R\)</strong></p>
           <p>
             In the script, the selected LQR weights are:
             \[
@@ -393,7 +397,7 @@
             Higher \(Q\) entries increase state-regulation priority; higher \(R\) entries reduce control aggressiveness.
           </p>
 
-          <p><strong>Step 5: Compute \(K\) from LQR</strong></p>
+          <p><strong>6.2.5 Step 5: Compute \(K\) from LQR</strong></p>
           <p>
             The \(K\)-matrix computation is implemented in
             <a class="matlab-link" data-file="build_reduced_model.m">build_reduced_model.m</a>,
@@ -429,13 +433,13 @@
             \]
           </p>
 
-          <p><strong>Step 6: Apply firmware sign convention</strong></p>
+          <p><strong>6.2.6 Step 6: Apply firmware sign convention</strong></p>
           <p>
             To match firmware pitch sign convention, columns corresponding to \(\phi\) and \(\dot{\phi}\) are negated:
             \[
             K_{\mathrm{firmware}}(:,5:6) = -K_{\mathrm{model}}(:,5:6).
             \]
-            Therefore:
+            So:
             \[
             K_{\mathrm{firmware}}=
             \begin{bmatrix}
@@ -443,10 +447,10 @@
             -7.6219 & -0.6497 & 0.9763 & 1.9702 & -21.2174 & -4.9853
             \end{bmatrix}.
             \]
-            This is the runtime-ready \(K\) used by firmware.
+            This is the firmware-ready \(K\) used in control.
           </p>
 
-          <p><strong>Step 7: Validate closed-loop response and export</strong></p>
+          <p><strong>6.2.7 Step 7: Validate closed-loop response and export</strong></p>
           <p>
             Closed-loop check is performed in
             <a class="matlab-link" data-file="test_lqr_linear.m">test_lqr_linear.m</a>
@@ -464,29 +468,30 @@
           <p>
             This animation shows the time evolution of all six reduced states
             \((\theta,\dot{\theta},x,\dot{x},\phi,\dot{\phi})\) under the same closed-loop simulation, where each trace is normalized by its own peak magnitude for visual comparison.
-            The intended verification outcome is that all states converge toward zero with decaying oscillation, indicating that the selected \(K\) stabilizes the linearized model.
+            The target result is that all states return toward zero with decaying oscillation, showing that the selected \(K\) stabilizes the linearized model.
             The animation and exported response media are generated from
             <a class="matlab-link" data-file="plot_kmatrix_response.m">plot_kmatrix_response.m</a>.
           </p>
           <p>
-            In project terms, this step is used as a consistency gate before firmware deployment:
+            In project terms, this step is a check point before firmware hardware testing:
             it verifies sign-convention handling (\(K_{\mathrm{model}}\) vs. \(K_{\mathrm{firmware}}\)),
-            confirms response directionality after disturbance injection, and provides a quick reference for tuning trade-offs between correction aggressiveness and damping quality.
+            confirms response directionality after disturbance injection, and provides a clear reference for tuning
+            balance between correction aggressiveness and damping quality.
           </p>
         </div>
       </details>
 
       <details class="expand-box">
-        <summary>3. VMC Torque Mapping</summary>
+        <summary>6.3 VMC Torque Mapping</summary>
         <div class="tab-body">
-          <p><strong>3.1 Why VMC is Used</strong></p>
+          <p><strong>6.3.1 Why VMC is Used</strong></p>
           <ul>
             <li>The control target is usually a force at the leg endpoint \( \mathbf{G} \), not a direct joint torque target.</li>
             <li>VMC turns that endpoint force target into motor/joint torque commands based on current leg geometry.</li>
             <li>In short: LQR keeps the robot balanced, while VMC controls how the leg pushes on the ground.</li>
           </ul>
 
-          <p><strong>3.2 Core Mapping Equations</strong></p>
+          <p><strong>6.3.2 Core Mapping Equations</strong></p>
           <p>
             For joint angles \(q=[\phi_1,\phi_2]^T\) and endpoint position \(\mathbf{G}(q)=[x(q),y(q)]^T\):
           </p>
@@ -511,7 +516,7 @@
             \( \tau_{\mathrm{N\cdot m}} = \tau_{\mathrm{N\cdot mm}}/1000 \).
           </p>
 
-          <p><strong>3.3 MATLAB Implementation</strong></p>
+          <p><strong>6.3.3 MATLAB Implementation</strong></p>
           <p>
             The implementation is documented in
             <a class="matlab-link" data-file="VMC_WN_Jacobian_Transformation.m">VMC_WN_Jacobian_Transformation.m</a>
@@ -527,7 +532,7 @@
           J_{\mathrm{rad}} = J_{\mathrm{deg}}\frac{180}{\pi}.
           \]
 
-          <p><strong>3.4 Role in the Full Control Loop</strong></p>
+          <p><strong>6.3.4 Role in the Full Control Loop</strong></p>
           <ol>
             <li>Set a desired endpoint force \(\mathbf{F}_{des}\) (for support, traction, or body response).</li>
             <li>Evaluate \(J(q)\) at the current posture.</li>
@@ -536,7 +541,7 @@
             <li>Apply conversion/limits, then send final torque commands to the motors.</li>
           </ol>
 
-          <p><strong>3.5 Quality Metrics and Limitations</strong></p>
+          <p><strong>6.3.5 Quality Metrics and Limitations</strong></p>
           <ul>
             <li>Velocity check: \( \mathbf{v}=J\dot{q},\ \|\dot{q}\|=1 \), shown as a velocity ellipse.</li>
             <li>Force-direction check: sweep force angle \(\theta_F\) and evaluate \( \tau=J^T\mathbf{F} \).</li>
@@ -546,13 +551,13 @@
       </details>
 
       <details class="expand-box">
-        <summary>4. Torque Output Sequencing</summary>
+        <summary>6.4 Torque Output Sequencing</summary>
         <div class="tab-body">
           <p>
             This subsection explains exactly which torque elements are combined before the final motor command is sent.
           </p>
 
-          <p><strong>4.1 Balance Torque from LQR</strong></p>
+          <p><strong>6.4.1 Balance Torque from LQR</strong></p>
           <p>
             Using the reduced-order model, the balance channel is
             \[
@@ -567,14 +572,14 @@
             <a class="matlab-link" data-file="test_lqr_linear.m">test_lqr_linear.m</a>).
           </p>
 
-          <p><strong>4.2 Additional Torque Elements</strong></p>
+          <p><strong>6.4.2 Additional Torque Elements</strong></p>
           <ul>
             <li>VMC torque term for endpoint force behavior: \(\tau_{\mathrm{VMC}} = J^T\mathbf{F}_{des}\).</li>
             <li>Leg support term from leg-length controller (PD + feedforward), see <a class="matlab-link" data-file="leg_length_pd_feedforward_tuning.c">leg_length_pd_feedforward_tuning.c</a>.</li>
             <li>Optional compensation terms (for implementation-specific offset/friction handling) if enabled.</li>
           </ul>
 
-          <p><strong>4.3 Final Torque Composition (Before Motor Mapping)</strong></p>
+          <p><strong>6.4.3 Final Torque Composition (Before Motor Mapping)</strong></p>
           <p>
             In compact form, the generalized command is assembled as
             \[
@@ -587,7 +592,7 @@
             where \(\tau_{\mathrm{support}}\) is the leg-length support contribution and \(\tau_{\mathrm{comp}}\) represents optional correction terms.
           </p>
 
-          <p><strong>4.4 Mapping to Motor Commands</strong></p>
+          <p><strong>6.4.4 Mapping to Motor Commands</strong></p>
           <ol>
             <li>Acquire and preprocess states \( \mathbf{x}=[\theta,\dot{\theta},x,\dot{x},\phi,\dot{\phi}]^T \).</li>
             <li>Compute \(\tau_{\mathrm{LQR}}\), then add \(\tau_{\mathrm{VMC}}\), support, and compensation terms to form \(\tau_{\mathrm{raw}}\).</li>
@@ -597,7 +602,7 @@
             <li>Publish final motor torque/current command to drivers.</li>
           </ol>
 
-          <p><strong>4.5 Verification Reference</strong></p>
+          <p><strong>6.4.5 Verification Reference</strong></p>
           <p>
             Verification scripts used in this torque-sequencing section are
             <a class="matlab-link" data-file="test_lqr_linear.m">test_lqr_linear.m</a>

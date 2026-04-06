@@ -1,0 +1,236 @@
+<section id="sec-9-forward">
+  <style>
+    #sec-9-forward .novelty-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin: 12px 0 14px 0;
+    }
+    #sec-9-forward .novelty-card {
+      background: #fff;
+      border: 1px solid rgba(0, 0, 0, 0.18);
+      border-radius: 8px;
+      padding: 8px;
+    }
+    #sec-9-forward .novelty-card img {
+      width: 100%;
+      height: 145px;
+      object-fit: cover;
+      border-radius: 6px;
+      border: 1px solid rgba(0, 0, 0, 0.14);
+      display: block;
+    }
+    #sec-9-forward .novelty-title {
+      margin: 8px 0 4px 0;
+      font-weight: 700;
+      font-size: 11pt;
+      line-height: 1.3;
+    }
+    #sec-9-forward .novelty-desc {
+      margin: 0;
+      font-size: 10.5pt;
+      line-height: 1.45;
+    }
+
+    #sec-9-forward .deliverable-table-wrap {
+      overflow-x: auto;
+      margin-top: 10px;
+      margin-bottom: 10px;
+    }
+    #sec-9-forward .deliverable-table {
+      width: 100%;
+      min-width: 780px;
+      border-collapse: collapse;
+      background: #fff;
+      border: 1.5px solid #1f1f1f;
+    }
+    #sec-9-forward .deliverable-table th,
+    #sec-9-forward .deliverable-table td {
+      border: 1px solid #1f1f1f;
+      padding: 8px 10px;
+      text-align: left;
+      vertical-align: top;
+      line-height: 1.45;
+      font-size: 10.8pt;
+    }
+    #sec-9-forward .deliverable-table th {
+      background: #eaf0ff;
+      font-weight: 700;
+    }
+    #sec-9-forward .row-done {
+      background: #f2fbf2;
+    }
+    #sec-9-forward .row-pending {
+      background: #fff4f4;
+    }
+    #sec-9-forward .status-chip {
+      display: inline-block;
+      padding: 2px 9px;
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: 10pt;
+      border: 1px solid transparent;
+      white-space: nowrap;
+    }
+    #sec-9-forward .status-done {
+      color: #116329;
+      background: #dcf8e2;
+      border-color: #8cd5a0;
+    }
+    #sec-9-forward .status-pending {
+      color: #8b1d1d;
+      background: #ffe2e2;
+      border-color: #f0a7a7;
+    }
+    @media (max-width: 980px) {
+      #sec-9-forward .novelty-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+  </style>
+
+  <h2 class="section-title">9. Project Value, Deliverables, and Moving Forward</h2>
+
+  <h3 class="subsection-title" id="sec-9-1">9.1 Main Innovations</h3>
+
+  <p>
+    The project introduces a wheel-leg architecture that is specifically engineered to bridge the gap between high-speed wheel mobility
+    and terrain adaptability. Its key novelty lies in the integrated mechanical-control co-design workflow: linkage kinematic modeling,
+    force transmission mapping, reduced-order balancing control, and firmware-level safety implementation are developed as one coherent stack
+    rather than as isolated subsystems.
+  </p>
+  <p>
+    The value proposition is practical and competition-driven. The platform targets obstacle-handling capability (including step-type terrain),
+    while retaining compact packaging and dynamic balancing potential. This provides a stronger foundation than conventional rigid-wheel chassis
+    designs for future RoboMaster-style terrain and mission requirements.
+  </p>
+  <h4 class="subsubsection-title" id="sec-9-1-1">9.1.1 Main Mechanical Design Innovation</h4>
+  <p>
+    The four key mechanical innovations that define this design are summarized below.
+  </p>
+  <div class="novelty-grid">
+    <div class="novelty-card">
+      <img src="images_2/Final%20Wheel%20look.jpg" alt="Hubless big wheel design">
+      <p class="novelty-title">Hubless Big Wheel Design</p>
+      <p class="novelty-desc">The hubless wheel architecture provides large effective wheel radius for obstacle crossing while keeping the center region open for drivetrain and structural packaging.</p>
+    </div>
+    <div class="novelty-card">
+      <img src="images_2/V%20groove%20Bearing.jpg" alt="V-groove bearing wheel">
+      <p class="novelty-title">V-Groove Bearing Wheel</p>
+      <p class="novelty-desc">A V-groove rolling interface is used to constrain inner-outer wheel motion and improve concentric tracking under radial and axial load transfer.</p>
+    </div>
+    <div class="novelty-card">
+      <img src="images_2/custom%20Tyre%20rim%20design.jpg" alt="Customised bicycle rim">
+      <p class="novelty-title">Customised Bicycle Rim</p>
+      <p class="novelty-desc">The rim profile is customized for low-cost manufacturing and compatibility with the bearing path, balancing producibility with mechanical function.</p>
+    </div>
+    <div class="novelty-card">
+      <img src="images_2/Final%20CAD.jpg" alt="Leg-wheel integration structure">
+      <p class="novelty-title">Leg-Wheel Integration Structure</p>
+      <p class="novelty-desc">The final integrated CAD combines linkage, wheel module, and chassis interfaces into a compact wheel-leg assembly suitable for control and maintenance.</p>
+    </div>
+  </div>
+  <h4 class="subsubsection-title" id="sec-9-1-2">9.1.2 Competitive Advantage and Innovation</h4>
+  <p>
+    This solution is selected not only for the current competition constraints, but also to anticipate likely future rule and terrain evolution.
+    The combined hubless big-wheel architecture, custom bearing-rim interface, and integrated wheel-leg structure provides a capability mix that is
+    currently uncommon across global competition groups, giving the project a clear differentiation in both engineering approach and competitive utility.
+  </p>
+
+  
+
+  <h3 class="subsection-title" id="sec-9-2">9.2 Project Deliverable Accomplished</h3>
+
+  <p>
+    Based on both the first-half and second-half project reports, the deliverable status is summarized below.
+  </p>
+  <div class="deliverable-table-wrap">
+    <table class="deliverable-table">
+      <thead>
+        <tr>
+          <th style="width:16%;">Phase</th>
+          <th style="width:50%;">Deliverable Item</th>
+          <th style="width:16%;">Status</th>
+          <th style="width:18%;">Remarks</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="row-done">
+          <td>Sem 1</td>
+          <td>Concept down-selection and wheel-leg architecture direction finalized.</td>
+          <td><span class="status-chip status-done">Accomplished</span></td>
+          <td>Mechanical concept validated.</td>
+        </tr>
+        <tr class="row-done">
+          <td>Sem 1</td>
+          <td>First working prototype built (linkage, cascaded joint, hubless wheel, chain-drive subsystems).</td>
+          <td><span class="status-chip status-done">Accomplished</span></td>
+          <td>Subsystem-level integration completed.</td>
+        </tr>
+        <tr class="row-done">
+          <td>Sem 1</td>
+          <td>Mechanical feasibility for 200 mm step-capable chassis established.</td>
+          <td><span class="status-chip status-done">Accomplished</span></td>
+          <td>Used as baseline for second-half refinement.</td>
+        </tr>
+        <tr class="row-done">
+          <td>Sem 2</td>
+          <td>Mechanical refinement completed (weight/stiffness, drivetrain/bearing/chassis iteration, manufacturable final direction).</td>
+          <td><span class="status-chip status-done">Accomplished</span></td>
+          <td>Final iteration converged for fabrication path.</td>
+        </tr>
+        <tr class="row-done">
+          <td>Sem 2</td>
+          <td>Control-oriented modeling completed (FK/IK, Jacobian mapping, reduced dynamics, transmission mapping).</td>
+          <td><span class="status-chip status-done">Accomplished</span></td>
+          <td>Model stack documented and integrated.</td>
+        </tr>
+        <tr class="row-done">
+          <td>Sem 2</td>
+          <td>Sim-to-real calibration pipeline implemented (startup calibration, runtime zero-offset, ratio conversion, sign alignment).</td>
+          <td><span class="status-chip status-done">Accomplished</span></td>
+          <td>Staged validation flow established.</td>
+        </tr>
+        <tr class="row-done">
+          <td>Sem 2</td>
+          <td>LQR pipeline implemented and validated (model build, \(K\)-matrix generation, disturbance-response verification, VMC/PD integration).</td>
+          <td><span class="status-chip status-done">Accomplished</span></td>
+          <td>Functionally validated at system level.</td>
+        </tr>
+        <tr class="row-pending">
+          <td>Sem 2</td>
+          <td>Final high-performance stable balancing under healthy hardware.</td>
+          <td><span class="status-chip status-pending">Not Accomplished</span></td>
+          <td>Constrained by actuator condition.</td>
+        </tr>
+        <tr class="row-pending">
+          <td>Sem 2</td>
+          <td>Repeatable competition-level stability (long-duration and high-disturbance scenarios).</td>
+          <td><span class="status-chip status-pending">Not Accomplished</span></td>
+          <td>Requires additional tuning and verification cycles.</td>
+        </tr>
+        <tr class="row-pending">
+          <td>Overall</td>
+          <td>Original target of a fully tuned, competition-ready, fully functioning final robot.</td>
+          <td><span class="status-chip status-pending">Partially Accomplished</span></td>
+          <td>Control framework completed, final tuning incomplete.</td>
+        </tr>
+        <tr class="row-pending">
+          <td>Constraint</td>
+          <td>Motor-side limitation: one HT8108 side with torque inconsistency and electrical offset drift.</td>
+          <td><span class="status-chip status-pending">Open Issue</span></td>
+          <td>Main blocker for final balancing quality.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3 class="subsection-title" id="sec-9-3">9.3 Moving Forward</h3>
+  <ol>
+    <li>Re-design the motor housing and motor-side gearing to support a better motor platform with dual encoder sensing and torque feedback.</li>
+    <li>Integrate the gimbal portion of the robot and complete installation of the referee-system components required by competition rules.</li>
+  </ol>
+
+
+</section>
+

@@ -18,10 +18,9 @@ function f = reduced_dynamics_symbolic(x, u, p)
 %
 % Notes:
 %   1. This is still a reduced equivalent model, not the full five-bar dynamics.
-%   2. The geometry/mass terms should come from your CAD + FK reduction.
-%   3. The equations below are derived with Lagrange mechanics rather than
-%      hand-written placeholder accelerations, so A/B/K now come from a
-%      mechanically consistent reduced model.
+%   2. The geometry/mass terms should be obtained from CAD + FK reduction.
+%   3. The equations are derived through Lagrange mechanics to keep A/B/K
+%      consistent with the reduced mechanical model.
 
 theta = x(1);
 dtheta = x(2);

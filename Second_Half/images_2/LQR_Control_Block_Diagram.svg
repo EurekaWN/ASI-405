@@ -1,0 +1,135 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1800 1000" width="1800" height="1000">
+  <defs>
+    <style>
+      .bg { fill: #f5f7fc; }
+      .title { font: 700 38px "Times New Roman", Times, serif; fill: #1f2a44; }
+      .subtitle { font: 400 23px "Times New Roman", Times, serif; fill: #344468; }
+      .lane { font: 700 20px "Times New Roman", Times, serif; fill: #2d3d60; }
+      .lane-line { stroke: #d3d9e9; stroke-width: 1.6; }
+      .block { fill: #ffffff; stroke: #2e4476; stroke-width: 2.1; rx: 16; ry: 16; }
+      .block-accent { fill: #edf2ff; stroke: #1d3e8b; stroke-width: 2.6; rx: 16; ry: 16; }
+      .btitle { font: 700 23px "Times New Roman", Times, serif; fill: #1f2a44; }
+      .btext { font: 400 18px "Times New Roman", Times, serif; fill: #27364f; }
+      .arrow { stroke: #1f2a44; stroke-width: 2.5; fill: none; marker-end: url(#arrowHead); }
+      .arrow-soft { stroke: #3e4f71; stroke-width: 2.1; fill: none; marker-end: url(#arrowSoftHead); }
+      .feedback { stroke: #2c5b9e; stroke-width: 2.2; fill: none; stroke-dasharray: 8 7; marker-end: url(#arrowSoftHead); }
+      .sig { font: 600 16px "Times New Roman", Times, serif; fill: #2c3c60; }
+      .note { font: 400 17px "Times New Roman", Times, serif; fill: #3e4d68; }
+      .loop-label { font: 700 18px "Times New Roman", Times, serif; }
+      .loop-lqr { fill: #254f9a; }
+      .loop-vmc { fill: #1d7d5f; }
+      .loop-pd { fill: #925525; }
+    </style>
+    <marker id="arrowHead" markerWidth="10" markerHeight="8" refX="8.4" refY="4" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L10,4 L0,8 z" fill="#1f2a44"/>
+    </marker>
+    <marker id="arrowSoftHead" markerWidth="9" markerHeight="7" refX="7.6" refY="3.5" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L9,3.5 L0,7 z" fill="#3e4f71"/>
+    </marker>
+  </defs>
+
+  <rect x="0" y="0" width="1800" height="1000" class="bg"/>
+
+  <text x="900" y="62" text-anchor="middle" class="title">Wheel-Leg Robot Control Architecture</text>
+  <text x="900" y="96" text-anchor="middle" class="subtitle">Structured LQR + VMC + Leg-Length Support Control Path</text>
+
+  <!-- Lane headings -->
+  <text x="245" y="132" text-anchor="middle" class="lane">Inputs and Estimation</text>
+  <line x1="70" y1="142" x2="420" y2="142" class="lane-line"/>
+
+  <text x="680" y="132" text-anchor="middle" class="lane">Control Laws</text>
+  <line x1="470" y1="142" x2="890" y2="142" class="lane-line"/>
+
+  <text x="1165" y="132" text-anchor="middle" class="lane">Command Fusion</text>
+  <line x1="930" y1="142" x2="1400" y2="142" class="lane-line"/>
+
+  <text x="1555" y="132" text-anchor="middle" class="lane">Actuation Path</text>
+  <line x1="1425" y1="142" x2="1715" y2="142" class="lane-line"/>
+
+  <!-- Left column -->
+  <rect x="90" y="160" width="310" height="110" class="block"/>
+  <text x="245" y="199" text-anchor="middle" class="btitle">Reference Generator</text>
+  <text x="245" y="227" text-anchor="middle" class="btext">x_ref, posture target, F_des</text>
+  <text x="245" y="249" text-anchor="middle" class="btext">leg-length reference</text>
+
+  <rect x="90" y="340" width="310" height="150" class="block"/>
+  <text x="245" y="381" text-anchor="middle" class="btitle">State Estimation</text>
+  <text x="245" y="409" text-anchor="middle" class="btext">IMU + encoder + mapping</text>
+  <text x="245" y="433" text-anchor="middle" class="btext">x = [theta, dtheta, x, dx, phi, dphi]^T</text>
+  <text x="245" y="457" text-anchor="middle" class="btext">q, dq and wheel states</text>
+
+  <!-- Control blocks -->
+  <rect x="500" y="160" width="360" height="110" class="block-accent"/>
+  <text x="680" y="200" text-anchor="middle" class="btitle">LQR Balance Loop</text>
+  <text x="680" y="229" text-anchor="middle" class="btext">u_LQR = -K(x - x_ref)</text>
+
+  <rect x="500" y="315" width="360" height="100" class="block"/>
+  <text x="680" y="352" text-anchor="middle" class="btitle">VMC Force Loop</text>
+  <text x="680" y="380" text-anchor="middle" class="btext">tau_VMC = J(q)^T F_des</text>
+
+  <rect x="500" y="450" width="360" height="100" class="block"/>
+  <text x="680" y="487" text-anchor="middle" class="btitle">Leg-Length PD + Feedforward</text>
+  <text x="680" y="515" text-anchor="middle" class="btext">tau_support</text>
+
+  <!-- Fusion / right path -->
+  <rect x="950" y="280" width="430" height="190" class="block-accent"/>
+  <text x="1165" y="322" text-anchor="middle" class="btitle">Torque Fusion / Sequencing</text>
+  <text x="1165" y="352" text-anchor="middle" class="btext">tau_raw = tau_LQR + tau_VMC + tau_support + tau_comp</text>
+  <text x="1165" y="378" text-anchor="middle" class="btext">sign/axis mapping and channel distribution</text>
+  <text x="1165" y="404" text-anchor="middle" class="btext">wheel channels + leg channels</text>
+
+  <rect x="1430" y="300" width="250" height="110" class="block"/>
+  <text x="1555" y="339" text-anchor="middle" class="btitle">Limits and Safety</text>
+  <text x="1555" y="367" text-anchor="middle" class="btext">saturation, slew-rate, interlocks</text>
+
+  <rect x="1430" y="455" width="250" height="105" class="block"/>
+  <text x="1555" y="494" text-anchor="middle" class="btitle">Motor Drivers</text>
+  <text x="1555" y="522" text-anchor="middle" class="btext">HT8108 + M3508 interfaces</text>
+
+  <rect x="1080" y="650" width="600" height="200" class="block-accent"/>
+  <text x="1380" y="694" text-anchor="middle" class="btitle">Wheel-Leg Robot Plant</text>
+  <text x="1380" y="724" text-anchor="middle" class="btext">multibody dynamics + transmission + ground contact</text>
+  <text x="1380" y="750" text-anchor="middle" class="btext">actual motion, force response, measured outputs</text>
+
+  <!-- Signal flow arrows -->
+  <path d="M400 215 L500 215" class="arrow"/>
+  <path d="M400 215 L455 215 L455 365 L500 365" class="arrow-soft"/>
+  <path d="M400 215 L445 215 L445 500 L500 500" class="arrow-soft"/>
+
+  <path d="M400 415 L475 415 L475 230 L500 230" class="arrow-soft"/>
+  <path d="M400 415 L475 415 L475 380 L500 380" class="arrow-soft"/>
+  <path d="M400 415 L475 415 L475 515 L500 515" class="arrow-soft"/>
+
+  <path d="M860 215 L950 330" class="arrow"/>
+  <path d="M860 365 L950 365" class="arrow"/>
+  <path d="M860 500 L950 400" class="arrow"/>
+
+  <path d="M1380 365 L1430 355" class="arrow"/>
+  <path d="M1555 410 L1555 455" class="arrow"/>
+  <path d="M1555 560 L1555 650" class="arrow"/>
+
+  <!-- Feedback paths -->
+  <path d="M1080 740 L520 740 L520 415 L400 415" class="feedback"/>
+  <path d="M1080 790 L900 790 L900 365 L860 365" class="feedback"/>
+
+  <!-- Labels -->
+  <text x="428" y="202" class="sig">setpoints</text>
+  <text x="440" y="438" class="sig">estimated states</text>
+  <text x="885" y="334" class="sig">tau terms</text>
+  <text x="1392" y="346" class="sig">tau_cmd</text>
+  <text x="1568" y="612" class="sig">actuation</text>
+  <text x="710" y="724" class="sig">sensor feedback</text>
+  <text x="930" y="812" class="sig">force/kinematic feedback</text>
+
+  <!-- Loop tags -->
+  <rect x="90" y="900" width="26" height="26" fill="#254f9a" rx="5" ry="5"/>
+  <text x="130" y="919" class="loop-label loop-lqr">Outer loop: LQR balance</text>
+  <rect x="460" y="900" width="26" height="26" fill="#1d7d5f" rx="5" ry="5"/>
+  <text x="500" y="919" class="loop-label loop-vmc">Inner loop: VMC endpoint force shaping</text>
+  <rect x="980" y="900" width="26" height="26" fill="#925525" rx="5" ry="5"/>
+  <text x="1020" y="919" class="loop-label loop-pd">Support loop: leg-length PD + feedforward</text>
+
+  <text x="900" y="958" text-anchor="middle" class="note">
+    Final path: tau_cmd -> limits/safety -> drivers -> plant, with estimation and force feedback closing the control loops.
+  </text>
+</svg>

@@ -12,7 +12,7 @@
 
 clear; clc; close all;
 
-%% 1) Motor-curve points (replace with exact extracted data if updated)
+%% 1) Motor-curve points (digitized dataset; update when new data is available)
 % Torque [N*m] vs motor speed [rpm], digitized from M3508 characteristic plot.
 torque_pts = [0.0 0.5 1.0 2.0 3.0 4.0 4.5 4.8 5.0];
 rpm_pts    = [520 510 500 490 475 455 430 380 320];

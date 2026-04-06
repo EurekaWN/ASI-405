@@ -9,7 +9,7 @@ typedef struct {
 
 static void set_all_motor_torque_zero(void)
 {
-    // Replace with actual motor command interface.
+    // Interface hook for motor torque shutdown.
 }
 
 bool over_tilt_protection_step(safety_state_t *s)

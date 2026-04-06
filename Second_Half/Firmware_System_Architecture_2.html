@@ -90,8 +90,19 @@
       color: #0b3d91;
       text-decoration: underline;
       text-underline-offset: 2px;
+      text-decoration-thickness: 1.5px;
       cursor: pointer;
       font-weight: 600;
+    }
+
+    .firmware-link:visited,
+    .firmware-link:hover,
+    .firmware-link:active,
+    .firmware-link:focus {
+      color: #0b3d91;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+      text-decoration-thickness: 1.5px;
     }
 
     .table-wrap {
@@ -99,16 +110,23 @@
       margin-top: 8px;
     }
 
+    .table-caption {
+      margin: 8px 0 6px 0;
+      text-align: center;
+      font-size: 10.5pt;
+    }
+
     table.report-table {
       width: 100%;
       border-collapse: collapse;
       background: #fff;
       min-width: 760px;
+      border: 2px solid #1f1f1f;
     }
 
     .report-table th,
     .report-table td {
-      border: 1px solid rgba(0, 0, 0, 0.18);
+      border: 1px solid #1f1f1f;
       padding: 8px 10px;
       text-align: left;
       vertical-align: top;
@@ -179,6 +197,29 @@
       min-height: 120px;
       font-family: Consolas, "Courier New", monospace;
     }
+
+    .inline-code-caption {
+      margin: 8px 0 6px 0;
+      font-size: 10.5pt;
+      font-style: italic;
+    }
+
+    pre.inline-code-window {
+      margin: 0 0 12px 0;
+      border-radius: 8px;
+      border: 1px solid rgba(0, 0, 0, 0.22);
+      overflow: auto;
+      background: #2d2d2d;
+    }
+
+    pre.inline-code-window code {
+      display: block;
+      padding: 12px 14px;
+      font-size: 10.25pt;
+      line-height: 1.42;
+      font-family: Consolas, "Courier New", monospace;
+      white-space: pre;
+    }
   </style>
 </head>
 <body>
@@ -186,150 +227,161 @@
     <section class="section-card" id="sec-7-firmware-system-architecture">
       <h1 class="page-title">7. Firmware System Architecture</h1>
       <p>
-        This section documents the runtime firmware architecture from sensing to estimation, control allocation, actuator interfacing,
+        This section documents the firmware architecture from sensing to estimation, control allocation, actuator interfacing,
         and output safety limiting. The structure is written as implementation-oriented documentation to support tuning, debugging,
         and future maintenance.
       </p>
 
+      <h3 class="subsection-title">7.1 System Structure</h3>
+      <p>
+        The firmware is organized as a fixed sequence:
+        \[
+        \text{Acquire} \rightarrow \text{Estimate} \rightarrow \text{Control} \rightarrow \text{Map/Limit} \rightarrow \text{Actuate}.
+        \]
+        The design objective is to keep signal validity and sign consistency before control commands are issued.
+      </p>
+      <p class="table-caption"><strong>Table 7.1.</strong> Firmware layer structure and main outputs.</p>
+      <div class="table-wrap">
+        <table class="report-table">
+          <thead>
+            <tr>
+              <th>Layer</th>
+              <th>Function</th>
+              <th>Typical outputs</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Acquisition</td>
+              <td>IMU, encoder, and motor data reading with freshness checks.</td>
+              <td>\(pitch,\ \dot{pitch},\ rpm,\ encoder\ angle\)</td>
+            </tr>
+            <tr>
+              <td>Estimation</td>
+              <td>Bias-corrected attitude and translational state reconstruction.</td>
+              <td>\(x,\dot{x},\theta,\dot{\theta},\phi,\dot{\phi}\)</td>
+            </tr>
+            <tr>
+              <td>Control</td>
+              <td>LQR/VMC/PD calculations in model-consistent coordinates.</td>
+              <td>\(u=[T,\ T_p]^T\)</td>
+            </tr>
+            <tr>
+              <td>Mapping + Safety</td>
+              <td>Driver command mapping, saturation, rate limiting, and safety lock checks.</td>
+              <td>Safe actuator command packets</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p>
+        Reference code:
+        <a class="firmware-link" data-file="firmware_system_structure.c">firmware_system_structure.c</a>
+      </p>
+
       <details class="expand-box">
-        <summary>System Structure</summary>
+        <summary>7.2 Acquisition of Sensory Data (IMU + Kalman Filter)</summary>
         <div class="tab-body">
+          <p><strong>Purpose in this project</strong></p>
           <p>
-            The firmware is organized as a deterministic pipeline:
-            \[
-            \text{Acquire} \rightarrow \text{Estimate} \rightarrow \text{Control} \rightarrow \text{Map/Limit} \rightarrow \text{Actuate}.
-            \]
-            The design objective is to guarantee signal validity and sign consistency before control commands are issued.
+            This stage combines raw onboard sensing (IMU + encoder/motor data) with filtered state estimation, so the controller
+            receives stable and usable states. The IMU supplies fast attitude-rate information,
+            while the estimator reduces noise and drift before the LQR/VMC stack uses the data in
+            <a class="firmware-link" data-file="imu_processing_pipeline.c">imu_processing_pipeline.c</a>
+            and
+            <a class="firmware-link" data-file="kalman_body_state_estimator.c">kalman_body_state_estimator.c</a>.
           </p>
-          <div class="table-wrap">
-            <table class="report-table">
-              <thead>
-                <tr>
-                  <th>Layer</th>
-                  <th>Function</th>
-                  <th>Typical outputs</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>Acquisition</td>
-                  <td>IMU, encoder, and motor telemetry ingestion with freshness checks.</td>
-                  <td>\(pitch,\ \dot{pitch},\ rpm,\ encoder\ angle\)</td>
-                </tr>
-                <tr>
-                  <td>Estimation</td>
-                  <td>Bias-corrected attitude and translational state reconstruction.</td>
-                  <td>\(x,\dot{x},\theta,\dot{\theta},\phi,\dot{\phi}\)</td>
-                </tr>
-                <tr>
-                  <td>Control</td>
-                  <td>LQR/VMC/PD calculations in model-consistent coordinates.</td>
-                  <td>\(u=[T,\ T_p]^T\)</td>
-                </tr>
-                <tr>
-                  <td>Mapping + Safety</td>
-                  <td>Driver command mapping, saturation, rate limiting, interlocks.</td>
-                  <td>Safe actuator command packets</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          <p>
-            Reference code:
-            <a class="firmware-link" data-file="firmware_system_structure.c">firmware_system_structure.c</a>
-          </p>
+
+          <p><strong>IMU processing role</strong></p>
+          <ul>
+            <li>Reads raw gyroscope and accelerometer channels each control cycle in <a class="firmware-link" data-file="imu_processing_pipeline.c">imu_processing_pipeline.c</a>.</li>
+            <li>Applies startup bias compensation and runtime filtering to reduce sensor noise in <a class="firmware-link" data-file="imu_processing_pipeline.c">imu_processing_pipeline.c</a>.</li>
+            <li>Enforces sign-convention mapping so firmware pitch channels remain consistent with the model state definition in <a class="firmware-link" data-file="sign_convention_alignment_check.c">sign_convention_alignment_check.c</a>.</li>
+            <li>Provides reliable short-horizon tilt and angular-rate cues for balance correction in <a class="firmware-link" data-file="imu_processing_pipeline.c">imu_processing_pipeline.c</a>.</li>
+          </ul>
+
+          <p><strong>Kalman-filter role in the same pipeline</strong></p>
+          <ul>
+            <li>Combines multiple noisy measurements into a smoother translational/body-state estimate in <a class="firmware-link" data-file="kalman_body_state_estimator.c">kalman_body_state_estimator.c</a>.</li>
+            <li>Improves state continuity during encoder jitter and short bursts of IMU disturbance in <a class="firmware-link" data-file="kalman_body_state_estimator.c">kalman_body_state_estimator.c</a>.</li>
+            <li>Produces controller-ready estimates for \(x,\dot{x},\theta,\dot{\theta},\phi,\dot{\phi}\) in <a class="firmware-link" data-file="kalman_body_state_estimator.c">kalman_body_state_estimator.c</a>.</li>
+          </ul>
         </div>
       </details>
 
       <details class="expand-box">
-        <summary>IMU Processing</summary>
+        <summary>7.3 HT8108 joint motor control interface (Joint Motors)</summary>
         <div class="tab-body">
           <p>
-            IMU processing includes startup bias capture, runtime bias compensation, filtering, and sign-convention alignment.
-            A key integration constraint from the prior process is that firmware pitch sign is opposite to model \(+\phi\), therefore
-            a mapping step is explicitly applied before state-vector assembly.
-          </p>
-          <ol>
-            <li>Read raw gyroscope and accelerometer channels.</li>
-            <li>Subtract startup-estimated bias terms.</li>
-            <li>Apply low-pass/complementary filtering.</li>
-            <li>Map to model sign convention for controller input channels.</li>
-          </ol>
-          <p>
-            Reference codes:
-            <a class="firmware-link" data-file="imu_processing_pipeline.c">imu_processing_pipeline.c</a>,
-            <a class="firmware-link" data-file="sign_convention_alignment_check.c">sign_convention_alignment_check.c</a>
-          </p>
-        </div>
-      </details>
-
-      <details class="expand-box">
-        <summary>Kalman Filter for Body speed/position Estimation</summary>
-        <div class="tab-body">
-          <p>
-            Translational state estimation is implemented as a linear Kalman filter using discrete prediction-correction form:
-            \[
-            \mathbf{x}_{k|k-1}=A_d\mathbf{x}_{k-1|k-1}+B_d\mathbf{u}_{k-1},\qquad
-            P_{k|k-1}=A_dP_{k-1|k-1}A_d^T+Q
-            \]
-            \[
-            K_k=P_{k|k-1}H^T(HP_{k|k-1}H^T+R)^{-1},\qquad
-            \mathbf{x}_{k|k}=\mathbf{x}_{k|k-1}+K_k(\mathbf{z}_k-H\mathbf{x}_{k|k-1}).
-            \]
-          </p>
-          <p>
-            The filter is tuned to balance responsiveness and noise immunity. In this project workflow, the filter also serves
-            as a stabilizing bridge between noisy wheel telemetry and control-state requirements.
-          </p>
-          <p>
-            Reference code:
-            <a class="firmware-link" data-file="kalman_body_state_estimator.c">kalman_body_state_estimator.c</a>
-          </p>
-        </div>
-      </details>
-
-      <details class="expand-box">
-        <summary>HT8108 joint motor control interface</summary>
-        <div class="tab-body">
-          <p>
-            The HT8108 interface performs command packing, communication transmission, and telemetry monitoring for joint channels.
+            The HT8108 interface performs command packing, communication transmission, and status monitoring for joint channels.
             Commands are converted from physical units into protocol-specific packed integers with strict min/max clamping.
           </p>
           <p>
             Practical issues encountered during integration include sign mismatch, parameter-limit clipping, and communication timeout handling.
-            Therefore, the interface includes both command validation and readback consistency checks before high-level control trust.
+            So the interface includes both command validation and readback checks before enabling high-level control.
           </p>
-          <p>
-            Reference codes:
-            <a class="firmware-link" data-file="ht8108_interface_flow.c">ht8108_interface_flow.c</a>,
-            <a class="firmware-link" data-file="actuator_readiness_gate.c">actuator_readiness_gate.c</a>
-          </p>
+          <p class="inline-code-caption"><strong>Sample control code (HT8108 command pack and send)</strong></p>
+          <pre class="inline-code-window"><code class="language-c">#include &lt;stdint.h&gt;
+
+void ht8108_pack_and_send(float p, float v, float kp, float kd, float t, int motor_id)
+{
+    // Apply command limits and pack frame fields.
+    (void)p; (void)v; (void)kp; (void)kd; (void)t; (void)motor_id;
+    // Transmit command over CAN.
+}</code></pre>
+          <p class="inline-code-caption"><strong>Sample readiness check (sign consistency + driver status)</strong></p>
+          <pre class="inline-code-window"><code class="language-c">#include &lt;stdbool.h&gt;
+
+typedef struct {
+    float test_cmd;
+    float measured_speed;
+    bool drv_ok;
+} motor_diag_t;
+
+static bool sign_match(float cmd, float speed)
+{
+    if (cmd &gt; 0.0f &amp;&amp; speed &lt; 0.0f) return false;
+    if (cmd &lt; 0.0f &amp;&amp; speed &gt; 0.0f) return false;
+    return true;
+}
+
+bool actuator_ready_check(const motor_diag_t *m)
+{
+    if (!m-&gt;drv_ok) return false;
+    if (!sign_match(m-&gt;test_cmd, m-&gt;measured_speed)) return false;
+    return true;
+}</code></pre>
         </div>
       </details>
 
       <details class="expand-box">
-        <summary>M3508 wheel motor control interface</summary>
+        <summary>7.4 M3508 wheel motor control interface (Wheel Motors)</summary>
         <div class="tab-body">
           <p>
             The M3508 interface maps generalized wheel-channel commands to left/right motors and reconstructs wheel speed/position
             from encoder telemetry for estimation and feedback closure.
           </p>
-          <p>
-            Because mirrored wheel installation can invert observed direction, per-channel sign correction is applied before computing:
-            \[
-            \dot{x}_{fw}=\frac{v_L+v_R}{2}.
-            \]
-            This was necessary to prevent directional inversion in speed feedback loops.
-          </p>
-          <p>
-            Reference code:
-            <a class="firmware-link" data-file="m3508_interface_flow.c">m3508_interface_flow.c</a>
-          </p>
+          <p class="inline-code-caption"><strong>Sample control code (M3508 speed mapping and wheel-center speed)</strong></p>
+          <pre class="inline-code-window"><code class="language-c">#include &lt;stdint.h&gt;
+
+typedef struct {
+    int16_t rpm;
+} m3508_raw_t;
+
+float m3508_speed_mps(const m3508_raw_t *m, float rpm_to_mps, int sign)
+{
+    return sign * m-&gt;rpm * rpm_to_mps;
+}
+
+float wheel_center_speed(float vL, float vR)
+{
+    return 0.5f * (vL + vR);
+}</code></pre>
         </div>
       </details>
 
       <details class="expand-box">
-        <summary>Torque command saturation and output limiting</summary>
+        <summary>7.5 Torque command saturation and output limiting</summary>
         <div class="tab-body">
           <p>
             Output limiting is implemented to ensure motor commands remain within electrical, thermal, and stability-safe envelopes.
@@ -343,7 +395,42 @@
             \]
           </p>
           <p>
-            Over-tilt cut-off is treated as a higher-priority safety interlock: if \(|pitch|>pitch_{lim}\), torque output is forced to zero.
+            For this project, the torque clipping is applied per actuator group as follows.
+          </p>
+          <div style="overflow-x:auto; margin: 8px 0 10px 0;">
+            <table style="width:100%; border-collapse:collapse; background:#fff; border:1px solid #1f1f1f; min-width:620px;">
+              <thead>
+                <tr>
+                  <th style="border:1px solid #1f1f1f; padding:8px 10px; text-align:left; background:#eef2ff;">Channel</th>
+                  <th style="border:1px solid #1f1f1f; padding:8px 10px; text-align:left; background:#eef2ff;">Clipped Command</th>
+                  <th style="border:1px solid #1f1f1f; padding:8px 10px; text-align:left; background:#eef2ff;">Clip Limit Used</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="border:1px solid #1f1f1f; padding:8px 10px;">M3508 wheel motor (left)</td>
+                  <td style="border:1px solid #1f1f1f; padding:8px 10px;">\(T_{w,L}\)</td>
+                  <td style="border:1px solid #1f1f1f; padding:8px 10px;">\(\left|T_{w,L}\right|\le 3\ \mathrm{Nm}\)</td>
+                </tr>
+                <tr>
+                  <td style="border:1px solid #1f1f1f; padding:8px 10px;">M3508 wheel motor (right)</td>
+                  <td style="border:1px solid #1f1f1f; padding:8px 10px;">\(T_{w,R}\)</td>
+                  <td style="border:1px solid #1f1f1f; padding:8px 10px;">\(\left|T_{w,R}\right|\le 3\ \mathrm{Nm}\)</td>
+                </tr>
+                <tr>
+                  <td style="border:1px solid #1f1f1f; padding:8px 10px;">HT8108 joint motors (4 channels)</td>
+                  <td style="border:1px solid #1f1f1f; padding:8px 10px;">\(T_{j,i},\ i\in\{1,2,3,4\}\)</td>
+                  <td style="border:1px solid #1f1f1f; padding:8px 10px;">\(\left|T_{j,i}\right|\le 6\ \mathrm{Nm}\) motor-side (\(\approx 36\ \mathrm{Nm}\) after \(1{:}6\) reduction)</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p>
+            Any command exceeding these limits is clipped before transmission, and the same channel also passes through
+            the rate limiter \(\dot{u}_{i,\max}\) to avoid sudden torque jumps.
+          </p>
+          <p>
+            Over-tilt cut-off is treated as a high-priority safety lock: if \(|pitch|>pitch_{lim}\), torque output is forced to zero.
           </p>
           <p>
             Reference codes:
