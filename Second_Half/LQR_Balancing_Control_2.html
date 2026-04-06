@@ -15,6 +15,8 @@
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-clike.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-matlab.min.js"></script>
   <style>
     body {
@@ -181,13 +183,13 @@
         This page is a structured draft for the LQR balancing-control section. Replace the sample text in each foldable tab with the final report content.
       </p>
 
-      <details class="expand-box">
+      <details class="expand-box" data-keep-open="true">
         <summary>1. Control Theory</summary>
         <div class="tab-body">
           <p><strong>LQR Model</strong></p>
-          <img src="images_2/LQR_Model.jpg" alt="LQR Model" style="width: 200; height: auto; display: block; margin: 0 auto 12px auto; border-radius: 8px; border: 1px solid rgba(0,0,0,0.14);">
+          <img src="images_2/LQR_Model.jpg" alt="LQR Model" style="width: 33.33%; max-width: 100%; height: auto; display: block; margin: 0 auto 12px auto; border-radius: 8px; border: 1px solid rgba(0,0,0,0.14);">
           <p>
-            The balancing plant is represented by a reduced-order inverted-pendulum model, where the chassis and upper-body dynamics are approximated as a pendulum-like mode mounted on a wheel-supported base.
+            The balancing model is represented by a reduced-order inverted-pendulum model, where the chassis and upper-body dynamics are approximated as a pendulum-like mode mounted on a wheel-supported base.
             Around the upright operating point, the nonlinear equations are linearized into
             \( \dot{\mathbf{x}} = A\mathbf{x} + B\mathbf{u} \),
             using state vector
@@ -278,6 +280,26 @@
             instead of tuning each state independently. This gives coordinated correction (wheel positioning + body stabilization),
             better transient behavior, and a systematic tradeoff between stability speed and actuator effort through \(Q\) and \(R\).
           </p>
+          <p><strong>Project Context and Practical Implementation</strong></p>
+          <p>
+            In this project, LQR is implemented as one layer inside the full wheel-leg control stack rather than as an isolated control exercise.
+            The practical objective is to stabilize body pitch while coordinating wheel translation and leg-body motion on the integrated RoboMaster platform.
+            Therefore, the LQR formulation is connected directly to the reduced-order model, firmware sign convention, actuation limits, and startup safety logic discussed in later sections.
+          </p>
+          <p>
+            During hardware deployment, LQR output is applied together with supporting subsystems:
+            <a class="matlab-link" data-file="leg_length_pd_feedforward_tuning.c">leg-length PD</a> maintains the structural operating posture,
+            IMU and drivetrain feedback provide the estimated state vector,
+            and commanded torques are passed through transmission mapping and saturation limits before motor output.
+            The resulting implementation is
+            \( \mathbf{u} = -K\mathbf{x}_{err} \),
+            where \(\mathbf{x}_{err}\) is formed from measured/estimated state deviations under the firmware coordinate convention.
+          </p>
+          <p>
+            Validation in this phase is performed progressively from simulation to bench testing.
+            The control directionality, sign alignment, and state-response trend are verified first, then the closed-loop response is evaluated under manual disturbance.
+            Although the LQR pipeline is completed and functionally validated, final high-performance balance tuning remains limited by actuator condition, as one reused motor introduces non-ideal behavior that constrains achievable control precision.
+          </p>
         </div>
       </details>
 
@@ -334,7 +356,7 @@
             \]
           </p>
           <p>
-            These parameters define the reduced balancing plant used for linearization.
+            These parameters define the reduced balancing model used for linearization.
           </p>
 
           <p><strong>Step 2: Build nonlinear reduced dynamics</strong></p>
@@ -628,7 +650,7 @@
   <div id="code-modal-lqr" class="code-modal" aria-hidden="true">
     <div class="code-modal-box">
       <div class="code-modal-head">
-        <div id="code-modal-title-lqr" class="code-modal-title">MATLAB File</div>
+        <div id="code-modal-title-lqr" class="code-modal-title">Code File</div>
         <button id="code-close-btn-lqr" class="code-close-btn" type="button">Close</button>
       </div>
       <pre><code id="code-modal-content-lqr" class="language-matlab">Loading...</code></pre>
@@ -645,13 +667,33 @@
       const closeBtn = document.getElementById("code-close-btn-lqr");
       const links = root.querySelectorAll(".matlab-link[data-file]");
 
+      function inferLanguage(fileName) {
+        const lower = String(fileName || "").toLowerCase();
+        if (lower.endsWith(".m")) return "matlab";
+        if (lower.endsWith(".c") || lower.endsWith(".h") || lower.endsWith(".cpp") || lower.endsWith(".hpp")) return "c";
+        return "none";
+      }
+
+      function applyLanguageClass(fileName) {
+        const lang = inferLanguage(fileName);
+        modalContent.className = "";
+        modalContent.classList.add("language-" + lang);
+      }
+
       async function openCode(fileName) {
         modal.classList.add("open");
         modal.setAttribute("aria-hidden", "false");
         modalTitle.textContent = fileName;
         modalContent.textContent = "Loading...";
+        applyLanguageClass(fileName);
         try {
-          const candidates = ["MatLab_Files/" + fileName, "Second_Half/MatLab_Files/" + fileName];
+          const candidates = [
+            fileName,
+            "MatLab_Files/" + fileName,
+            "Second_Half/MatLab_Files/" + fileName,
+            "Firmware_Files/" + fileName,
+            "Second_Half/Firmware_Files/" + fileName
+          ];
           let loaded = false;
           for (const url of candidates) {
             const resp = await fetch(url);
@@ -664,7 +706,7 @@
               break;
             }
           }
-          if (!loaded) throw new Error("File not found in MatLab_Files");
+          if (!loaded) throw new Error("File not found in configured code folders");
         } catch (err) {
           modalContent.textContent = "Failed to load " + fileName + "\n" + err;
         }

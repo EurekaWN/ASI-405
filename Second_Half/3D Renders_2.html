@@ -1,37 +1,14 @@
 <div class="viewer-wrapper">
+  <h1 class="viewer-title">Bipedal Wheel-Leg Robot - 3D Model</h1>
 
-  <h1 class="viewer-title">Bipedal Wheel-Leg Robot – 3D Model</h1>
-
-  <div class="model-primary">
-    <img src="images_2/for_website_preview.jpg" alt="Model preview from EPRT package">
-    <p>
-      The provided <code>for website.htm</code> uses legacy eDrawings ActiveX technology and does not render in most modern browsers.
-      A preview is shown here to avoid a blank viewer area.
-    </p>
-  </div>
-
-  <details class="legacy-viewer">
-    <summary><strong>Open Legacy eDrawings Embed (Optional)</strong></summary>
+  <div class="model-embed-card">
     <iframe
       id="robot-model-iframe"
-      src="models_2/for%20website.htm"
-      title="Embedded eDrawings Model"
+      src="models_2/Bipedal%20Wheelchair%203D%20Prototype%20Overall%20Assembly.html"
+      title="Bipedal Wheel-Leg Robot 3D Model"
       loading="lazy">
     </iframe>
-  </details>
-
-  <div class="model-fallback">
-    <p>
-      If interactive viewing is required, open the legacy file externally (Internet Explorer mode), or export the model
-      as <code>.glb</code> from CAD and replace this section with native web 3D.
-    </p>
-    <p class="model-links">
-      <a href="models_2/for%20website.htm" target="_blank" rel="noopener noreferrer">Open Embedded HTM</a>
-      <a href="models_2/for%20website.EPRT" target="_blank" rel="noopener noreferrer">Open EPRT File</a>
-      <a href="models_2/for%20website.EPRT" download>Download EPRT</a>
-    </p>
   </div>
-
 </div>
 
 <style>
@@ -47,95 +24,176 @@
     font-weight: bold;
   }
 
-  .model-primary {
-    margin: 0 auto 12px;
-    max-width: 920px;
+  .model-embed-card {
+    margin: 0 auto;
+    max-width: 980px;
     border: 1px solid rgba(0, 0, 0, 0.14);
     border-radius: 10px;
     background: #f7f9fd;
-    padding: 14px;
-    text-align: left;
-  }
-
-  .model-primary img {
-    width: min(100%, 760px);
-    height: auto;
-    display: block;
-    margin: 0 auto 12px;
-    border-radius: 8px;
-    border: 1px solid rgba(0, 0, 0, 0.12);
-    background: #fff;
-  }
-
-  .model-primary p {
-    margin: 0;
-    line-height: 1.55;
-  }
-
-  .legacy-viewer {
-    margin: 0 auto 12px;
-    max-width: 920px;
-    text-align: left;
-    border: 1px solid rgba(0, 0, 0, 0.14);
-    border-radius: 10px;
-    background: #eef2fa;
-    padding: 10px 12px;
-  }
-
-  .legacy-viewer summary {
-    cursor: pointer;
-    font-weight: 700;
-  }
-
-  .legacy-viewer[open] {
-    background: #e7edf9;
+    padding: 12px;
   }
 
   #robot-model-iframe {
     width: 100%;
-    height: 680px;
+    height: 760px;
     background: #fff;
     border: 1px solid rgba(0, 0, 0, 0.16);
     border-radius: 8px;
-    margin-top: 10px;
-  }
-
-  .model-fallback {
-    margin: 10px auto 0;
-    max-width: 860px;
-    border: 1px solid rgba(0, 0, 0, 0.14);
-    border-radius: 10px;
-    background: #f7f9fd;
-    padding: 14px;
-    text-align: left;
-  }
-
-  .model-fallback img {
-    width: min(100%, 520px);
-    height: auto;
     display: block;
-    margin: 0 auto 12px;
-    border-radius: 8px;
-    border: 1px solid rgba(0, 0, 0, 0.12);
-    background: #fff;
-  }
-
-  .model-fallback p {
-    margin: 0 0 10px 0;
-    line-height: 1.55;
-  }
-
-  .model-fallback .model-links {
-    display: flex;
-    gap: 14px;
-    flex-wrap: wrap;
-    margin-bottom: 0;
-  }
-
-  .model-fallback .model-links a {
-    color: #0b3d91;
-    text-decoration: underline;
-    text-underline-offset: 2px;
-    font-weight: 600;
   }
 </style>
+
+<script>
+  (function () {
+    var iframe = document.getElementById('robot-model-iframe');
+    if (!iframe) return;
+
+    var selectors = [
+      '#edrawings-button-animate',
+      '[data-i18n-title="Strings.AnimateViews"]',
+      '[title="Animate Views"]'
+    ];
+
+    var startTimer = null;
+    var orbitTimer = null;
+    var dragAngle = 0;
+
+    function getFrameDoc() {
+      try {
+        return iframe.contentDocument || (iframe.contentWindow && iframe.contentWindow.document);
+      } catch (err) {
+        return null;
+      }
+    }
+
+    function dispatchMouse(el, type, view, x, y, buttons) {
+      var evt = new MouseEvent(type, {
+        bubbles: true,
+        cancelable: true,
+        view: view,
+        clientX: x,
+        clientY: y,
+        button: 0,
+        buttons: buttons || 0
+      });
+      el.dispatchEvent(evt);
+    }
+
+    function dispatchClick(el, view) {
+      var events = ['pointerdown', 'mousedown', 'pointerup', 'mouseup', 'click'];
+      for (var i = 0; i < events.length; i += 1) {
+        dispatchMouse(el, events[i], view, 0, 0, 0);
+      }
+    }
+
+    function getAnimateButton(doc) {
+      var button = null;
+      for (var i = 0; i < selectors.length; i += 1) {
+        button = doc.querySelector(selectors[i]);
+        if (button) break;
+      }
+      return button;
+    }
+
+    function isPlaying(button) {
+      var className = button && button.className ? button.className : '';
+      return className.indexOf('edrawings-animate-pause-icon') !== -1;
+    }
+
+    function startFallbackOrbit() {
+      if (orbitTimer) return;
+
+      orbitTimer = setInterval(function () {
+        var doc = getFrameDoc();
+        if (!doc) return;
+
+        var btn = getAnimateButton(doc);
+        if (btn && isPlaying(btn)) {
+          clearInterval(orbitTimer);
+          orbitTimer = null;
+          return;
+        }
+
+        var canvas = doc.getElementById('edrawings-canvas') || doc.querySelector('#edrawings-viewer canvas');
+        if (!canvas) return;
+
+        var rect = canvas.getBoundingClientRect();
+        if (!rect.width || !rect.height) return;
+
+        var cx = rect.left + rect.width * 0.5;
+        var cy = rect.top + rect.height * 0.55;
+        var radius = Math.min(rect.width, rect.height) * 0.12;
+        var x1 = cx + radius * Math.cos(dragAngle);
+        var y1 = cy + radius * Math.sin(dragAngle);
+        dragAngle += 0.22;
+        var x2 = cx + radius * Math.cos(dragAngle);
+        var y2 = cy + radius * Math.sin(dragAngle);
+
+        var view = doc.defaultView || window;
+        dispatchMouse(canvas, 'pointerdown', view, x1, y1, 1);
+        dispatchMouse(canvas, 'mousedown', view, x1, y1, 1);
+        dispatchMouse(canvas, 'mousemove', view, x2, y2, 1);
+        dispatchMouse(canvas, 'mouseup', view, x2, y2, 0);
+        dispatchMouse(canvas, 'pointerup', view, x2, y2, 0);
+      }, 240);
+    }
+
+    function tryStartBuiltInAnimation() {
+      var doc = getFrameDoc();
+      if (!doc) return false;
+
+      var button = getAnimateButton(doc);
+      if (!button) return false;
+
+      var hidden = button.classList.contains('edrawings-ui-hide');
+      if (!hidden && !isPlaying(button)) {
+        dispatchClick(button, doc.defaultView || window);
+      }
+
+      return isPlaying(button);
+    }
+
+    function setupAutoPlay() {
+      if (startTimer) clearInterval(startTimer);
+      if (orbitTimer) {
+        clearInterval(orbitTimer);
+        orbitTimer = null;
+      }
+
+      var attempts = 0;
+      var maxAttempts = 960; // ~4 minutes
+
+      startTimer = setInterval(function () {
+        attempts += 1;
+        var started = tryStartBuiltInAnimation();
+        if (started) {
+          clearInterval(startTimer);
+          startTimer = null;
+          if (orbitTimer) {
+            clearInterval(orbitTimer);
+            orbitTimer = null;
+          }
+          return;
+        }
+
+        // If loading is slow, start a fallback orbit after ~10s.
+        if (attempts === 40) {
+          startFallbackOrbit();
+        }
+
+        if (attempts >= maxAttempts) {
+          clearInterval(startTimer);
+          startTimer = null;
+        }
+      }, 250);
+    }
+
+    iframe.addEventListener('load', function () {
+      setTimeout(setupAutoPlay, 300);
+    });
+
+    if (iframe.contentDocument && iframe.contentDocument.readyState === 'complete') {
+      setTimeout(setupAutoPlay, 300);
+    }
+  })();
+</script>
