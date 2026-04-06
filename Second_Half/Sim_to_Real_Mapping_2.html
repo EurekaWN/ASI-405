@@ -399,7 +399,9 @@
         <div class="tab-body">
           <p>
             Startup calibration is implemented as a gated state machine to establish a deterministic and safe initial condition
-            before any hold-mode or balancing controller is enabled.
+            before any hold-mode or balancing controller is enabled. It is also required to accommodate the single-encoder
+            actuation setup, where absolute joint position is not directly observable at power-on; therefore, a mechanical jig
+            reference is used so the motor can identify and register its initial position correctly.
           </p>
           <p>
             Preconditions: the robot is mechanically supported in startup posture (or jig condition), emergency-stop (over tilt E-Stop and E-Stop coded onto controller)
@@ -463,81 +465,6 @@
           <p>
             Startup outputs: <code>imu_bias_ready</code>, <code>encoder_ready</code>, <code>actuator_ready</code>,
             <code>calib_ready</code>, and <code>system_ready</code>.
-          </p>
-        </div>
-      </details>
-
-      <details class="expand-box">
-        <summary><strong>Runtime offset calculation for joint zero positions</strong></summary>
-        <div class="tab-body">
-          <p>
-            Runtime offset calibration is implemented to align encoder-reported joint angles with the mechanical zero
-            reference used by the control model. The corrected joint angle is defined as:
-            \[
-            \theta_{\mathrm{true}} = \theta_{\mathrm{encoder}} - \theta_{\mathrm{offset}}.
-            \]
-            The offset term is obtained from a known reference pose (e.g., jig-based hold pose):
-            \[
-            \theta_{\mathrm{offset}}=\theta_{\mathrm{encoder,ref}}-\theta_{\mathrm{ref,true}}.
-            \]
-          </p>
-          <p>
-            This compensation is required because startup encoder origin, assembly tolerance, and sensor mounting variation
-            introduce a persistent angular bias. Without offset correction, forward/inverse kinematics, Jacobian mapping,
-            and LQR/VMC control allocation may become sign-inconsistent with hardware behavior.
-          </p>
-          <p>
-            Firmware implementation reference:
-            <a class="firmware-link" data-file="runtime_joint_zero_offset.c">runtime_joint_zero_offset.c</a>
-          </p>
-          <p><strong>Calibration and runtime procedure</strong></p>
-          <ul>
-            <li>Set the mechanism to the designated reference pose and capture \( \theta_{\mathrm{encoder,ref}} \).</li>
-            <li>Assign \( \theta_{\mathrm{ref,true}} \) from calibration geometry definition.</li>
-            <li>Compute and store \( \theta_{\mathrm{offset}} \) for each joint channel.</li>
-            <li>Apply offset correction to every encoder sample before state-vector construction.</li>
-          </ul>
-          <p><strong>Joint zero-offset table (editable)</strong></p>
-          <div class="offset-table-wrap">
-            <table class="offset-table">
-              <thead>
-                <tr>
-                  <th>Joint</th>
-                  <th>Reference Angle \(\theta_{\mathrm{ref,true}}\) (deg)</th>
-                  <th>Encoder at Capture \(\theta_{\mathrm{encoder,ref}}\) (deg)</th>
-                  <th>Offset \(\theta_{\mathrm{offset}}\) (deg)</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>Left Hip</td>
-                  <td>0.00</td>
-                  <td>12.40</td>
-                  <td>12.40</td>
-                </tr>
-                <tr>
-                  <td>Left Knee</td>
-                  <td>0.00</td>
-                  <td>-8.15</td>
-                  <td>-8.15</td>
-                </tr>
-                <tr>
-                  <td>Right Hip</td>
-                  <td>0.00</td>
-                  <td>11.90</td>
-                  <td>11.90</td>
-                </tr>
-                <tr>
-                  <td>Right Knee</td>
-                  <td>0.00</td>
-                  <td>-7.80</td>
-                  <td>-7.80</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          <p>
-            Table values should be updated using the most recent calibration session and version-controlled prior to deployment.
           </p>
         </div>
       </details>
@@ -617,14 +544,94 @@
         </div>
       </details>
 
+      <details class="expand-box">
+        <summary><strong>Runtime offset calculation for joint zero positions</strong></summary>
+        <div class="tab-body">
+          <p>
+            Runtime offset calibration is implemented to align encoder-reported joint angles with the mechanical zero
+            reference used by the control model. The corrected joint angle is defined as:
+            \[
+            \theta_{\mathrm{true}} = \theta_{\mathrm{encoder}} - \theta_{\mathrm{offset}}.
+            \]
+            The offset term is obtained from a known reference pose (e.g., jig-based hold pose):
+            \[
+            \theta_{\mathrm{offset}}=\theta_{\mathrm{encoder,ref}}-\theta_{\mathrm{ref,true}}.
+            \]
+          </p>
+          <p>
+            This compensation is required because startup encoder origin, assembly tolerance, and sensor mounting variation
+            introduce a persistent angular bias. Without offset correction, forward/inverse kinematics, Jacobian mapping,
+            and LQR/VMC control allocation may become sign-inconsistent with hardware behavior.
+          </p>
+          <p>
+            Firmware implementation reference:
+            <a class="firmware-link" data-file="runtime_joint_zero_offset.c">runtime_joint_zero_offset.c</a>
+          </p>
+          <p><strong>Calibration and runtime procedure</strong></p>
+          <ul>
+            <li>Set the mechanism to the designated reference pose and capture \( \theta_{\mathrm{encoder,ref}} \).</li>
+            <li>Assign \( \theta_{\mathrm{ref,true}} \) from calibration geometry definition.</li>
+            <li>Compute and store \( \theta_{\mathrm{offset}} \) for each joint channel.</li>
+            <li>Apply offset correction to every encoder sample before state-vector construction.</li>
+          </ul>
+          <p><strong>Joint zero-offset table (sample)</strong></p>
+          <div class="offset-table-wrap">
+            <table class="offset-table">
+              <thead>
+                <tr>
+                  <th>Joint</th>
+                  <th>Reference Angle \(\theta_{\mathrm{ref,true}}\) (deg)</th>
+                  <th>Encoder at Capture \(\theta_{\mathrm{encoder,ref}}\) (deg)</th>
+                  <th>Offset \(\theta_{\mathrm{offset}}\) (deg)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Left Hip</td>
+                  <td>0.00</td>
+                  <td>12.40</td>
+                  <td>12.40</td>
+                </tr>
+                <tr>
+                  <td>Left Knee</td>
+                  <td>0.00</td>
+                  <td>-8.15</td>
+                  <td>-8.15</td>
+                </tr>
+                <tr>
+                  <td>Right Hip</td>
+                  <td>0.00</td>
+                  <td>11.90</td>
+                  <td>11.90</td>
+                </tr>
+                <tr>
+                  <td>Right Knee</td>
+                  <td>0.00</td>
+                  <td>-7.80</td>
+                  <td>-7.80</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p>
+            Table values should be updated using the most recent calibration session and version-controlled prior to deployment.
+          </p>
+        </div>
+      </details>
+
       <section class="plain-block">
         <h3>Jig-based zero capture / hold pose initialization</h3>
+        <video
+          src="videos_2/calibration%20video.mp4"
+          playsinline
+          controls
+          preload="metadata"
+          style="width: 100%; max-width: 760px; display: block; margin: 6px auto 12px auto; border-radius: 8px; background: #000;">
+        </video>
         <p>
           This section demonstrates the initial calibration process, followed by the transition of the motors into a “leg length” hold state.
           Once this state is established, the robot can then proceed into the LQR balancing sequence.
         </p>
-        <div class="media-placeholder">[Image Placeholder: Jig Setup / Zero-Capture Geometry]</div>
-        <div class="media-placeholder">[Video Placeholder: Hold-Pose Initialization Procedure]</div>
       </section>
 
       <details class="expand-box">
@@ -719,16 +726,17 @@
           style="width: 100%; max-width: 760px; display: block; margin: 10px auto 12px auto; border-radius: 8px; background: #000;">
         </video>
         <p>
-          This section documents the validation workflow from simulation to hardware testing.
-          Validation is executed in staged progression to reduce commissioning risk and to isolate model-controller mismatch prior to full deployment.
-          In the demonstrated test sequence, the controller mapping is verified for both positive and negative increments under manual excitation
-          (up/down and left/right disturbance directions). The objective is to command the motors to shift the wheel-center of the leg assembly
-          (the forward-kinematics point \(\mathbf{G}\)) in discrete increments of \(20\,\mathrm{mm}\) per command step.
-          This procedure is used to verify both forward-kinematic consistency and sign-convention correctness across sensing, state mapping,
-          and actuation channels. The corresponding implementation code is
+          This section presents the validation flow from simulation to hardware.
+          The validation is carried out in stages so commissioning risk is reduced and any model-controller mismatch can be identified early, before full deployment.
+          In this demonstrated sequence, manual disturbances are applied (up/down and left/right) while verifying that the controller mapping responds correctly
+          for both positive and negative command increments.
+          The motors are commanded to shift the wheel-center of the leg assembly, i.e., the forward-kinematics point \(\mathbf{G}\),
+          in discrete steps of \(20\,\mathrm{mm}\) per increment.
+          This check confirms both forward-kinematic consistency and sign-convention correctness across sensing, state mapping, and actuation.
+          The corresponding implementation code is
           <a class="firmware-link" data-file="validation_sim_to_hw_sequence.c">validation_sim_to_hw_sequence.c</a>.
-          During this validation stage, leg length is maintained by a leg-length PD loop, which is intentionally kept in a preliminary
-          (not fully tuned) state because it is used only for testing support.
+          During this stage, leg length is maintained by a leg-length PD loop kept in a preliminary (not fully tuned) condition,
+          since it is used only as test support.
         </p>
       </section>
       <div id="code-modal-sim2real" class="code-modal" aria-hidden="true">

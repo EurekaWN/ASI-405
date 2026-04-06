@@ -512,6 +512,24 @@ p.sub {
       line-height: 1.5;
     }
 
+    .auto-media-caption {
+      margin: 6px 0 12px 0;
+      font-size: 10.5pt;
+      line-height: 1.45;
+      color: #2f3b4a;
+      text-align: center;
+      font-style: italic;
+    }
+
+    table caption.auto-media-caption {
+      caption-side: bottom;
+      text-align: left;
+      margin-top: 6px;
+      margin-bottom: 6px;
+      font-style: italic;
+      color: #2f3b4a;
+    }
+
     /* ---------------------------------------------------- */
     /* SIDEBAR (FIXED, ALWAYS VISIBLE) */
     /* ---------------------------------------------------- */
@@ -793,6 +811,15 @@ p.sub {
       color: #2f3b4a;
       line-height: 1.2;
       white-space: nowrap;
+    }
+
+    #sec-2-project-progression .prog-photo .auto-media-caption {
+      margin: 6px 0 0 0;
+      font-size: 9pt;
+      line-height: 1.25;
+      text-align: center;
+      font-style: normal;
+      color: #243041;
     }
 
     #sec-2-project-progression .prog-photo:hover {
@@ -1171,7 +1198,7 @@ p.sub {
         try {
           let loaded = false;
           for (const c of candidates) {
-            const resp = await fetch(c);
+            const resp = await fetch(c, { cache: "no-store" });
             if (resp.ok) {
               const raw = await resp.text();
               const isFullDocument = /<!doctype/i.test(raw) || /<html[\s>]/i.test(raw);
@@ -1199,9 +1226,230 @@ p.sub {
       }
 
       insertSectionDividers();
+      applyAutoMediaCaptions();
       generateTOC();
       initScrollSpy();
       initExpandAccordion();
+    }
+
+    function extractLeadingSectionNumber(text) {
+      if (!text) return "";
+      const match = String(text).trim().match(/^(\d+(?:\.\d+)*)/);
+      return match ? match[1] : "";
+    }
+
+    function normalizeCaptionText(text) {
+      return (text || "").replace(/\s+/g, " ").trim();
+    }
+
+    function parseCaptionParts(text) {
+      const normalized = normalizeCaptionText(text);
+      const match = normalized.match(/^(Figure|Fig\.?|Video|Table)\s+([0-9A-Za-z.\-]+)\s*:\s*(.+)$/i);
+      if (!match) return null;
+      return {
+        label: match[1],
+        number: match[2],
+        description: match[3].trim()
+      };
+    }
+
+    function humanizeFromSource(mediaEl) {
+      let src = mediaEl.getAttribute("src") || "";
+      if (!src && mediaEl.tagName && mediaEl.tagName.toLowerCase() === "video") {
+        const source = mediaEl.querySelector("source[src]");
+        if (source) src = source.getAttribute("src") || "";
+      }
+      if (!src) return "";
+      let filename = src.split("/").pop().split("?")[0] || "";
+      try {
+        filename = decodeURIComponent(filename);
+      } catch (_) {}
+      const noExt = filename.replace(/\.[^.]+$/, "");
+      return noExt.replace(/[_-]+/g, " ").replace(/\s+/g, " ").trim();
+    }
+
+    function getMediaFallbackDescription(mediaEl, kind) {
+      const prog = mediaEl.closest ? mediaEl.closest(".prog-photo") : null;
+      if (prog) {
+        const progLabel = prog.querySelector(".prog-label");
+        const progText = normalizeCaptionText(progLabel ? progLabel.textContent : "");
+        if (progText) return progText;
+      }
+
+      const alt = normalizeCaptionText(mediaEl.getAttribute("alt"));
+      if (alt) return alt;
+      const title = normalizeCaptionText(mediaEl.getAttribute("title"));
+      if (title) return title;
+      const dataCaption = normalizeCaptionText(mediaEl.getAttribute("data-caption"));
+      if (dataCaption) return dataCaption;
+      const fromSource = humanizeFromSource(mediaEl);
+      if (fromSource) return fromSource;
+      if (kind === "Table") return "Tabulated data summary";
+      if (kind === "Video") return "Demonstration video";
+      return "Illustration";
+    }
+
+    function isCaptionExcluded(mediaEl) {
+      if (!mediaEl || !mediaEl.closest) return true;
+      if (mediaEl.closest("#sidebar")) return true;
+      if (mediaEl.closest(".code-modal")) return true;
+      if (mediaEl.closest(".front-logo")) return true;
+      if (mediaEl.closest(".card")) return true;
+      if (mediaEl.closest(".preview-image-wrapper")) return true;
+      if (mediaEl.closest("[data-no-auto-caption='true'], .no-auto-caption")) return true;
+      if (mediaEl.id === "previewImg") return true;
+      return false;
+    }
+
+    function getOrCreateTableCaption(tableEl) {
+      const childCaptions = Array.from(tableEl.children).filter((child) => {
+        return child.tagName && child.tagName.toLowerCase() === "caption";
+      });
+      if (childCaptions.length) return childCaptions[0];
+      const caption = document.createElement("caption");
+      caption.classList.add("auto-media-caption");
+      caption.setAttribute("data-auto-caption", "true");
+      tableEl.appendChild(caption);
+      return caption;
+    }
+
+    function getOrCreateProgCaption(mediaEl) {
+      const prog = mediaEl.closest(".prog-photo");
+      if (!prog) return null;
+      let cap = prog.querySelector(".auto-media-caption");
+      if (!cap) {
+        cap = document.createElement("p");
+        cap.className = "auto-media-caption";
+        cap.setAttribute("data-auto-caption", "true");
+        prog.appendChild(cap);
+      }
+      return cap;
+    }
+
+    function getOrCreateStandaloneCaption(mediaEl) {
+      const parentFigure = mediaEl.closest("figure");
+      if (parentFigure) {
+        let figcaption = parentFigure.querySelector("figcaption");
+        if (!figcaption) {
+          figcaption = document.createElement("figcaption");
+          figcaption.className = "auto-media-caption";
+          figcaption.setAttribute("data-auto-caption", "true");
+          parentFigure.appendChild(figcaption);
+        }
+        return figcaption;
+      }
+
+      const progCaption = getOrCreateProgCaption(mediaEl);
+      if (progCaption) return progCaption;
+
+      const next = mediaEl.nextElementSibling;
+      if (next) {
+        const cls = next.className || "";
+        const isCaptionClass = /\bcaption\b/i.test(cls) || next.classList.contains("auto-media-caption");
+        const isCaptionLikeText = /^(Figure|Fig\.?|Video|Table)\s+[0-9A-Za-z.\-]+\s*:/i.test(
+          normalizeCaptionText(next.textContent || "")
+        );
+        if (isCaptionClass || isCaptionLikeText) return next;
+      }
+
+      const cap = document.createElement("p");
+      cap.className = "auto-media-caption";
+      cap.setAttribute("data-auto-caption", "true");
+      mediaEl.insertAdjacentElement("afterend", cap);
+      return cap;
+    }
+
+    function buildCaptionText(kind, sectionNumber, runningNumber, existingText, fallbackDescription) {
+      const parsed = parseCaptionParts(existingText);
+      if (parsed) {
+        const desc = parsed.description || fallbackDescription;
+        return `${kind} ${parsed.number}: ${desc}`;
+      }
+
+      const normalizedExisting = normalizeCaptionText(existingText);
+      const descText = normalizedExisting || fallbackDescription;
+      return `${kind} ${sectionNumber}.${runningNumber}: ${descText}`;
+    }
+
+    function detectSectionNumber(sectionEl, includeFile, lastKnownSection) {
+      const heading = sectionEl.querySelector(
+        ".page-title, .section-title, .subsection-title, .subsubsection-title, h1, h2, h3"
+      );
+      const fromHeading = extractLeadingSectionNumber(heading ? heading.textContent : "");
+      if (fromHeading) return fromHeading;
+
+      const fileMatch = String(includeFile || "").trim().match(/^(\d+(?:\.\d+)*)\s*[\.\s_-]/);
+      const fromFile = fileMatch ? fileMatch[1] : "";
+      if (fromFile) return fromFile;
+
+      return lastKnownSection || "";
+    }
+
+    function applyAutoMediaCaptions() {
+      const wrapper = document.querySelector(".report-wrapper");
+      if (!wrapper) return;
+
+      wrapper.querySelectorAll(".auto-media-caption[data-auto-caption='true']").forEach((el) => el.remove());
+      wrapper.querySelectorAll("caption.auto-media-caption[data-auto-caption='true']").forEach((el) => el.remove());
+
+      const includeBlocks = Array.from(wrapper.querySelectorAll(":scope > [include-html]"));
+      let lastKnownSection = "";
+
+      includeBlocks.forEach((block) => {
+        const includeFile = block.getAttribute("include-html") || "";
+        const sectionNumber = detectSectionNumber(block, includeFile, lastKnownSection);
+        if (sectionNumber) lastKnownSection = sectionNumber;
+        if (!sectionNumber) return;
+
+        let figureCount = 0;
+        let videoCount = 0;
+        let tableCount = 0;
+
+        const mediaItems = Array.from(block.querySelectorAll("img, video, table"));
+        mediaItems.forEach((mediaEl) => {
+          if (isCaptionExcluded(mediaEl)) return;
+
+          const tag = mediaEl.tagName.toLowerCase();
+          let kind = "Figure";
+          let count = 0;
+
+          if (tag === "video") {
+            kind = "Video";
+            videoCount += 1;
+            count = videoCount;
+          } else if (tag === "table") {
+            kind = "Table";
+            tableCount += 1;
+            count = tableCount;
+          } else {
+            kind = "Figure";
+            figureCount += 1;
+            count = figureCount;
+          }
+
+          const fallbackDescription = getMediaFallbackDescription(mediaEl, kind);
+          let captionEl = null;
+          if (kind === "Table") {
+            captionEl = getOrCreateTableCaption(mediaEl);
+          } else {
+            captionEl = getOrCreateStandaloneCaption(mediaEl);
+          }
+          if (!captionEl) return;
+
+          if (!captionEl.classList.contains("auto-media-caption")) {
+            captionEl.classList.add("auto-media-caption");
+          }
+
+          const existingCaption = normalizeCaptionText(captionEl.textContent || "");
+          captionEl.textContent = buildCaptionText(
+            kind,
+            sectionNumber,
+            count,
+            existingCaption,
+            fallbackDescription
+          );
+        });
+      });
     }
 
     function insertSectionDividers() {
