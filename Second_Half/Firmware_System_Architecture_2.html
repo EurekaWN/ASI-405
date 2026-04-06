@@ -183,7 +183,7 @@
 </head>
 <body>
   <div class="report-wrapper">
-    <section class="section-card">
+    <section class="section-card" id="sec-7-firmware-system-architecture">
       <h1 class="page-title">7. Firmware System Architecture</h1>
       <p>
         This section documents the runtime firmware architecture from sensing to estimation, control allocation, actuator interfacing,
@@ -355,23 +355,26 @@
     </section>
   </div>
 
-  <div id="code-modal" class="code-modal" aria-hidden="true">
+  <div id="code-modal-fwarch" class="code-modal" aria-hidden="true">
     <div class="code-modal-box">
       <div class="code-modal-head">
-        <div id="code-modal-title" class="code-modal-title">Firmware File</div>
-        <button id="code-close-btn" class="code-close-btn" type="button">Close</button>
+        <div id="code-modal-title-fwarch" class="code-modal-title">Firmware File</div>
+        <button id="code-close-btn-fwarch" class="code-close-btn" type="button">Close</button>
       </div>
-      <pre><code id="code-modal-content" class="language-c">Loading...</code></pre>
+      <pre><code id="code-modal-content-fwarch" class="language-c">Loading...</code></pre>
     </div>
   </div>
 
   <script>
     (function () {
-      const modal = document.getElementById("code-modal");
-      const modalTitle = document.getElementById("code-modal-title");
-      const modalContent = document.getElementById("code-modal-content");
-      const closeBtn = document.getElementById("code-close-btn");
-      const links = document.querySelectorAll(".firmware-link[data-file]");
+      const root = document.getElementById("sec-7-firmware-system-architecture");
+      if (!root) return;
+
+      const modal = document.getElementById("code-modal-fwarch");
+      const modalTitle = document.getElementById("code-modal-title-fwarch");
+      const modalContent = document.getElementById("code-modal-content-fwarch");
+      const closeBtn = document.getElementById("code-close-btn-fwarch");
+      const links = root.querySelectorAll(".firmware-link[data-file]");
 
       async function openCode(fileName) {
         modal.classList.add("open");

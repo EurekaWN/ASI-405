@@ -232,14 +232,170 @@
 </head>
 <body>
   <div class="report-wrapper">
-    <section class="section-card">
+    <section class="section-card" id="sec-5-sim-to-real-mapping">
       <h1 class="page-title">5. Sim to Real Mapping</h1>
+      <style>
+        #sec-5-sim-to-real-mapping .page-title {
+          font-size: 20pt;
+          font-weight: bold;
+          margin: 0 0 14px 0;
+        }
+
+        #sec-5-sim-to-real-mapping p {
+          margin: 0 0 12px 0;
+          line-height: 1.5;
+        }
+
+        #sec-5-sim-to-real-mapping details.expand-box {
+          margin: 8px 0 0 0;
+          padding: 14px 16px;
+          border-radius: 8px;
+          background: rgba(230, 236, 255, 0.55);
+          border: 1px solid rgba(140, 160, 220, 0.3);
+          transition: 0.25s ease;
+        }
+
+        #sec-5-sim-to-real-mapping details.expand-box[open] {
+          background: rgba(210, 220, 255, 0.65);
+          border-color: rgba(90, 110, 200, 0.45);
+        }
+
+        #sec-5-sim-to-real-mapping details.expand-box summary {
+          cursor: pointer;
+          list-style: none;
+          display: flex;
+          align-items: center;
+          margin: 0;
+          padding: 0;
+          font-weight: bold;
+          margin-bottom: 6px;
+          font-size: 12pt;
+          font-family: inherit;
+        }
+
+        #sec-5-sim-to-real-mapping details.expand-box summary::-webkit-details-marker {
+          display: none;
+        }
+
+        #sec-5-sim-to-real-mapping details.expand-box summary::before {
+          content: "▶";
+          font-size: 11pt;
+          margin-right: 6px;
+        }
+
+        #sec-5-sim-to-real-mapping details.expand-box[open] summary::before {
+          content: "▼";
+        }
+
+        #sec-5-sim-to-real-mapping .tab-body {
+          padding-top: 8px;
+        }
+
+        #sec-5-sim-to-real-mapping .firmware-link {
+          color: #0b3d91;
+          text-decoration: underline;
+          text-underline-offset: 2px;
+          cursor: pointer;
+          font-weight: 600;
+        }
+
+        #sec-5-sim-to-real-mapping .offset-table-wrap {
+          overflow-x: auto;
+          margin-top: 8px;
+        }
+
+        #sec-5-sim-to-real-mapping table.offset-table {
+          width: 100%;
+          border-collapse: collapse;
+          background: #fff;
+          min-width: 560px;
+        }
+
+        #sec-5-sim-to-real-mapping .offset-table th,
+        #sec-5-sim-to-real-mapping .offset-table td {
+          border: 1px solid rgba(0, 0, 0, 0.18);
+          padding: 8px 10px;
+          text-align: left;
+          vertical-align: top;
+        }
+
+        #sec-5-sim-to-real-mapping .offset-table th {
+          background: #eef2ff;
+          font-weight: 700;
+        }
+
+        #code-modal-sim2real.code-modal {
+          position: fixed;
+          inset: 0;
+          background: rgba(0, 0, 0, 0.45);
+          display: none;
+          align-items: center;
+          justify-content: center;
+          z-index: 9999;
+          padding: 20px;
+        }
+
+        #code-modal-sim2real.code-modal.open {
+          display: flex;
+        }
+
+        #code-modal-sim2real .code-modal-box {
+          width: min(980px, 96vw);
+          max-height: 88vh;
+          background: #fff;
+          border-radius: 10px;
+          border: 1px solid rgba(0, 0, 0, 0.15);
+          box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+          display: flex;
+          flex-direction: column;
+          overflow: hidden;
+        }
+
+        #code-modal-sim2real .code-modal-head {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 10px 14px;
+          border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+          background: #f6f8fc;
+        }
+
+        #code-modal-sim2real .code-close-btn {
+          border: 1px solid #b9c3e6;
+          background: #fff;
+          color: #1d2e66;
+          border-radius: 6px;
+          padding: 6px 10px;
+          cursor: pointer;
+          font-family: "Times New Roman", Times, serif;
+          font-size: 11pt;
+        }
+
+        #code-modal-sim2real .code-close-btn:hover {
+          background: #f0f4ff;
+        }
+
+        #code-modal-sim2real pre {
+          margin: 0;
+          padding: 0;
+          overflow: auto;
+          background: #2d2d2d;
+        }
+
+        #code-modal-sim2real code {
+          font-size: 10.5pt;
+          line-height: 1.45;
+          display: block;
+          min-height: 120px;
+          font-family: Consolas, "Courier New", monospace;
+        }
+      </style>
       <p>
         This section demonstrates how the theoretical system is translated into the real mechanical robot. Multiple stages of calibration and tuning are required to ensure the robot behaves as intended, while safety features are implemented to prevent potential incidents. A step-by-step calibration process is presented in this section, with the ultimate goal of ensuring that the real-world robot is accurately represented in software so that its commanded behavior can be executed reliably.
       </p>
 
       <details class="expand-box">
-        <summary>Startup calibration procedure</summary>
+        <summary><strong>Startup calibration procedure</strong></summary>
         <div class="tab-body">
           <p>
             Startup calibration is implemented as a gated state machine to establish a deterministic and safe initial condition
@@ -312,7 +468,7 @@
       </details>
 
       <details class="expand-box">
-        <summary>Runtime offset calculation for joint zero positions</summary>
+        <summary><strong>Runtime offset calculation for joint zero positions</strong></summary>
         <div class="tab-body">
           <p>
             Runtime offset calibration is implemented to align encoder-reported joint angles with the mechanical zero
@@ -387,7 +543,7 @@
       </details>
 
       <details class="expand-box">
-        <summary>Gear ratio and chain ratio conversion</summary>
+        <summary><strong>Gear ratio and chain ratio conversion</strong></summary>
         <div class="tab-body">
           <img
             src="images_2/Gear_Ratio.jpg"
@@ -472,7 +628,7 @@
       </section>
 
       <details class="expand-box">
-        <summary>Coordinate/sign convention alignment between hardware and software</summary>
+        <summary><strong>Coordinate/sign convention alignment between hardware and software</strong></summary>
         <div class="tab-body">
           <p>
             Coordinate and sign-convention alignment was executed as a dedicated integration task to ensure that model equations,
@@ -575,24 +731,27 @@
           (not fully tuned) state because it is used only for testing support.
         </p>
       </section>
-    </section>
-  </div>
-  <div id="code-modal" class="code-modal" aria-hidden="true">
+      <div id="code-modal-sim2real" class="code-modal" aria-hidden="true">
     <div class="code-modal-box">
       <div class="code-modal-head">
-        <div id="code-modal-title" class="code-modal-title">Firmware File</div>
-        <button id="code-close-btn" class="code-close-btn" type="button">Close</button>
+        <div id="code-modal-title-sim2real" class="code-modal-title">Firmware File</div>
+        <button id="code-close-btn-sim2real" class="code-close-btn" type="button">Close</button>
       </div>
-      <pre><code id="code-modal-content" class="language-c">Loading...</code></pre>
+      <pre><code id="code-modal-content-sim2real" class="language-c">Loading...</code></pre>
     </div>
   </div>
+    </section>
+    </div>
   <script>
     (function () {
-      const modal = document.getElementById("code-modal");
-      const modalTitle = document.getElementById("code-modal-title");
-      const modalContent = document.getElementById("code-modal-content");
-      const closeBtn = document.getElementById("code-close-btn");
-      const links = document.querySelectorAll(".firmware-link[data-file]");
+      const root = document.getElementById("sec-5-sim-to-real-mapping");
+      if (!root) return;
+
+      const modal = root.querySelector("#code-modal-sim2real");
+      const modalTitle = root.querySelector("#code-modal-title-sim2real");
+      const modalContent = root.querySelector("#code-modal-content-sim2real");
+      const closeBtn = root.querySelector("#code-close-btn-sim2real");
+      const links = root.querySelectorAll(".firmware-link[data-file]");
 
       async function openCode(fileName) {
         modal.classList.add("open");

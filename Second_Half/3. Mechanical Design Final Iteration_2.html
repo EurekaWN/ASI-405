@@ -93,16 +93,49 @@
         while V-groove contact surfaces improve radial support and axial retention.
       </p>
 
-      <div class="mech-grid-2">
+      <div class="mech-grid-3">
         <figure class="mech-figure">
-          <img id="img-3-6a" class="mech-media-size" style="--media-max-w: 100%;" src="images_2/mech_iter_05_custom_bearing_implementation.png" alt="Custom big bearing structure implementation">
-          <figcaption>Figure 3.5: Custom big-bearing structure and physical implementation.</figcaption>
+          <img id="img-3-2a" class="mech-media-size" style="--media-max-w: 100%;" src="images_2/V%20groove%20Bearing.jpg" alt="V groove bearing concept">
+          <figcaption>Figure 3.6a: V-groove bearing concept.</figcaption>
         </figure>
         <figure class="mech-figure">
-          <img id="img-3-6b" class="mech-media-size" style="--media-max-w: 100%;" src="images_2/mech_iter_06_bearing_components.png" alt="Custom bearing and eccentric component details">
-          <figcaption>Figure 3.6: Bearing component and eccentric-nut detail for adjustable preload.</figcaption>
+          <img id="img-3-2b" class="mech-media-size" style="--media-max-w: 100%;" src="images_2/Final%20CAD.jpg" alt="Final CAD for custom bearing assembly">
+          <figcaption>Figure 3.6b: Final CAD integration of the custom bearing module.</figcaption>
+        </figure>
+        <figure class="mech-figure">
+          <img id="img-3-2c" class="mech-media-size" style="--media-max-w: 100%;" src="images_2/Final%20Wheel%20look.jpg" alt="Final wheel look with custom bearing">
+          <figcaption>Figure 3.6c: Final wheel appearance after bearing integration.</figcaption>
         </figure>
       </div>
+      <p class="mech-figure-note">
+        The design uses an inner V-groove bearing that is extended outward with an eccentric nut to apply tension preload.
+        This preload pushes the bearing against the rim. The carbon-fiber rim is chamfered at the inner diameter so that
+        the V-groove bearing can seat properly and constrain axial movement between the inner and outer wheel structures.
+        The design progression from conceptual groove-profile selection to full-CAD packaging and final wheel assembly
+        demonstrates that the custom bearing layout is mechanically feasible within the available wheel envelope.
+      </p>
+
+      <figure class="mech-figure mech-figure-fit">
+        <img id="img-3-2d" class="mech-media-size" style="--media-max-w: 760px;" src="images_2/Vgroove%20and%20eccentric%20NUT.jpg" alt="V groove bearing with eccentric nut detail">
+        <figcaption>Figure 3.6d: V-groove and eccentric-nut implementation detail.</figcaption>
+      </figure>
+      <p class="mech-figure-note">
+        The eccentric nut provides preload adjustability during assembly, allowing controlled bearing contact pressure
+        and compensation for manufacturing tolerance. This mechanism improves rotational stability, reduces radial play,
+        and supports smoother wheel motion under load.
+      </p>
+
+      <figure class="mech-figure mech-figure-fit">
+        <video id="vid-3-2-wheel-turn" class="mech-inline-video mech-media-size" style="--media-max-w: 760px;" controls playsinline preload="metadata">
+          <source src="videos_2/wheel%20turn%20video.mp4" type="video/mp4">
+          Your browser does not support the video tag.
+        </video>
+        <figcaption>Figure 3.6e: Wheel turning demonstration of the final custom-bearing assembly.</figcaption>
+      </figure>
+      <p class="mech-figure-note">
+        The wheel rotates concentrically between the inner and outer wheel structures with minimal noise,
+        and can achieve high rotational speed on the floor.
+      </p>
     </div>
   </details>
 
@@ -274,35 +307,72 @@
   <details class="expand-box">
     <summary><strong>3.4 Other Mechanical Details</strong></summary>
     <div class="mech-body">
-      <div class="mech-grid-3">
-        <figure class="mech-figure">
-          <img id="img-3-8" class="mech-media-size" style="--media-max-w: 100%;" src="images_2/mech_iter_08_chain_tensioning_block.png" alt="Chain tensioning block implementation">
-          <figcaption>Figure 3.8: Chain tensioning block detail.</figcaption>
-        </figure>
-        <figure class="mech-figure">
-          <img id="img-3-9" class="mech-media-size" style="--media-max-w: 100%;" src="images_2/mech_iter_09_chassis_structure.png" alt="Chassis structure model">
-          <figcaption>Figure 3.9: Chassis structure configuration.</figcaption>
-        </figure>
-        <figure class="mech-figure">
-          <img id="img-3-10" class="mech-media-size" style="--media-max-w: 100%;" src="images_2/mech_iter_10_custom_tyre_rim.png" alt="Custom tyre rim design">
-          <figcaption>Figure 3.10: Custom tyre rim profile.</figcaption>
-        </figure>
-      </div>
-
-      <figure class="mech-figure mech-figure-narrow">
-        <img id="img-3-11" class="mech-media-size" style="--media-max-w: 100%;" src="images_2/mech_iter_11_tyre_profile_comparison.png" alt="Tyre profile concept comparison">
-        <figcaption>Figure 3.11: Tyre profile concept comparison for hubless configuration.</figcaption>
+      <figure class="mech-figure mech-figure-fit">
+        <img id="img-3-8" class="mech-media-size" style="--media-max-w: 760px;" src="images_2/chain%20tensioning%20block.jpg" alt="Chain tensioning block implementation">
+        <figcaption>Figure 3.8: Chain tensioning block.</figcaption>
       </figure>
+      <p class="mech-figure-note">
+        A 5 mm bolt with a lock nut is used to push down the tensioning block.
+        The block then pushes the small tensioning wheel downward to tighten chain slack,
+        without requiring motor re-spacing.
+      </p>
+
+      <figure class="mech-figure mech-figure-fit">
+        <img id="img-3-9" class="mech-media-size" style="--media-max-w: 760px;" src="images_2/chasis%20structure.jpg" alt="Chassis structure configuration">
+        <figcaption>Figure 3.9: Chassis structure configuration.</figcaption>
+      </figure>
+      <p class="mech-figure-note">
+        The chassis structure is arranged to provide a compact load path between wheel-leg modules and the main frame,
+        while maintaining mounting interfaces for drivetrain components, sensing modules, and service access.
+        A low-cost rectangle mounting block is also designed to hold the square extrusions together internally.
+      </p>
+
+      <figure class="mech-figure mech-figure-fit">
+        <img id="img-3-10" class="mech-media-size" style="--media-max-w: 760px;" src="images_2/custom%20Tyre%20rim%20design.jpg" alt="Custom tyre rim design">
+        <figcaption>Figure 3.10: Custom tyre rim design.</figcaption>
+      </figure>
+      <p class="mech-figure-note">
+        The custom tyre rim geometry is designed for the hubless wheel layout, providing a secure tyre seating profile
+        and improved integration clearance with the surrounding drive and bearing architecture.
+        The rim is also designed for low-cost manufacturing, as only 3-axis CNC machining is required to produce
+        the common chamfer and groove features within the rim.
+      </p>
     </div>
   </details>
 
   <details class="expand-box">
-    <summary><strong>3.5 Manufacturing and Cost Notes</strong></summary>
+    <summary><strong>3.5 Manufacturing Lists</strong></summary>
     <div class="mech-body">
-      <p>
-        Sample text: Summarise part-level manufacturing method (CNC, laser, printing, off-the-shelf),
-        lead time, critical tolerance, and unit cost contribution.
-        Add the final bill-of-material estimate and identify high-cost drivers for future optimisation.
+      <figure class="mech-figure mech-figure-fit">
+        <img id="img-3-11" class="mech-media-size" style="--media-max-w: 760px;" src="images_2/list%20ofmanufacturing.jpg" alt="List of manufacturing">
+        <figcaption>Figure 3.11: List of manufacturing.</figcaption>
+      </figure>
+      <p class="mech-figure-note">
+        This list summarizes the first batch of custom and standard components required for fabrication and integration.
+      </p>
+
+      <figure class="mech-figure mech-figure-fit">
+        <img id="img-3-12" class="mech-media-size" style="--media-max-w: 760px;" src="images_2/list%20of%20manufacturing%202.jpg" alt="List of manufacturing 2">
+        <figcaption>Figure 3.12: List of manufacturing 2.</figcaption>
+      </figure>
+      <p class="mech-figure-note">
+        This continuation captures additional items and quantity planning for subsequent assembly stages.
+      </p>
+
+      <figure class="mech-figure mech-figure-fit">
+        <img id="img-3-13" class="mech-media-size" style="--media-max-w: 760px;" src="images_2/list%20ofmanufacturing%203.jpg" alt="List of manufacturing 3">
+        <figcaption>Figure 3.13: List of manufacturing 3.</figcaption>
+      </figure>
+      <p class="mech-figure-note">
+        This page records the remaining manufacturing entries and supports final part-tracking before build completion.
+      </p>
+
+      <figure class="mech-figure mech-figure-fit">
+        <img id="img-3-14" class="mech-media-size" style="--media-max-w: 760px;" src="images_2/sample%20procuement%20page.jpg" alt="Sample procurement page">
+        <figcaption>Figure 3.14: Sample procurement page.</figcaption>
+      </figure>
+      <p class="mech-figure-note">
+        The sample procurement page documents supplier sourcing, purchasing records, and cost traceability for key parts.
       </p>
     </div>
   </details>
