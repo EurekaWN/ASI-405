@@ -180,7 +180,11 @@
     <section class="section-card" id="sec-6-lqr-balancing-control">
       <h1 class="page-title">6. LQR Balancing Control</h1>
       <p>
-        This page is a structured draft for the LQR balancing-control section. Replace the sample text in each foldable tab with the final report content.
+        LQR is selected instead of a standalone PID approach because the wheel-leg balancing problem is strongly coupled across multiple states
+        (\(\theta,\dot{\theta},x,\dot{x},\phi,\dot{\phi}\)) and multiple torque channels. A PID design can regulate individual loops, but it generally
+        requires heavy manual decoupling and retuning when operating conditions change. In contrast, LQR provides a single full-state feedback gain
+        \( \mathbf{u}=-K\mathbf{x}_{err} \) that simultaneously shapes stability, response speed, and control effort through \(Q\) and \(R\), giving a
+        more systematic and repeatable tuning workflow for this project.
       </p>
 
       <details class="expand-box" data-keep-open="true">
@@ -188,117 +192,69 @@
         <div class="tab-body">
           <p><strong>LQR Model</strong></p>
           <img src="images_2/LQR_Model.jpg" alt="LQR Model" style="width: 33.33%; max-width: 100%; height: auto; display: block; margin: 0 auto 12px auto; border-radius: 8px; border: 1px solid rgba(0,0,0,0.14);">
+          <p><strong>1.1 Reduced-Order Model and State Definition</strong></p>
           <p>
-            The balancing model is represented by a reduced-order inverted-pendulum model, where the chassis and upper-body dynamics are approximated as a pendulum-like mode mounted on a wheel-supported base.
-            Around the upright operating point, the nonlinear equations are linearized into
+            The balancing dynamics are modeled using a reduced-order inverted-pendulum formulation around the upright operating point.
+            The linearized model is
             \( \dot{\mathbf{x}} = A\mathbf{x} + B\mathbf{u} \),
-            using state vector
+            with
             \( \mathbf{x} = [\theta,\dot{\theta},x,\dot{x},\phi,\dot{\phi}]^T \)
-            and generalized input
+            and
             \( \mathbf{u} = [T,\;T_p]^T \).
-            This model retains the dominant coupling between translation and pitch required for balance control, while remaining sufficiently compact for LQR gain synthesis and real-time firmware implementation.
-          </p>
-          <p>
-            The LQR control model is defined by the linear state-space system
-          </p>
-          \[
-          \dot{\mathbf{x}} = A\mathbf{x} + B\mathbf{u},
-          \]
-          <p>
-            with quadratic performance index
-          </p>
-          \[
-          J = \int_0^\infty \left(\mathbf{x}^T Q \mathbf{x} + \mathbf{u}^T R \mathbf{u}\right)\,dt.
-          \]
-          <p>
-            The optimal state-feedback law is
-          </p>
-          \[
-          \mathbf{u} = -K\mathbf{x}.
-          \]
-
-          <p>
-            In LQR design, the four core matrices are \(A\), \(B\), \(Q\), and \(R\):
-            \[
-            \dot{\mathbf{x}} = A\mathbf{x} + B\mathbf{u}, \qquad
-            J = \int_0^\infty \left(\mathbf{x}^T Q \mathbf{x} + \mathbf{u}^T R \mathbf{u}\right)\,dt.
-            \]
-          </p>
-          <p>
-            Matrix \(A\) is the state-dynamics matrix and captures how the state evolves without control input.
-            Matrix \(B\) is the input matrix and captures how actuator commands influence state-rate evolution.
-          </p>
-          <p>
-            Matrix \(Q\) is the state-error weighting matrix in the performance index.
-            Larger entries in \(Q\) impose stronger penalties on corresponding state deviations
-            (for example, pitch-angle and pitch-rate errors in balancing tasks).
-          </p>
-          <p>
-            Matrix \(R\) is the control-effort weighting matrix.
-            Larger entries in \(R\) penalize actuator usage more strongly, typically yielding smoother but slower responses.
-          </p>
-          <p>
-            Given \((A,B,Q,R)\), the LQR solution produces a feedback gain \(K\), and the controller is implemented as
-            \[
-            \mathbf{u} = -K\mathbf{x}.
-            \]
-            Therefore, \(A\) and \(B\) are model-derived quantities, whereas \(Q\) and \(R\) are design selections that define the performance-versus-effort tradeoff.
+            This representation captures the dominant coupling between wheel translation and body pitch while remaining practical for real-time control synthesis.
           </p>
 
+          <p><strong>1.2 LQR Objective and Control Law</strong></p>
           <p>
-            The balancing controller is formulated as a linear state-feedback problem around the upright operating point.
-            In the reduced model, the state vector is
-            \( \mathbf{x} = [\theta,\dot{\theta},x,\dot{x},\phi,\dot{\phi}]^T \),
-            where wheel translation and body/leg pitch dynamics are coupled.
+            The controller minimizes the quadratic performance index
           </p>
+          \[
+          J = \int_0^\infty \left(\mathbf{x}^T Q \mathbf{x} + \mathbf{u}^T R \mathbf{u}\right)\,dt,
+          \]
           <p>
-            The local linearized dynamics are written as
-            \( \dot{\mathbf{x}} = A\mathbf{x} + B\mathbf{u} \),
-            with generalized input
-            \( \mathbf{u} = [T,\;T_p]^T \).
-            Here, \(T\) is the generalized wheel torque channel and \(T_p\) is the generalized body/leg torque channel.
-            The implemented control law uses state-error feedback:
-            \( \mathbf{u} = -K\mathbf{x}_{err} \).
+            and applies full-state feedback:
           </p>
+          \[
+          \mathbf{u} = -K\mathbf{x}_{err}.
+          \]
           <p>
-            The LQR objective is to minimize a quadratic cost over time:
-            \[
-            J = \int_0^\infty \left(\mathbf{x}^T Q \mathbf{x} + \mathbf{u}^T R \mathbf{u}\right)\,dt.
-            \]
-            Matrix \(Q\) penalizes balancing errors (especially pitch/attitude states), while \(R\) penalizes control effort.
-            In the implementation, this is solved by \( \mathrm{lqr}(A,B,Q,R) \) to obtain \(K_{\text{model}}\).
+            Compared with tuning multiple independent loops, this gives one coordinated control action across all coupled states.
           </p>
+
+          <p><strong>1.3 Physical Meaning of \(A\), \(B\), \(Q\), and \(R\)</strong></p>
+          <ul>
+            <li>\(A\): open-loop state dynamics from the linearized model.</li>
+            <li>\(B\): actuator influence on state-rate evolution.</li>
+            <li>\(Q\): weighting on state deviation; larger terms enforce tighter regulation.</li>
+            <li>\(R\): weighting on control effort; larger terms reduce aggressive torque demand.</li>
+          </ul>
           <p>
-            To match firmware sign convention, the pipeline applies a pitch-sign correction before export:
-            the model uses forward tilt as positive \(\phi\), while firmware uses forward tilt as negative pitch.
-            Therefore, columns corresponding to \(\phi\) and \(\dot{\phi}\) are flipped:
-            \(K(:,5\!:\!6)=-K(:,5\!:\!6)\).
-            This produces \(K_{\text{firmware}}\) consistent with runtime sensing signs.
+            In this project, \(A\) and \(B\) come from model linearization, while \(Q\) and \(R\) are design selections used to trade off damping quality against control effort.
           </p>
+
+          <p><strong>1.4 Firmware Sign Convention and Exported Gain</strong></p>
           <p>
-            Physically, LQR works by generating restoring torque commands that drive all balancing states back to zero together,
-            instead of tuning each state independently. This gives coordinated correction (wheel positioning + body stabilization),
-            better transient behavior, and a systematic tradeoff between stability speed and actuator effort through \(Q\) and \(R\).
+            The model uses forward tilt as positive \(\phi\), while firmware uses the opposite pitch sign.
+            Therefore, the exported gain applies
+            \(K(:,5\!:\!6)=-K(:,5\!:\!6)\)
+            so that runtime control direction remains consistent with sensor mapping and motor command polarity.
           </p>
-          <p><strong>Project Context and Practical Implementation</strong></p>
+
+          <p><strong>1.5 Integration in the Full Control Stack</strong></p>
           <p>
-            In this project, LQR is implemented as one layer inside the full wheel-leg control stack rather than as an isolated control exercise.
-            The practical objective is to stabilize body pitch while coordinating wheel translation and leg-body motion on the integrated RoboMaster platform.
-            Therefore, the LQR formulation is connected directly to the reduced-order model, firmware sign convention, actuation limits, and startup safety logic discussed in later sections.
+            LQR is implemented as one layer inside the full wheel-leg system rather than as a standalone block.
+            During deployment, LQR output is combined with supporting subsystems:
           </p>
+          <ul>
+            <li><a class="matlab-link" data-file="leg_length_pd_feedforward_tuning.c">leg-length PD</a> for posture support.</li>
+            <li>IMU and drivetrain estimation pipeline for \(\mathbf{x}_{err}\) construction.</li>
+            <li>Transmission mapping, saturation, and safety gating before final motor output.</li>
+          </ul>
+
+          <p><strong>1.6 Validation Scope and Current Status</strong></p>
           <p>
-            During hardware deployment, LQR output is applied together with supporting subsystems:
-            <a class="matlab-link" data-file="leg_length_pd_feedforward_tuning.c">leg-length PD</a> maintains the structural operating posture,
-            IMU and drivetrain feedback provide the estimated state vector,
-            and commanded torques are passed through transmission mapping and saturation limits before motor output.
-            The resulting implementation is
-            \( \mathbf{u} = -K\mathbf{x}_{err} \),
-            where \(\mathbf{x}_{err}\) is formed from measured/estimated state deviations under the firmware coordinate convention.
-          </p>
-          <p>
-            Validation in this phase is performed progressively from simulation to bench testing.
-            The control directionality, sign alignment, and state-response trend are verified first, then the closed-loop response is evaluated under manual disturbance.
-            Although the LQR pipeline is completed and functionally validated, final high-performance balance tuning remains limited by actuator condition, as one reused motor introduces non-ideal behavior that constrains achievable control precision.
+            Validation is performed progressively from simulation to bench testing, focusing on sign consistency, response directionality, and closed-loop convergence trend.
+            The LQR pipeline is functionally validated, while final high-performance balancing remains limited by non-ideal actuator condition in the reused motor.
           </p>
         </div>
       </details>
@@ -519,72 +475,76 @@
       </details>
 
       <details class="expand-box">
-        <summary>3. LQR State-Feedback Design</summary>
+        <summary>3. VMC Torque Mapping</summary>
         <div class="tab-body">
-          <p>Sample text: Present the quadratic cost function and explain the design intent of the Q and R weighting matrices.</p>
-        </div>
-      </details>
+          <p><strong>3.1 Why VMC is Used</strong></p>
+          <ul>
+            <li>The control target is usually a force at the leg endpoint \( \mathbf{G} \), not a direct joint torque target.</li>
+            <li>VMC turns that endpoint force target into motor/joint torque commands based on current leg geometry.</li>
+            <li>In short: LQR keeps the robot balanced, while VMC controls how the leg pushes on the ground.</li>
+          </ul>
 
-      <details class="expand-box">
-        <summary>4. VMC Torque Mapping</summary>
-        <div class="tab-body">
+          <p><strong>3.2 Core Mapping Equations</strong></p>
           <p>
-            This section defines the virtual-model-control (VMC) force-to-torque transformation based on the Jacobian
-            obtained from the forward kinematic chain. The implementation corresponds to
+            For joint angles \(q=[\phi_1,\phi_2]^T\) and endpoint position \(\mathbf{G}(q)=[x(q),y(q)]^T\):
+          </p>
+          \[
+          \dot{\mathbf{G}} = J(q)\dot{q},\qquad
+          J(q)=
+          \begin{bmatrix}
+          \frac{\partial x}{\partial \phi_1} & \frac{\partial x}{\partial \phi_2}\\
+          \frac{\partial y}{\partial \phi_1} & \frac{\partial y}{\partial \phi_2}
+          \end{bmatrix}.
+          \]
+          <p>
+            The desired endpoint force is converted to joint torque by:
+          </p>
+          \[
+          \tau = J^T \mathbf{F}_{des},\qquad
+          \mathbf{F}_{des}=[F_x,F_y]^T,\qquad
+          \tau=[\tau_1,\tau_2]^T.
+          \]
+          <p>
+            If \(J\) is in \(\mathrm{mm/rad}\), torque is first in \(\mathrm{N\cdot mm}\), then converted to \(\mathrm{N\cdot m}\):
+            \( \tau_{\mathrm{N\cdot m}} = \tau_{\mathrm{N\cdot mm}}/1000 \).
+          </p>
+
+          <p><strong>3.3 MATLAB Implementation</strong></p>
+          <p>
+            The implementation is documented in
             <a class="matlab-link" data-file="VMC_WN_Jacobian_Transformation.m">VMC_WN_Jacobian_Transformation.m</a>
             and
             <a class="matlab-link" data-file="VMC_WN_Jacobian_Transformation_Animation.m">VMC_WN_Jacobian_Transformation_Animation.m</a>.
+            In these scripts, the Jacobian is computed numerically (central difference in degrees), then converted to \(\mathrm{mm/rad}\):
           </p>
-          <p>
-            For generalized joint coordinates \(q=[\phi_1,\phi_2]^T\) and endpoint position
-            \(\mathbf{G}(q)=[x(q),y(q)]^T\), the velocity mapping is
-            \[
-            \dot{\mathbf{G}} = J(q)\dot{q},\qquad
-            J(q)=
-            \begin{bmatrix}
-            \frac{\partial x}{\partial \phi_1} & \frac{\partial x}{\partial \phi_2}\\
-            \frac{\partial y}{\partial \phi_1} & \frac{\partial y}{\partial \phi_2}
-            \end{bmatrix}.
-            \]
-            In the MATLAB implementation, \(J\) is computed numerically by central difference in degrees and converted to
-            \(\mathrm{mm/rad}\):
-            \[
-            \frac{\partial \mathbf{G}}{\partial \phi_i}\bigg|_{\deg}
-            \approx
-            \frac{\mathbf{G}(\phi_i+h)-\mathbf{G}(\phi_i-h)}{2h},
-            \qquad
-            J_{\mathrm{rad}} = J_{\mathrm{deg}}\frac{180}{\pi}.
-            \]
-          </p>
-          <p>
-            The force-to-torque mapping follows virtual work:
-            \[
-            \tau = J^T \mathbf{F},\qquad
-            \mathbf{F}=[F_x,F_y]^T,\qquad
-            \tau=[\tau_1,\tau_2]^T.
-            \]
-            With \(\mathbf{F}\) in \(\mathrm{N}\) and \(J\) in \(\mathrm{mm/rad}\), the output is
-            \(\tau\) in \(\mathrm{N\cdot mm}\), then converted by
-            \[
-            \tau_{\mathrm{N\cdot m}} = \tau_{\mathrm{N\cdot mm}}/1000.
-            \]
-          </p>
-          <p>
-            The mapping quality is evaluated by two complementary analyses:
-          </p>
+          \[
+          \frac{\partial \mathbf{G}}{\partial \phi_i}\bigg|_{\deg}
+          \approx
+          \frac{\mathbf{G}(\phi_i+h)-\mathbf{G}(\phi_i-h)}{2h},
+          \qquad
+          J_{\mathrm{rad}} = J_{\mathrm{deg}}\frac{180}{\pi}.
+          \]
+
+          <p><strong>3.4 Role in the Full Control Loop</strong></p>
+          <ol>
+            <li>Set a desired endpoint force \(\mathbf{F}_{des}\) (for support, traction, or body response).</li>
+            <li>Evaluate \(J(q)\) at the current posture.</li>
+            <li>Compute the VMC torque: \(\tau_{\mathrm{VMC}} = J^T\mathbf{F}_{des}\).</li>
+            <li>Add it to the balance torque: \(\tau_{\mathrm{cmd}}=\tau_{\mathrm{LQR}}+\tau_{\mathrm{VMC}}\).</li>
+            <li>Apply conversion/limits, then send final torque commands to the motors.</li>
+          </ol>
+
+          <p><strong>3.5 Quality Metrics and Limitations</strong></p>
           <ul>
-            <li>Velocity manipulability: \( \mathbf{v}=J\dot{q},\ \|\dot{q}\|=1 \), producing a velocity ellipse.</li>
-            <li>Force-direction torque demand: \( \mathbf{F}=[\cos\theta_F,\sin\theta_F]^T,\ \tau=J^T\mathbf{F} \), sweeping \(\theta_F\in[-180^\circ,180^\circ]\).</li>
+            <li>Velocity check: \( \mathbf{v}=J\dot{q},\ \|\dot{q}\|=1 \), shown as a velocity ellipse.</li>
+            <li>Force-direction check: sweep force angle \(\theta_F\) and evaluate \( \tau=J^T\mathbf{F} \).</li>
+            <li>Large \(|\det(J)|\) usually means better local movement capability; large \(\|\tau\|\) peaks indicate weak leverage or near-singular posture.</li>
           </ul>
-          <p>
-            Large \(|\det(J)|\) indicates stronger local 2D motion capability, while peaks in
-            \(\|\tau\|\) versus \(\theta_F\) indicate poor leverage directions and near-singular behavior.
-          </p>
         </div>
       </details>
 
       <details class="expand-box">
-        <summary>5. Torque Output Sequencing</summary>
+        <summary>4. Torque Output Sequencing</summary>
         <div class="tab-body">
           <p>
             The control output pipeline is executed in a deterministic sequence from state error to actuator command.
@@ -633,7 +593,7 @@
       </details>
 
       <details class="expand-box">
-        <summary>6. Implementation Notes and Limitations</summary>
+        <summary>5. Implementation Notes and Limitations</summary>
         <div class="tab-body">
           <p>
             This subsection summarizes practical implementation constraints for translating the model-level controller into
