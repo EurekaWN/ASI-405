@@ -184,7 +184,7 @@
         (\(\theta,\dot{\theta},x,\dot{x},\phi,\dot{\phi}\)) and multiple torque channels. A PID design can regulate individual loops, but it generally
         requires heavy manual decoupling and retuning when operating conditions change. In contrast, LQR provides a single full-state feedback gain
         \( \mathbf{u}=-K\mathbf{x}_{err} \) that simultaneously shapes stability, response speed, and control effort through \(Q\) and \(R\), giving a
-        more systematic and repeatable tuning workflow for this project.
+        more systematic and repeatable tuning workflow for this project (Anderson &amp; Moore, 2007; Lewis et al., 2012).
       </p>
       <img src="images_2/LQR_Control_Block_Diagram.svg" alt="Integrated LQR nested control block diagram" style="width: 100%; max-width: 860px; height: auto; display: block; margin: 12px auto 8px auto; border-radius: 8px; border: 1px solid rgba(0,0,0,0.14); background: #fff;">
       <p style="text-align:center; font-size: 10.5pt; margin-bottom: 12px;">
@@ -222,7 +222,8 @@
           \mathbf{u} = -K\mathbf{x}_{err}.
           \]
           <p>
-            Compared with tuning multiple independent loops, this gives one coordinated control action across all coupled states.
+            Compared with tuning multiple independent loops, this gives one coordinated control action across all coupled states, consistent with
+            standard LQR state-feedback design formulations (Anderson &amp; Moore, 2007; Lewis et al., 2012).
           </p>
 
           <p><strong>6.1.4 Physical Meaning of \(A\), \(B\), \(Q\), and \(R\)</strong></p>
@@ -423,6 +424,10 @@
             \]
           </p>
           <p>
+            Numerically, this corresponds to solving the continuous-time algebraic Riccati equation and then recovering the optimal feedback gain,
+            as implemented by standard Schur-based methods in control software (Laub, 1979; MathWorks, n.d.).
+          </p>
+          <p>
             Substituting the model identified in the script gives:
             \[
             K_{\mathrm{model}}=
@@ -511,6 +516,9 @@
           \mathbf{F}_{des}=[F_x,F_y]^T,\qquad
           \tau=[\tau_1,\tau_2]^T.
           \]
+          <p>
+            The transpose mapping in this form follows the virtual-work and operational-space force interpretation widely used in robotics (Khatib, 1987).
+          </p>
           <p>
             If \(J\) is in \(\mathrm{mm/rad}\), torque is first in \(\mathrm{N\cdot mm}\), then converted to \(\mathrm{N\cdot m}\):
             \( \tau_{\mathrm{N\cdot m}} = \tau_{\mathrm{N\cdot mm}}/1000 \).

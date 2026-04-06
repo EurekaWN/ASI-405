@@ -580,7 +580,8 @@
             \mathbf{q}=\begin{bmatrix}\phi_1\\\phi_2\end{bmatrix}.
             \]
             So joint angular velocities map directly to end-point linear velocity.
-            Physically, the Jacobian is the local transmission operator between actuator space and Cartesian space.
+            Physically, the Jacobian is the local transmission operator between actuator space and Cartesian space, which is consistent with standard robot
+            differential kinematics treatment (Khatib, 1987).
           </p>
 
           <h3 class="subsection-title">4.1.3.2 Physical Meaning of the Matrix Columns</h3>
@@ -679,6 +680,9 @@
           \;\Rightarrow\;
           \boldsymbol{\tau}=J^\top\mathbf{F}.
           \]
+          <p>
+            This Jacobian-transpose force mapping is the same core principle used in operational-space force control (Khatib, 1987).
+          </p>
           <p>
             In the current script, torque is obtained in N$\cdot$mm and converted by:
             \[

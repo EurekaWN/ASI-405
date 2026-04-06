@@ -289,7 +289,8 @@
             while the estimator reduces noise and drift before the LQR/VMC stack uses the data in
             <a class="firmware-link" data-file="imu_processing_pipeline.c">imu_processing_pipeline.c</a>
             and
-            <a class="firmware-link" data-file="kalman_body_state_estimator.c">kalman_body_state_estimator.c</a>.
+            <a class="firmware-link" data-file="kalman_body_state_estimator.c">kalman_body_state_estimator.c</a>
+            (Kalman, 1960).
           </p>
 
           <p><strong>IMU processing role</strong></p>
@@ -301,6 +302,9 @@
           </ul>
 
           <p><strong>Kalman-filter role in the same pipeline</strong></p>
+          <p>
+            The estimator uses a recursive prediction-update structure from linear state-estimation theory to keep controller states smooth and usable in runtime (Kalman, 1960).
+          </p>
           <ul>
             <li>Combines multiple noisy measurements into a smoother translational/body-state estimate in <a class="firmware-link" data-file="kalman_body_state_estimator.c">kalman_body_state_estimator.c</a>.</li>
             <li>Improves state continuity during encoder jitter and short bursts of IMU disturbance in <a class="firmware-link" data-file="kalman_body_state_estimator.c">kalman_body_state_estimator.c</a>.</li>

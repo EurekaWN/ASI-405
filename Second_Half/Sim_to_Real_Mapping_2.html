@@ -395,7 +395,7 @@
       </p>
 
       <details class="expand-box">
-        <summary><strong>5.1 Startup calibration procedure</strong></summary>
+        <summary><strong>5.1 Startup Sequence</strong></summary>
         <div class="tab-body">
           <p>
             Startup calibration runs in a fixed gate sequence to set a safe initial state before hold mode or balancing is enabled.
@@ -406,7 +406,7 @@
             Preconditions: the robot is mechanically supported in startup posture (jig condition), emergency-stop paths are active
             (hardware and controller), power rails are healthy, and CAN motor communication is online.
           </p>
-          <p><strong>Startup sequence</strong></p>
+          <p><strong>Table 5.1: Startup Sequence.</strong></p>
           <div class="offset-table-wrap">
             <table class="offset-table">
               <thead>
@@ -573,6 +573,7 @@
             <li>Apply offset correction to every encoder sample before state-vector construction.</li>
           </ul>
           <p><strong>Joint zero-offset table (sample)</strong></p>
+          <p><strong>Table 5.2: Joint Zero-Offset Values (Sample).</strong></p>
           <div class="offset-table-wrap">
             <table class="offset-table">
               <thead>
@@ -626,6 +627,9 @@
           preload="metadata"
           style="width: 100%; max-width: 760px; display: block; margin: 6px auto 12px auto; border-radius: 8px; background: #000;">
         </video>
+        <p style="text-align:center; margin-top:6px;">
+          <strong>Video 5.1:</strong> Jig Initial Pose Calibration Video.
+        </p>
         <p>
           This section presents the initial calibration process, followed by transition of the motors into a “leg length” hold state.
           Once this state is established, the robot can then proceed into the LQR balancing sequence.
@@ -660,7 +664,7 @@
             <li>Run live-expression monitoring under single-axis excitation to verify polarity.</li>
             <li>Lock final mapping into control-state construction and torque output interfaces.</li>
           </ol>
-          <p><strong>Live-expression verification records (integration summary)</strong></p>
+          <p><strong>Table 5.3: Signal-to-Map Alignment.</strong></p>
           <div class="offset-table-wrap">
             <table class="offset-table">
               <thead>
@@ -722,6 +726,9 @@
           controls
           style="width: 100%; max-width: 760px; display: block; margin: 10px auto 12px auto; border-radius: 8px; background: #000;">
         </video>
+        <p style="text-align:center; margin-top:6px;">
+          <strong>Video 5.2:</strong> Kinematics Validation.
+        </p>
         <p>
           This section presents the validation flow from simulation to hardware.
           The validation is carried out in stages to reduce setup risk and catch model-controller mismatch early, before full hardware testing.
