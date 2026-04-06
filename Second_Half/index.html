@@ -1198,7 +1198,7 @@ p.sub {
       document.querySelectorAll(".auto-section-divider").forEach(el => el.remove());
 
       const headings = Array.from(document.querySelectorAll(
-        ".report-wrapper .section-title, .report-wrapper .subsection-title, .report-wrapper .subsubsection-title"
+        ".report-wrapper .page-title, .report-wrapper .section-title, .report-wrapper .subsection-title, .report-wrapper .subsubsection-title"
       )).filter(h => !h.closest("summary"));
 
       for (let i = 0; i < headings.length - 1; i++) {
@@ -1214,9 +1214,17 @@ p.sub {
       const tocRoot = document.getElementById("toc-root");
       tocRoot.innerHTML = "";
 
-      const headings = document.querySelectorAll(
-        ".section-title, .subsection-title, .subsubsection-title"
-      );
+      const isSidebarHeading = (h) => {
+        if (!h) return false;
+        // Keep sidebar focused on page-level flow, not expandable-tab internals.
+        if (h.closest("summary")) return false;
+        if (h.closest("details.expand-box")) return false;
+        return true;
+      };
+
+      const headings = Array.from(document.querySelectorAll(
+        ".page-title, .section-title, .subsection-title, .subsubsection-title"
+      )).filter(isSidebarHeading);
 
       let lastLevel1 = null;
       let lastLevel2 = null;
@@ -1284,11 +1292,28 @@ p.sub {
     /* ========== SCROLL SPY (nearest heading to top) ========== */
     function initScrollSpy() {
       const links = document.querySelectorAll(".toc-link");
-      const headings = document.querySelectorAll(
-        ".section-title, .subsection-title, .subsubsection-title"
-      );
+      const isSidebarHeading = (h) => {
+        if (!h) return false;
+        if (h.closest("summary")) return false;
+        if (h.closest("details.expand-box")) return false;
+        return true;
+      };
+
+      const headings = Array.from(document.querySelectorAll(
+        ".page-title, .section-title, .subsection-title, .subsubsection-title"
+      )).filter(isSidebarHeading);
 
       if (!headings.length) return;
+
+      const isTrackableHeading = (h) => {
+        if (!h || !h.isConnected) return false;
+        // Ignore headings inside closed <details> bodies.
+        const closedDetails = h.closest("details.expand-box:not([open])");
+        if (closedDetails) return false;
+        // Ignore nodes that are not rendered.
+        const rects = h.getClientRects();
+        return !!(rects && rects.length);
+      };
 
       // map id -> link
       const linkMap = {};
@@ -1335,8 +1360,10 @@ p.sub {
         const offsetTopTarget = 80; // approx from top where we consider "active"
         let bestHeading = null;
         let bestOffset = -Infinity;
+        const visibleHeadings = headings.filter(isTrackableHeading);
+        const pool = visibleHeadings.length ? visibleHeadings : headings;
 
-        headings.forEach(h => {
+        pool.forEach(h => {
           const rect = h.getBoundingClientRect();
           const offset = rect.top - offsetTopTarget;
           // we want headings whose top is <= offsetTopTarget, choose one closest to it
@@ -1348,7 +1375,7 @@ p.sub {
 
         // If none is above the line yet (top of page), just take the first heading
         if (!bestHeading) {
-          bestHeading = headings[0];
+          bestHeading = pool[0];
         }
 
         setActiveByHeading(bestHeading);
@@ -1359,56 +1386,52 @@ p.sub {
 
       // And on scroll
       window.addEventListener("scroll", updateFromScroll);
+      window.addEventListener("resize", updateFromScroll);
+      document.addEventListener("toggle", (e) => {
+        if (e.target && e.target.matches && e.target.matches("details.expand-box")) {
+          updateFromScroll();
+        }
+      }, true);
     }
 
-    /* ========== AUTO-CLOSE ACCORDION FOR EXPANDABLES ========== */
+    /* ========== STICKY EXPANDABLES (NO AUTO-CLOSE, NO RE-COLLAPSE) ========== */
     function initExpandAccordion() {
-      const boxes = document.querySelectorAll("details.expand-box");
-      const pinnedOpenIds = new Set();
-      const isPinned = (el) =>
-        el.getAttribute("data-keep-open") === "true" ||
-        (el.id && pinnedOpenIds.has(el.id));
+      const boxes = Array.from(document.querySelectorAll("details.expand-box"));
+      const stickyOpened = new WeakSet();
 
       boxes.forEach(box => {
-        if (isPinned(box)) return;
         const summaryEl = box.querySelector("summary");
+        const keepOpenByDefault = box.getAttribute("data-keep-open") === "true";
+
+        if (keepOpenByDefault) {
+          box.open = true;
+          stickyOpened.add(box);
+        } else {
+          box.open = false;
+        }
+
+        // Once opened, prevent future collapse from clicking the summary again.
+        if (summaryEl) {
+          summaryEl.addEventListener("click", (e) => {
+            if (box.open && stickyOpened.has(box)) {
+              e.preventDefault();
+            }
+          });
+        }
 
         box.addEventListener("toggle", () => {
           if (box.open) {
-            const anchorEl = summaryEl || box;
-            const topPinned = anchorEl.getBoundingClientRect().top;
-
-            boxes.forEach(other => {
-              if (other !== box && !isPinned(other)) other.open = false;
-            });
-
-            requestAnimationFrame(() => {
-              const currentTop = anchorEl.getBoundingClientRect().top;
-              const adjust = topPinned - currentTop;
-              if (Math.abs(adjust) > 0.5) {
-                const root = document.documentElement;
-                const prevBehavior = root.style.scrollBehavior;
-                root.style.scrollBehavior = "auto";
-                window.scrollBy({ top: adjust, left: 0, behavior: "auto" });
-                root.style.scrollBehavior = prevBehavior;
-              }
-
-              if (window.MathJax && typeof window.MathJax.typesetPromise === "function") {
-                window.MathJax.typesetPromise([box]).catch(() => {});
-              } else {
-                typesetAllMathWithRetry(20);
-              }
-            });
+            stickyOpened.add(box);
+            if (window.MathJax && typeof window.MathJax.typesetPromise === "function") {
+              window.MathJax.typesetPromise([box]).catch(() => {});
+            } else {
+              typesetAllMathWithRetry(20);
+            }
+          } else if (stickyOpened.has(box)) {
+            // Fallback: if a close slips through (keyboard/script), force it back open.
+            requestAnimationFrame(() => { box.open = true; });
           }
         });
-      });
-
-      boxes.forEach((el) => {
-        if (isPinned(el)) {
-          el.open = true;
-        } else {
-          el.open = false;
-        }
       });
     }
 
