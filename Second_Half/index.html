@@ -5,7 +5,19 @@
   
 
   <!-- MathJax for equations -->
-<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+<script>
+  window.MathJax = {
+    loader: {
+      load: ['[tex]/noerrors', '[tex]/noundefined']
+    },
+    tex: {
+      packages: { '[+]': ['noerrors', 'noundefined'] },
+      inlineMath: [['$', '$'], ['\\(', '\\)']],
+      displayMath: [['$$', '$$'], ['\\[', '\\]']]
+    }
+  };
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" async></script>
 
 <!-- (Removed highlight.js; using Prism.js below) -->
 
@@ -453,6 +465,17 @@ p.sub {
       font-family: "Times New Roman", Times, serif !important;
     }
 
+    /* Keep MathJax output readable and isolated from global visuals */
+    mjx-container {
+      background: transparent !important;
+      color: #111 !important;
+    }
+
+    mjx-container svg {
+      max-width: 100%;
+      height: auto;
+    }
+
     :root {
       --sidebar-w: clamp(190px, 22vw, 260px);
       --sidebar-gap: 20px;
@@ -685,6 +708,62 @@ p.sub {
     }
 
     /* ---------------------------------------------------- */
+    /* PROJECT PROGRESSION STRIP (Section 2) */
+    /* ---------------------------------------------------- */
+    #sec-2-project-progression .prog-row {
+      display: grid;
+      grid-template-columns:
+        minmax(0, 1fr) 24px
+        minmax(0, 1fr) 24px
+        minmax(0, 1fr) 24px
+        minmax(0, 1fr);
+      gap: 8px;
+      align-items: center;
+      margin-top: 14px;
+      padding: 16px 2px;
+      overflow: visible;
+    }
+
+    #sec-2-project-progression .prog-photo {
+      min-height: 150px;
+      border: 2px dashed #9aa4b2;
+      border-radius: 8px;
+      background: #f8fafc;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 6px;
+      overflow: visible;
+      position: relative;
+      transform-origin: center center;
+      transition: transform 0.28s ease, box-shadow 0.28s ease;
+      will-change: transform;
+      z-index: 1;
+    }
+
+    #sec-2-project-progression .prog-photo img {
+      width: 100%;
+      height: 138px;
+      object-fit: contain;
+      display: block;
+    }
+
+    #sec-2-project-progression .prog-photo:hover {
+      transform: scale(1.85);
+      z-index: 22;
+      box-shadow: 0 18px 34px rgba(0, 0, 0, 0.30);
+    }
+
+    #sec-2-project-progression .prog-arrow {
+      text-align: center;
+      font-size: 24px;
+      font-weight: 700;
+      color: #5f6773;
+      user-select: none;
+    }
+
+    /* ---------------------------------------------------- */
     /* RESPONSIVE OVERFLOW / SCROLL FIXES */
     /* ---------------------------------------------------- */
     html, body {
@@ -754,6 +833,7 @@ p.sub {
     <div include-html="1. Introduction_2.html"></div>
     <div include-html="2. Competition Background Information_2.html"></div>
     <div include-html="3. Modelling Bubble Segment.html"></div>
+    <div include-html="Forward_Kinematics_Tab_2.html"></div>
     <div include-html="4. Design Thinking Process_2.html"></div>
     <div include-html="5. Finalised Main Design Concept Validation and Prototyping_2.html"></div>
     <div include-html="6. Overall Prototyping Testing_2.html"></div>
@@ -770,12 +850,41 @@ p.sub {
     function executeIncludedScripts(container) {
       const scripts = container.querySelectorAll("script");
       scripts.forEach((oldScript) => {
+        const srcAttr = oldScript.getAttribute("src");
+        const inlineCode = oldScript.textContent || "";
+
+        // Skip duplicate MathJax inline config in included partials.
+        if (!srcAttr && inlineCode.includes("window.MathJax")) {
+          oldScript.remove();
+          return;
+        }
+
+        // Skip duplicate external scripts (MathJax/Prism/etc.) already loaded by index.
+        if (srcAttr) {
+          const lowerSrc = srcAttr.toLowerCase();
+
+          // Always prevent MathJax re-loading from included partials.
+          if (lowerSrc.includes("cdn.jsdelivr.net/npm/mathjax")) {
+            oldScript.remove();
+            return;
+          }
+
+          const absSrc = new URL(srcAttr, document.baseURI).href;
+          const alreadyLoaded = Array.from(document.scripts).some((s) => {
+            return s !== oldScript && s.src === absSrc;
+          });
+          if (alreadyLoaded) {
+            oldScript.remove();
+            return;
+          }
+        }
+
         const newScript = document.createElement("script");
         for (const attr of oldScript.attributes) {
           newScript.setAttribute(attr.name, attr.value);
         }
-        if (oldScript.textContent) {
-          newScript.textContent = oldScript.textContent;
+        if (inlineCode) {
+          newScript.textContent = inlineCode;
         }
         oldScript.parentNode.replaceChild(newScript, oldScript);
       });
@@ -981,19 +1090,47 @@ p.sub {
     /* ========== AUTO-CLOSE ACCORDION FOR EXPANDABLES ========== */
     function initExpandAccordion() {
       const boxes = document.querySelectorAll("details.expand-box");
+      const pinnedOpenIds = new Set(["fk-tab"]);
 
       boxes.forEach(box => {
+        if (pinnedOpenIds.has(box.id)) return;
+
         box.addEventListener("toggle", () => {
           if (box.open) {
             boxes.forEach(other => {
-              if (other !== box) other.open = false;
+              if (other !== box && !pinnedOpenIds.has(other.id)) other.open = false;
             });
           }
         });
       });
+
+      pinnedOpenIds.forEach((id) => {
+        const el = document.getElementById(id);
+        if (el) el.open = true;
+      });
+    }
+
+    function typesetAllMathWithRetry(retries = 30) {
+      try {
+        if (window.MathJax && typeof window.MathJax.typesetPromise === 'function') {
+          window.MathJax.typesetPromise([document.body]).catch((e) => {
+            console.warn('MathJax typeset failed:', e);
+          });
+          return;
+        }
+      } catch (e) {
+        console.warn('MathJax initialization failed:', e);
+      }
+
+      if (retries > 0) {
+        setTimeout(() => typesetAllMathWithRetry(retries - 1), 150);
+      }
     }
 
     includeHTML().then(() => {
+      // Re-typeset equations for dynamically included sections
+      typesetAllMathWithRetry();
+
       // Re-run syntax highlighting for dynamically included content
       try {
         if (window.Prism) {

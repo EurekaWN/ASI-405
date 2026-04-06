@@ -1,88 +1,52 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Forward Kinematics</title>
-
-  <script>
-    window.MathJax = {
-      tex: {
-        inlineMath: [['$', '$'], ['\\(', '\\)']],
-        displayMath: [['$$', '$$'], ['\\[', '\\]']]
-      }
-    };
-  </script>
-  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-matlab.min.js"></script>
-
   <style>
-    body {
-      font-family: 'Times New Roman', Times, serif;
-      background: #f3f5f8;
+    .fk-tab-scope {
+      font-family: inherit;
+      background: transparent;
       margin: 0;
-      padding: 40px 0;
-      color: #222;
+      padding: 0;
+      color: inherit;
     }
 
-    body, body * {
-      font-family: 'Times New Roman', Times, serif !important;
+    .fk-tab-scope .report-wrapper {
+      max-width: 100%;
+      margin: 0;
+      padding: 0;
     }
 
-    .report-wrapper {
-      max-width: 900px;
-      margin: 24px auto 40px auto;
-      padding: 0 12px;
+    .fk-tab-scope .section-card {
+      background: transparent;
+      border-radius: 0;
+      padding: 0;
+      margin: 0;
+      box-shadow: none;
     }
 
-    .section-card {
-      background: rgba(255, 255, 255, 0.92);
-      border-radius: 10px;
-      padding: 32px 40px;
-      margin-bottom: 24px;
-      box-shadow: 0 6px 18px rgba(0,0,0,0.08);
-    }
-
-    .section-title,
-    .subsection-title {
+    .fk-tab-scope .section-title,
+    .fk-tab-scope .subsection-title {
       position: relative;
       line-height: 1.5;
     }
 
-    .section-title {
+    .fk-tab-scope .section-title {
       font-size: 20pt;
       font-weight: bold;
       margin: 0 0 12px 0;
       padding-top: 26px;
     }
 
-    .subsection-title {
+    .fk-tab-scope .subsection-title {
       font-size: 16pt;
       font-weight: bold;
       margin: 26px 0 10px 0;
       padding-top: 26px;
     }
 
-    .section-title::before,
-    .subsection-title::before {
-      content: "";
-      position: absolute;
-      top: 8px;
-      left: 0;
-      width: 100%;
-      height: 2px;
-      background: linear-gradient(
-        to right,
-        rgba(0,0,0,0.10),
-        rgba(0,0,0,0.25),
-        rgba(0,0,0,0.10)
-      );
-      border-radius: 2px;
+    .fk-tab-scope .section-title::before,
+    .fk-tab-scope .subsection-title::before {
+      display: none;
     }
 
-    p {
+    .fk-tab-scope p {
       margin: 0 0 12px 0;
       line-height: 1.65;
     }
@@ -127,12 +91,12 @@
     #h1-img { max-width: var(--h1-width); }
     #h2-img { max-width: var(--h2-width); }
 
-    code {
+    .fk-tab-scope code {
       font-family: Consolas, "Courier New", monospace;
       font-size: 0.95em;
     }
 
-    details.expand-box {
+    .fk-tab-scope details.expand-box {
       margin: 8px 0 0 0;
       padding: 14px 16px;
       border-radius: 8px;
@@ -141,12 +105,12 @@
       transition: 0.25s ease;
     }
 
-    details.expand-box[open] {
+    .fk-tab-scope details.expand-box[open] {
       background: rgba(210, 220, 255, 0.65);
       border-color: rgba(90, 110, 200, 0.45);
     }
 
-    details.expand-box summary {
+    .fk-tab-scope details.expand-box summary {
       cursor: pointer;
       list-style: none;
       display: flex;
@@ -154,35 +118,29 @@
       margin: 0;
       padding: 0;
       font-weight: bold;
+      margin-bottom: 6px;
     }
 
-    details.expand-box summary::-webkit-details-marker {
+    .fk-tab-scope details.expand-box summary::-webkit-details-marker {
       display: none;
     }
 
-    details.expand-box summary::before {
+    .fk-tab-scope details.expand-box summary::marker {
+      content: "";
+    }
+
+    .fk-tab-scope details.expand-box summary::before {
       content: "▶";
-      font-size: 0.95rem;
-      margin-right: 8px;
+      font-size: 11pt;
+      margin-right: 6px;
       transition: transform 0.2s ease;
     }
 
-    /* Remove heading divider line when title is used as foldable summary */
-    details.expand-box > summary.section-title::before {
-      display: none !important;
-      content: none !important;
-    }
-
-    details.expand-box > summary.section-title {
-      padding-top: 0 !important;
-      margin-top: 0 !important;
-    }
-
-    details.expand-box[open] summary::before {
+    .fk-tab-scope details.expand-box[open] summary::before {
       content: "▼";
     }
 
-    .expand-body {
+    .fk-tab-scope .expand-body {
       padding-top: 8px;
     }
 
@@ -210,7 +168,7 @@
       background: #000;
     }
 
-    .matlab-link {
+    .fk-tab-scope .matlab-link {
       color: #0b3d91;
       text-decoration: underline;
       text-underline-offset: 2px;
@@ -281,8 +239,7 @@
       max-height: 78vh;
     }
   </style>
-</head>
-<body>
+<section class="fk-tab-scope" id="sec-forward-kinematics-tab">
   <div class="report-wrapper">
     <section class="section-card">
       <h2 class="page-intro-title">Kinematic Modelling Overview</h2>
@@ -296,8 +253,8 @@
         while the second tab documents the constrained inverse reconstruction used to recover joint angles from a target end-point.
       </p>
 
-      <details class="expand-box" id="fk-tab">
-        <summary class="section-title">Forward Kinematics</summary>
+      <details class="expand-box" id="fk-tab" open>
+        <summary><strong>Forward Kinematics</strong></summary>
         <div class="expand-body">
           <p>
             This section presents the MatLab Version of Forward Kinematics which will later be integrated into the firmware.
@@ -317,23 +274,10 @@
             </div>
           </div>
           <p>
-            Forward kinematics was first derived by hand and later transferred to MATLAB for verification. 
-𝜙
-1
-
-	​
-
- and 
-𝜙
-2
-
-	​
-
- are the angles directly controlled by the two leg motors, after accounting for the chain and gear reduction ratios. In this report, any angle denoted by 
-𝜙
- refers to an absolute angle measured with respect to the global horizontal, while any angle denoted by 
-𝜃
- refers to the relative angle between each joint or link.
+            Forward kinematics was first derived by hand and later transferred to MATLAB for verification.
+            The variables $\phi_1$ and $\phi_2$ are the two motor-driven joint angles after chain and gearbox ratio conversion.
+            In this report, symbols of the form $\phi$ denote absolute angles referenced to the global horizontal axis,
+            while symbols of the form $\theta$ denote relative inter-link or inter-joint angles.
           </p>
 
           <h3 class="subsection-title">Angle Wrapping and Inputs</h3>
@@ -446,7 +390,7 @@
       </details>
 
       <details class="expand-box" id="ik-tab">
-        <summary class="section-title">Inverse Kinematics</summary>
+        <summary><strong>Inverse Kinematics</strong></summary>
         <div class="expand-body">
           <p>
             The inverse-kinematic module solves for the input angles
@@ -609,7 +553,7 @@
       </details>
 
       <details class="expand-box" id="jacobian-tab">
-        <summary class="section-title">Jacobian Torque Mapping</summary>
+        <summary><strong>Jacobian Torque Mapping</strong></summary>
         <div class="expand-body">
           <p>
             This section explains the Jacobian-based kinematic and force transmission framework implemented in
@@ -797,11 +741,19 @@
   </div>
   <script>
   (function () {
-      const tabs = document.querySelectorAll("details.expand-box");
+      const root = document.getElementById("sec-forward-kinematics-tab");
+      if (!root) return;
+
+      const tabs = root.querySelectorAll("details.expand-box");
       if (!tabs.length) return;
 
-      async function typesetMath(target) {
-        if (!window.MathJax) return;
+      async function typesetMath(target, retries = 20) {
+        if (!window.MathJax) {
+          if (retries > 0) {
+            setTimeout(() => typesetMath(target, retries - 1), 150);
+          }
+          return;
+        }
         try {
           if (window.MathJax.startup && window.MathJax.startup.promise) {
             await window.MathJax.startup.promise;
@@ -820,11 +772,14 @@
         });
       });
 
-      const modal = document.getElementById("code-modal");
-      const modalTitle = document.getElementById("code-modal-title");
-      const modalContent = document.getElementById("code-modal-content");
-      const closeBtn = document.getElementById("code-close-btn");
-      const links = document.querySelectorAll(".matlab-link[data-file]");
+      // Initial render for default-open tab content
+      typesetMath(root);
+
+      const modal = root.querySelector("#code-modal");
+      const modalTitle = root.querySelector("#code-modal-title");
+      const modalContent = root.querySelector("#code-modal-content");
+      const closeBtn = root.querySelector("#code-close-btn");
+      const links = root.querySelectorAll(".matlab-link[data-file]");
 
       async function openCode(fileName) {
         modal.classList.add("open");
@@ -872,5 +827,4 @@
       });
     })();
   </script>
-</body>
-</html>
+</section>
