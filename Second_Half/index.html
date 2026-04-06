@@ -7,17 +7,17 @@
   <!-- MathJax for equations -->
 <script>
   window.MathJax = {
-    loader: {
-      load: ['[tex]/noerrors', '[tex]/noundefined']
-    },
     tex: {
-      packages: { '[+]': ['noerrors', 'noundefined'] },
       inlineMath: [['$', '$'], ['\\(', '\\)']],
       displayMath: [['$$', '$$'], ['\\[', '\\]']]
+    },
+    chtml: {
+      scale: 1
     }
   };
 </script>
-<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" async></script>
+<script src="lib/mathjax/tex-chtml-full.js?v=1"
+  onerror="(function(){var s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js';document.head.appendChild(s);}())"></script>
 
 <!-- (Removed highlight.js; using Prism.js below) -->
 
@@ -455,25 +455,34 @@ p.sub {
     /* ---------------------------------------------------- */
     /* GLOBAL FONT + BASE STYLES */
     /* ---------------------------------------------------- */
-    * {
+    html, body {
       font-family: "Times New Roman", Times, serif;
       font-size: 12pt;
+    }
+
+    * {
       box-sizing: border-box;
     }
 
-    body, body * {
-      font-family: "Times New Roman", Times, serif !important;
-    }
-
-    /* Keep MathJax output readable and isolated from global visuals */
+    /* MathJax isolation */
     mjx-container {
       background: transparent !important;
       color: #111 !important;
+      font-size: 1em !important;
+      overflow-x: auto;
+      overflow-y: hidden;
     }
 
-    mjx-container svg {
+    mjx-container[jax="CHTML"],
+    mjx-container[jax="SVG"] {
+      line-height: normal !important;
+      overflow: visible !important;
+    }
+
+    mjx-container[jax="SVG"] > svg {
       max-width: 100%;
       height: auto;
+      overflow: visible !important;
     }
 
     :root {
@@ -486,6 +495,17 @@ p.sub {
       background: #dfe4f0;
       /* reserve space for fixed sidebar so content can still be centered */
       padding-left: calc(var(--sidebar-w) + var(--sidebar-gap));
+      display: block;
+      justify-content: initial;
+    }
+
+    /* Lock base layout so included files cannot override body/sidebar geometry */
+    html body {
+      margin: 0 !important;
+      background: #dfe4f0 !important;
+      padding-left: calc(var(--sidebar-w) + var(--sidebar-gap)) !important;
+      display: block !important;
+      justify-content: initial !important;
     }
 
     p, li {
@@ -506,6 +526,16 @@ p.sub {
       height: 100vh;
       overflow-y: auto;
       z-index: 10;
+    }
+
+    html body #sidebar {
+      width: var(--sidebar-w) !important;
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      height: 100vh !important;
+      overflow-y: auto !important;
+      z-index: 10 !important;
     }
 
     #sidebar::-webkit-scrollbar {
@@ -573,6 +603,12 @@ p.sub {
       max-width: 900px;
       margin: 24px auto 40px auto;  /* centered */
       padding: 0 12px;
+    }
+
+    html body .report-wrapper {
+      max-width: 900px !important;
+      margin: 24px auto 40px auto !important;
+      padding: 0 12px !important;
     }
 
     [include-html] {
@@ -845,6 +881,14 @@ p.sub {
       text-align: center;
     }
 
+    #sec-3-mechanical-design-final-iteration .mech-figure-note {
+      margin: 6px 4px 2px 4px;
+      font-size: 10.5pt;
+      line-height: 1.5;
+      color: #2f3b4a;
+      text-align: left;
+    }
+
     #sec-3-mechanical-design-final-iteration .mech-figure-wide img {
       max-height: 430px;
       object-fit: contain;
@@ -978,7 +1022,19 @@ p.sub {
         padding-left: 0 !important;
       }
 
+      html body {
+        padding-left: 0 !important;
+      }
+
       #sidebar {
+        position: static !important;
+        width: 100% !important;
+        height: auto !important;
+        max-height: none !important;
+        overflow: visible !important;
+      }
+
+      html body #sidebar {
         position: static !important;
         width: 100% !important;
         height: auto !important;
@@ -1037,9 +1093,9 @@ p.sub {
     <div include-html="3. Mechanical Design Final Iteration_2.html"></div>
     <div include-html="4. Full Control Implementation Process_2.html"></div>
     <div include-html="Forward_Kinematics_Tab_2.html"></div>
-    <div include-html="5. Design Thinking Process_2.html"></div>
-    <div include-html="6. Finalised Main Design Concept Validation and Prototyping_2.html"></div>
-    <div include-html="7. Overall Prototyping Testing_2.html"></div>
+    <div include-html="Sim_to_Real_Mapping_2.html"></div>
+    <div include-html="LQR_Balancing_Control_2.html"></div>
+    <div include-html="Firmware_System_Architecture_2.html"></div>
     <div include-html="8. Moving Forward_2.html"></div>
     <div include-html="9. Conclusion_2.html"></div>
     <div include-html="References_2.html"></div>
@@ -1107,7 +1163,18 @@ p.sub {
           for (const c of candidates) {
             const resp = await fetch(c);
             if (resp.ok) {
-              el.innerHTML = await resp.text();
+              const raw = await resp.text();
+              const isFullDocument = /<!doctype/i.test(raw) || /<html[\s>]/i.test(raw);
+
+              if (isFullDocument) {
+                // Full standalone pages are sanitized to body-only content so their
+                // global <head> CSS/JS cannot override index-level layout and MathJax.
+                const parsed = new DOMParser().parseFromString(raw, "text/html");
+                el.innerHTML = parsed && parsed.body ? parsed.body.innerHTML : raw;
+              } else {
+                el.innerHTML = raw;
+              }
+
               executeIncludedScripts(el);
               loaded = true;
               break;
@@ -1297,46 +1364,106 @@ p.sub {
     /* ========== AUTO-CLOSE ACCORDION FOR EXPANDABLES ========== */
     function initExpandAccordion() {
       const boxes = document.querySelectorAll("details.expand-box");
-      const pinnedOpenIds = new Set(["fk-tab"]);
+      const pinnedOpenIds = new Set();
+      const isPinned = (el) =>
+        el.getAttribute("data-keep-open") === "true" ||
+        (el.id && pinnedOpenIds.has(el.id));
 
       boxes.forEach(box => {
-        if (pinnedOpenIds.has(box.id)) return;
+        if (isPinned(box)) return;
+        const summaryEl = box.querySelector("summary");
 
         box.addEventListener("toggle", () => {
           if (box.open) {
+            const anchorEl = summaryEl || box;
+            const topPinned = anchorEl.getBoundingClientRect().top;
+
             boxes.forEach(other => {
-              if (other !== box && !pinnedOpenIds.has(other.id)) other.open = false;
+              if (other !== box && !isPinned(other)) other.open = false;
+            });
+
+            requestAnimationFrame(() => {
+              const currentTop = anchorEl.getBoundingClientRect().top;
+              const adjust = topPinned - currentTop;
+              if (Math.abs(adjust) > 0.5) {
+                const root = document.documentElement;
+                const prevBehavior = root.style.scrollBehavior;
+                root.style.scrollBehavior = "auto";
+                window.scrollBy({ top: adjust, left: 0, behavior: "auto" });
+                root.style.scrollBehavior = prevBehavior;
+              }
+
+              if (window.MathJax && typeof window.MathJax.typesetPromise === "function") {
+                window.MathJax.typesetPromise([box]).catch(() => {});
+              } else {
+                typesetAllMathWithRetry(20);
+              }
             });
           }
         });
       });
 
-      pinnedOpenIds.forEach((id) => {
-        const el = document.getElementById(id);
-        if (el) el.open = true;
+      boxes.forEach((el) => {
+        if (isPinned(el)) {
+          el.open = true;
+        } else {
+          el.open = false;
+        }
       });
     }
 
-    function typesetAllMathWithRetry(retries = 30) {
-      try {
-        if (window.MathJax && typeof window.MathJax.typesetPromise === 'function') {
-          window.MathJax.typesetPromise([document.body]).catch((e) => {
-            console.warn('MathJax typeset failed:', e);
-          });
-          return;
+    let mathJaxFallbackRequested = false;
+    function requestMathJaxFallback() {
+      if (mathJaxFallbackRequested) return;
+      mathJaxFallbackRequested = true;
+      const s = document.createElement("script");
+      s.src = "lib/mathjax/tex-chtml-full.js?v=2";
+      s.onerror = function () {
+        const s2 = document.createElement("script");
+        s2.src = "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js";
+        document.head.appendChild(s2);
+      };
+      s.async = true;
+      document.head.appendChild(s);
+    }
+
+    function typesetAllMathWithRetry(retries = 60) {
+      const hasMathJax =
+        !!(window.MathJax && typeof window.MathJax.typesetPromise === "function");
+
+      if (!hasMathJax) {
+        if (retries === 45) {
+          requestMathJaxFallback();
         }
-      } catch (e) {
-        console.warn('MathJax initialization failed:', e);
+        if (retries > 0) {
+          setTimeout(() => typesetAllMathWithRetry(retries - 1), 250);
+        }
+        return;
       }
 
-      if (retries > 0) {
-        setTimeout(() => typesetAllMathWithRetry(retries - 1), 150);
-      }
+      const startupPromise =
+        (window.MathJax.startup && window.MathJax.startup.promise)
+          ? window.MathJax.startup.promise
+          : Promise.resolve();
+
+      startupPromise
+        .then(() => {
+          return window.MathJax.typesetPromise([document.body]);
+        })
+        .catch((e) => {
+          console.warn("MathJax typeset failed:", e);
+          if (retries > 0) {
+            setTimeout(() => typesetAllMathWithRetry(retries - 1), 400);
+          }
+        });
     }
 
     includeHTML().then(() => {
       // Re-typeset equations for dynamically included sections
       typesetAllMathWithRetry();
+      setTimeout(() => typesetAllMathWithRetry(20), 700);
+      setTimeout(() => typesetAllMathWithRetry(20), 2200);
+      window.addEventListener("load", () => typesetAllMathWithRetry(20), { once: true });
 
       // Re-run syntax highlighting for dynamically included content
       try {

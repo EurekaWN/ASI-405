@@ -747,10 +747,10 @@
       const tabs = root.querySelectorAll("details.expand-box");
       if (!tabs.length) return;
 
-      async function typesetMath(target, retries = 20) {
-        if (!window.MathJax) {
+      async function typesetMath(target, retries = 60) {
+        if (!(window.MathJax && typeof window.MathJax.typesetPromise === "function")) {
           if (retries > 0) {
-            setTimeout(() => typesetMath(target, retries - 1), 150);
+            setTimeout(() => typesetMath(target, retries - 1), 250);
           }
           return;
         }
@@ -758,9 +758,7 @@
           if (window.MathJax.startup && window.MathJax.startup.promise) {
             await window.MathJax.startup.promise;
           }
-          if (typeof window.MathJax.typesetPromise === "function") {
-            await window.MathJax.typesetPromise(target ? [target] : undefined);
-          }
+          await window.MathJax.typesetPromise(target ? [target] : [root]);
         } catch (e) {
           console.warn("MathJax typeset failed:", e);
         }
@@ -774,6 +772,8 @@
 
       // Initial render for default-open tab content
       typesetMath(root);
+      setTimeout(() => typesetMath(root, 20), 700);
+      window.addEventListener("load", () => typesetMath(root, 20), { once: true });
 
       const modal = root.querySelector("#code-modal");
       const modalTitle = root.querySelector("#code-modal-title");

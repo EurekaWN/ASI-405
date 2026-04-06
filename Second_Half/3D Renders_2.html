@@ -2,17 +2,35 @@
 
   <h1 class="viewer-title">Bipedal Wheel-Leg Robot – 3D Model</h1>
 
-  <model-viewer
-    src="Bipedal%20Wheelchair%203D%20Prototype%20Overall%20Assembly.glb"
-    alt="3D model of the robot"
-    camera-controls
-    auto-rotate
-    rotation-per-second="30deg"
-    exposure="1"
-    shadow-intensity="1"
-    orientation="0deg 90deg 0deg"
-    scale="0.001 0.001 0.001">
-  </model-viewer>
+  <div class="model-primary">
+    <img src="images_2/for_website_preview.jpg" alt="Model preview from EPRT package">
+    <p>
+      The provided <code>for website.htm</code> uses legacy eDrawings ActiveX technology and does not render in most modern browsers.
+      A preview is shown here to avoid a blank viewer area.
+    </p>
+  </div>
+
+  <details class="legacy-viewer">
+    <summary><strong>Open Legacy eDrawings Embed (Optional)</strong></summary>
+    <iframe
+      id="robot-model-iframe"
+      src="models_2/for%20website.htm"
+      title="Embedded eDrawings Model"
+      loading="lazy">
+    </iframe>
+  </details>
+
+  <div class="model-fallback">
+    <p>
+      If interactive viewing is required, open the legacy file externally (Internet Explorer mode), or export the model
+      as <code>.glb</code> from CAD and replace this section with native web 3D.
+    </p>
+    <p class="model-links">
+      <a href="models_2/for%20website.htm" target="_blank" rel="noopener noreferrer">Open Embedded HTM</a>
+      <a href="models_2/for%20website.EPRT" target="_blank" rel="noopener noreferrer">Open EPRT File</a>
+      <a href="models_2/for%20website.EPRT" download>Download EPRT</a>
+    </p>
+  </div>
 
 </div>
 
@@ -29,10 +47,95 @@
     font-weight: bold;
   }
 
-  model-viewer {
+  .model-primary {
+    margin: 0 auto 12px;
+    max-width: 920px;
+    border: 1px solid rgba(0, 0, 0, 0.14);
+    border-radius: 10px;
+    background: #f7f9fd;
+    padding: 14px;
+    text-align: left;
+  }
+
+  .model-primary img {
+    width: min(100%, 760px);
+    height: auto;
+    display: block;
+    margin: 0 auto 12px;
+    border-radius: 8px;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    background: #fff;
+  }
+
+  .model-primary p {
+    margin: 0;
+    line-height: 1.55;
+  }
+
+  .legacy-viewer {
+    margin: 0 auto 12px;
+    max-width: 920px;
+    text-align: left;
+    border: 1px solid rgba(0, 0, 0, 0.14);
+    border-radius: 10px;
+    background: #eef2fa;
+    padding: 10px 12px;
+  }
+
+  .legacy-viewer summary {
+    cursor: pointer;
+    font-weight: 700;
+  }
+
+  .legacy-viewer[open] {
+    background: #e7edf9;
+  }
+
+  #robot-model-iframe {
     width: 100%;
-    height: 600px;
-    background: #fefefe;
-    border: none;
+    height: 680px;
+    background: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.16);
+    border-radius: 8px;
+    margin-top: 10px;
+  }
+
+  .model-fallback {
+    margin: 10px auto 0;
+    max-width: 860px;
+    border: 1px solid rgba(0, 0, 0, 0.14);
+    border-radius: 10px;
+    background: #f7f9fd;
+    padding: 14px;
+    text-align: left;
+  }
+
+  .model-fallback img {
+    width: min(100%, 520px);
+    height: auto;
+    display: block;
+    margin: 0 auto 12px;
+    border-radius: 8px;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    background: #fff;
+  }
+
+  .model-fallback p {
+    margin: 0 0 10px 0;
+    line-height: 1.55;
+  }
+
+  .model-fallback .model-links {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-bottom: 0;
+  }
+
+  .model-fallback .model-links a {
+    color: #0b3d91;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    font-weight: 600;
   }
 </style>
