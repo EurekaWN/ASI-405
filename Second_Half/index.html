@@ -1381,7 +1381,7 @@ p.sub {
       const fromSource = humanizeFromSource(mediaEl);
       if (fromSource) return fromSource;
       if (kind === "Table") return "Tabulated data summary";
-      if (kind === "Video") return "Demonstration video";
+      if (kind === "Video") return "Video record";
       return "Illustration";
     }
 
@@ -1873,7 +1873,7 @@ const paramLabels = {
   terrain: "All terrain capability",
   reliability: "Overall reliability",
   power: "Power consumption (lower score = more consumption)",
-  structure: "Structure robustness",
+  structure: "Structure stability",
   maintain: "Maintainability",
   weight: "Weight",
   mechcomplex: "Mechanism complexity (lower = more complex)",
