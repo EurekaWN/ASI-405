@@ -1,0 +1,246 @@
+<section id="sec-3-mechanical-design-final-iteration">
+  <!-- Resize media by editing --media-max-w on each <img>/<video> tag below. -->
+  <h2 class="section-title">3. Mechanical Design Final Iteration</h2>
+
+  <p>
+    This section documents the final mechanical-iteration stage before full control implementation.
+    The iteration focuses on gear-ratio redesign, custom bearing development, weight optimisation from jump-load constraints,
+    and detailed mechanical refinements required for stable integration into the complete robot platform.
+  </p>
+
+  <details class="expand-box" open>
+    <summary><strong>3.1 Wheel Inner Gear Ratio Analysis & Redesign</strong></summary>
+    <div class="mech-body">
+      <div class="mech-gear-row">
+        <figure class="mech-figure">
+          <img id="img-3-1a" class="mech-media-size" style="--media-max-w: 100%;" src="images_2/Inner%20Gear%201.jpg" alt="Inner Gear 1">
+          <figcaption>Figure 3.1a: Inner Gear 1.</figcaption>
+        </figure>
+        <div class="mech-gear-arrow">→</div>
+        <figure class="mech-figure">
+          <img id="img-3-1b" class="mech-media-size" style="--media-max-w: 100%;" src="images_2/finalised%20gear%20design.jpg" alt="Finalised Gear Design">
+          <figcaption>Figure 3.1b: Finalised gear design.</figcaption>
+        </figure>
+      </div>
+
+      <p>
+        As the design progressed from a 3D-printed wheel prototype 
+        to the actual wheel design, the wheel size had to be increased because 
+        the initial 14-inch wheel was too small to accommodate the mechanical 
+        structure within the centre of the hubless wheel. It was therefore enlarged 
+        to 16 inches. Following this change, the gear specifications were recalculated 
+        and reselected to suit the updated wheel size while still maintaining sufficient 
+        mechanical advantage. In addition, to integrate the rubber tyre with the hubless 
+        wheel design, a custom rim was designed for CNC fabrication using carbon fibre plate,
+         allowing the required groove profile to securely house the tyre.
+      </p>
+
+      <figure class="mech-figure mech-figure-fit">
+        <img id="img-3-2" class="mech-media-size" style="--media-max-w: 400px;" src="images_2/motor%20spec%20chart.jpg" alt="Motor Spec Chart">
+        <figcaption>Figure 3.2: Motor specification chart.</figcaption>
+      </figure>
+      <p>
+        As the motor specification sheet did not directly provide all required data points, a web-based digitisation workflow was used
+        to extract the motor curve characteristics with higher resolution.
+        The extraction was conducted using
+        <a href="https://automeris.io/WebPlotDigitizer" target="_blank" rel="noopener noreferrer">WebPlotDigitizer</a>,
+        and the recovered data was used as the numerical input for subsequent ratio-performance analysis.
+      </p>
+
+      <figure class="mech-figure mech-figure-wide">
+        <img id="img-3-3" class="mech-media-size" style="--media-max-w: 600px;" src="images_2/Motor%20effect%20chart.jpg" alt="Motor Effect Chart">
+        <figcaption>Figure 3.3: Motor effect chart.</figcaption>
+      </figure>
+      <p>
+        The plotted effect of gear ratio on speed and acceleration (based on M3508 motor characteristics) indicates that
+        the most efficient tradeoff region is around a gear ratio of 3.4.
+        The final selected ratio was 3.76, as this was the closest practical involute gear ratio achievable from the gear-design workflow.
+        The MATLAB script used to generate the graph and compute the data points is
+        <a href="#" class="matlab-link" data-file="gear_ratio_speed_accel_analysis.m"><u>gear_ratio_speed_accel_analysis.m</u></a>.
+      </p>
+
+      <figure class="mech-figure mech-figure-wide">
+        <img id="img-3-4" class="mech-media-size" style="--media-max-w: 100%;" src="images_2/gear%20pressure%20angle%20comparison.jpg" alt="Pressure Angle Comparison">
+        <figcaption>Figure 3.4: Gear pressure-angle comparison.</figcaption>
+      </figure>
+      <p>
+        The pressure angle of the involute profile was evaluated against multiple transmission characteristics,
+        as summarized in Figure 3.4. A pressure angle of 20° was selected as the final design value, as it
+        provides a balanced compromise between load-carrying capability and meshing smoothness.
+      </p>
+
+      <figure class="mech-figure mech-figure-wide">
+        <video id="vid-3-5" class="mech-inline-video mech-media-size" style="--media-max-w: 100%;" autoplay muted loop playsinline controls preload="metadata">
+          <source src="videos_2/gear%20generator%20video%20.mp4" type="video/mp4">
+          Your browser does not support the video tag.
+        </video>
+        <figcaption>Figure 3.5: Gear generation workflow video.</figcaption>
+      </figure>
+      <p>
+        The gear-generator video records the profile-generation workflow and validates that the selected parameters
+        produce a consistent tooth form ready for downstream CAD integration and fabrication detailing.
+      </p>
+    </div>
+  </details>
+
+  <details class="expand-box">
+    <summary><strong>3.2 Custom Big Bearing Design</strong></summary>
+    <div class="mech-body">
+      <p>
+        Due to weight and budget constraints, commercial large bearings were not adopted.
+        A custom bearing mechanism was developed to allow independent rotation of the inner and outer wheel structures.
+        The implemented concept uses two rows of bearings with eccentric adjustment to provide outward preload,
+        while V-groove contact surfaces improve radial support and axial retention.
+      </p>
+
+      <div class="mech-grid-2">
+        <figure class="mech-figure">
+          <img id="img-3-6a" class="mech-media-size" style="--media-max-w: 100%;" src="images_2/mech_iter_05_custom_bearing_implementation.png" alt="Custom big bearing structure implementation">
+          <figcaption>Figure 3.5: Custom big-bearing structure and physical implementation.</figcaption>
+        </figure>
+        <figure class="mech-figure">
+          <img id="img-3-6b" class="mech-media-size" style="--media-max-w: 100%;" src="images_2/mech_iter_06_bearing_components.png" alt="Custom bearing and eccentric component details">
+          <figcaption>Figure 3.6: Bearing component and eccentric-nut detail for adjustable preload.</figcaption>
+        </figure>
+      </div>
+    </div>
+  </details>
+
+  <details class="expand-box">
+    <summary><strong>3.3 Weight Optimisation (From Jump Load)</strong></summary>
+    <div class="mech-body">
+      <p>
+        A simplified energy-force calculation was used to define a conservative target load for structural validation:
+      </p>
+      <p class="mech-equation">
+        Mass = 25 kg, &nbsp; Jump height = 200 mm, &nbsp; Mass per side = 12.5 kg
+      </p>
+      <p class="mech-equation">
+        Potential energy per side: 12.5 x 9.81 x 0.2 = 24.525 J
+      </p>
+      <p class="mech-equation">
+        Push-off distance = 50 mm, &nbsp; Force = 24.525 / 0.05 = 490.5 N
+      </p>
+      <p class="mech-equation">
+        With safety factor 3: design load = 1500 N per leg
+      </p>
+
+      <figure class="mech-figure mech-figure-wide">
+        <img id="img-3-7" class="mech-media-size" style="--media-max-w: 100%;" src="images_2/mech_iter_07_weight_optimisation.png" alt="Weight optimisation setup from jump load">
+        <figcaption>Figure 3.7: Weight optimisation and load-case setup used for structural checks.</figcaption>
+      </figure>
+    </div>
+  </details>
+
+  <details class="expand-box">
+    <summary><strong>3.4 Other Mechanical Details</strong></summary>
+    <div class="mech-body">
+      <div class="mech-grid-3">
+        <figure class="mech-figure">
+          <img id="img-3-8" class="mech-media-size" style="--media-max-w: 100%;" src="images_2/mech_iter_08_chain_tensioning_block.png" alt="Chain tensioning block implementation">
+          <figcaption>Figure 3.8: Chain tensioning block detail.</figcaption>
+        </figure>
+        <figure class="mech-figure">
+          <img id="img-3-9" class="mech-media-size" style="--media-max-w: 100%;" src="images_2/mech_iter_09_chassis_structure.png" alt="Chassis structure model">
+          <figcaption>Figure 3.9: Chassis structure configuration.</figcaption>
+        </figure>
+        <figure class="mech-figure">
+          <img id="img-3-10" class="mech-media-size" style="--media-max-w: 100%;" src="images_2/mech_iter_10_custom_tyre_rim.png" alt="Custom tyre rim design">
+          <figcaption>Figure 3.10: Custom tyre rim profile.</figcaption>
+        </figure>
+      </div>
+
+      <figure class="mech-figure mech-figure-narrow">
+        <img id="img-3-11" class="mech-media-size" style="--media-max-w: 100%;" src="images_2/mech_iter_11_tyre_profile_comparison.png" alt="Tyre profile concept comparison">
+        <figcaption>Figure 3.11: Tyre profile concept comparison for hubless configuration.</figcaption>
+      </figure>
+    </div>
+  </details>
+
+  <details class="expand-box">
+    <summary><strong>3.5 Manufacturing and Cost Notes</strong></summary>
+    <div class="mech-body">
+      <p>
+        Sample text: Summarise part-level manufacturing method (CNC, laser, printing, off-the-shelf),
+        lead time, critical tolerance, and unit cost contribution.
+        Add the final bill-of-material estimate and identify high-cost drivers for future optimisation.
+      </p>
+    </div>
+  </details>
+
+  <div id="sec3-code-modal" class="code-modal" aria-hidden="true">
+    <div class="code-modal-box">
+      <div class="code-modal-head">
+        <div id="sec3-code-modal-title" class="code-modal-title">MATLAB File</div>
+        <button id="sec3-code-close-btn" class="code-close-btn" type="button">Close</button>
+      </div>
+      <pre><code id="sec3-code-modal-content" class="language-matlab">Loading...</code></pre>
+    </div>
+  </div>
+
+  <p class="mech-source-note">
+    Source note: Figures in this section were cropped from
+    <code>MASTER DOCUMENT - RM FYP Weining - Google 文档.pdf</code>
+    and imported into <code>Second_Half/images_2</code> for website integration.
+  </p>
+</section>
+
+<script>
+  (function () {
+    const root = document.getElementById("sec-3-mechanical-design-final-iteration");
+    if (!root) return;
+
+    const modal = root.querySelector("#sec3-code-modal");
+    const modalTitle = root.querySelector("#sec3-code-modal-title");
+    const modalContent = root.querySelector("#sec3-code-modal-content");
+    const closeBtn = root.querySelector("#sec3-code-close-btn");
+    const links = root.querySelectorAll(".matlab-link[data-file]");
+    if (!modal || !modalTitle || !modalContent || !closeBtn || !links.length) return;
+
+    async function openCode(fileName) {
+      modal.classList.add("open");
+      modal.setAttribute("aria-hidden", "false");
+      modalTitle.textContent = fileName;
+      modalContent.textContent = "Loading...";
+      modalContent.className = "language-matlab";
+      try {
+        const candidates = ["MatLab_Files/" + fileName, "Second_Half/MatLab_Files/" + fileName];
+        let loaded = false;
+        for (const url of candidates) {
+          const resp = await fetch(url);
+          if (resp.ok) {
+            modalContent.textContent = await resp.text();
+            if (window.Prism && typeof window.Prism.highlightElement === "function") {
+              window.Prism.highlightElement(modalContent);
+            }
+            loaded = true;
+            break;
+          }
+        }
+        if (!loaded) throw new Error("File not found in MatLab_Files");
+      } catch (err) {
+        modalContent.textContent = "Failed to load " + fileName + "\n" + err;
+      }
+    }
+
+    function closeCode() {
+      modal.classList.remove("open");
+      modal.setAttribute("aria-hidden", "true");
+    }
+
+    links.forEach((a) => {
+      a.addEventListener("click", (e) => {
+        e.preventDefault();
+        openCode(a.getAttribute("data-file"));
+      });
+    });
+
+    closeBtn.addEventListener("click", closeCode);
+    modal.addEventListener("click", (e) => {
+      if (e.target === modal) closeCode();
+    });
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") closeCode();
+    });
+  })();
+</script>
