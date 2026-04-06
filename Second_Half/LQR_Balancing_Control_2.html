@@ -454,6 +454,8 @@
             <code>save('reduced_model_ABK.mat', 'A', 'B', 'K', 'K_model', 'p', 'ff')</code>,
             where \(K\) corresponds to the firmware-ready gain and \(K_{\mathrm{model}}\) preserves the original model sign convention.
           </p>
+          <img src="images_2/LQR_Disturbance_Validation_6States.png" alt="LQR Disturbance Validation - 6 States" style="width: 100%; max-width: 880px; height: auto; display: block; margin: 10px auto 8px auto; border-radius: 8px; border: 1px solid rgba(0,0,0,0.14); background: #fff;">
+          <p style="text-align: center; margin-top: 0;"><em>Figure 6.2: Disturbance validation response of all six states under closed-loop \(A_{cl}=A-BK\).</em></p>
           <video controls autoplay loop muted playsinline preload="auto" style="width: 100%; max-width: 860px; height: auto; display: block; margin: 10px auto 8px auto; border-radius: 8px; border: 1px solid rgba(0,0,0,0.14); background: #000;">
             <source src="videos_2/working%20LQR%20video.mp4" type="video/mp4">
             Your browser does not support the video tag.
@@ -547,8 +549,12 @@
         <summary>4. Torque Output Sequencing</summary>
         <div class="tab-body">
           <p>
-            The control output pipeline is executed in a deterministic sequence from state error to actuator command.
-            Using the reduced-order model, the generalized control input is
+            This subsection explains exactly which torque elements are combined before the final motor command is sent.
+          </p>
+
+          <p><strong>4.1 Balance Torque from LQR</strong></p>
+          <p>
+            Using the reduced-order model, the balance channel is
             \[
             \mathbf{u}=
             \begin{bmatrix}
@@ -557,76 +563,51 @@
             =
             -K\mathbf{x}_{err},
             \]
-            where \(T\) is the wheel-torque channel and \(T_p\) is the body/leg torque channel
-            (see
+            where \(T\) is the wheel-torque channel and \(T_p\) is the body/leg torque channel (see
             <a class="matlab-link" data-file="test_lqr_linear.m">test_lqr_linear.m</a>).
           </p>
-          <p><strong>Output sequence used in implementation:</strong></p>
+
+          <p><strong>4.2 Additional Torque Elements</strong></p>
+          <ul>
+            <li>VMC torque term for endpoint force behavior: \(\tau_{\mathrm{VMC}} = J^T\mathbf{F}_{des}\).</li>
+            <li>Leg support term from leg-length controller (PD + feedforward), see <a class="matlab-link" data-file="leg_length_pd_feedforward_tuning.c">leg_length_pd_feedforward_tuning.c</a>.</li>
+            <li>Optional compensation terms (for implementation-specific offset/friction handling) if enabled.</li>
+          </ul>
+
+          <p><strong>4.3 Final Torque Composition (Before Motor Mapping)</strong></p>
+          <p>
+            In compact form, the generalized command is assembled as
+            \[
+            \tau_{\mathrm{raw}} =
+            \tau_{\mathrm{LQR}} +
+            \tau_{\mathrm{VMC}} +
+            \tau_{\mathrm{support}} +
+            \tau_{\mathrm{comp}},
+            \]
+            where \(\tau_{\mathrm{support}}\) is the leg-length support contribution and \(\tau_{\mathrm{comp}}\) represents optional correction terms.
+          </p>
+
+          <p><strong>4.4 Mapping to Motor Commands</strong></p>
           <ol>
             <li>Acquire and preprocess states \( \mathbf{x}=[\theta,\dot{\theta},x,\dot{x},\phi,\dot{\phi}]^T \).</li>
-            <li>Compute state error \( \mathbf{x}_{err}=\mathbf{x}-\mathbf{x}_{ref} \).</li>
-            <li>Compute model-level feedback \( \mathbf{u}=-K\mathbf{x}_{err} \).</li>
-            <li>Apply sign conventions and axis mapping between model and runtime channels.</li>
-            <li>Distribute generalized channels to left/right wheel and left/right leg actuators.</li>
-            <li>Apply magnitude/rate limits and publish final motor commands.</li>
+            <li>Compute \(\tau_{\mathrm{LQR}}\), then add \(\tau_{\mathrm{VMC}}\), support, and compensation terms to form \(\tau_{\mathrm{raw}}\).</li>
+            <li>Apply sign-convention mapping between model axes and runtime axes.</li>
+            <li>Distribute generalized channels to left/right wheel and left/right leg actuator channels.</li>
+            <li>Apply unit conversion, saturation, and rate limiting.</li>
+            <li>Publish final motor torque/current command to drivers.</li>
           </ol>
+
+          <p><strong>4.5 Verification Reference</strong></p>
           <p>
-            For contact-force driven operation, the endpoint-force command can be inserted before final actuator mapping:
-            \[
-            \tau_q = J^T\mathbf{F}_{des},
-            \]
-            then combined with balance channels as required by architecture:
-            \[
-            \tau_{\mathrm{cmd}} = \tau_{\mathrm{LQR}} + \tau_{\mathrm{VMC}}.
-            \]
-            This combination preserves posture stabilization while adding explicit force regulation.
-          </p>
-          <p>
-            In linear verification, closed-loop dynamics are checked using
-            \[
-            A_{cl}=A-BK,\qquad \dot{\mathbf{x}}=A_{cl}\mathbf{x},
-            \]
-            and corresponding generalized effort traces are reported from
-            \(\mathbf{u}(t)=-(K\mathbf{x}(t))\).
+            Verification scripts used in this torque-sequencing section are
+            <a class="matlab-link" data-file="test_lqr_linear.m">test_lqr_linear.m</a>
+            and
+            <a class="matlab-link" data-file="plot_kmatrix_response.m">plot_kmatrix_response.m</a>.
+            Detailed disturbance-recovery results are presented in K-matrix Step 7 to avoid duplication across sections.
           </p>
         </div>
       </details>
 
-      <details class="expand-box">
-        <summary>5. Implementation Notes and Limitations</summary>
-        <div class="tab-body">
-          <p>
-            This subsection summarizes practical implementation constraints for translating the model-level controller into
-            embedded execution.
-          </p>
-          <p><strong>Notes for implementation:</strong></p>
-          <ul>
-            <li>Coordinate consistency is mandatory: \(\phi\), pitch sign, and force-axis definitions must match the exported \(K\) and Jacobian convention.</li>
-            <li>Unit consistency must be enforced end-to-end (\(\mathrm{rad}\), \(\mathrm{m}\), \(\mathrm{N\cdot m}\)); Jacobian scripts that use \(\mathrm{mm}\) require explicit conversion.</li>
-            <li>Sampling period should satisfy a bandwidth margin for the fastest mode in \(A_{cl}\) to avoid discrete-time degradation.</li>
-            <li>Torque commands should include anti-windup-compatible clamping and optional slew-rate limiting for motor protection.</li>
-            <li>Sensor pipelines should include bias handling and filtered derivatives to reduce \(\dot{\theta}\), \(\dot{x}\), and \(\dot{\phi}\) noise injection.</li>
-          </ul>
-          <p>
-            A generic saturation operator used in deployment can be expressed as:
-            \[
-            u_i^{sat}=\mathrm{clip}(u_i,\,-u_{i,\max},\,u_{i,\max}),
-            \]
-            and, with rate limiting,
-            \[
-            \dot{u}_i^{sat}=\mathrm{clip}\!\left(\frac{u_i^{sat}(k)-u_i^{sat}(k-1)}{T_s},\,-\dot{u}_{i,\max},\,\dot{u}_{i,\max}\right).
-            \]
-          </p>
-          <p><strong>Current model limitations:</strong></p>
-          <ul>
-            <li>The reduced model is not the full multibody five-bar model; high-frequency flexible effects are not represented.</li>
-            <li>Linearization around upright equilibrium does not fully capture large-angle transient behavior.</li>
-            <li>Ground contact and friction are represented implicitly; discontinuous contact transitions are not explicitly modeled here.</li>
-            <li>Jacobian-based force mapping degrades near singular configurations and requires posture-aware gain/safety scheduling.</li>
-            <li>Actuator dead-zone, transmission backlash, and unmodeled delay can shift the effective closed-loop poles from prediction.</li>
-          </ul>
-        </div>
-      </details>
     </section>
   </div>
   <div id="code-modal-lqr" class="code-modal" aria-hidden="true">

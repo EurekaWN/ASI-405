@@ -195,10 +195,12 @@ fprintf("  max |Tp|         = %.4f\n", max(abs(u(:,2))));
 imgDir = fullfile(rootDir, "images_2");
 if exist(imgDir, "dir")
     out1 = fullfile(imgDir, 'LQR_Kmatrix_State_Response.png');
+    out1b = fullfile(imgDir, 'LQR_Disturbance_Validation_6States.png');
     out2 = fullfile(imgDir, 'LQR_Kmatrix_Control_Response.png');
     out3 = fullfile(imgDir, 'LQR_Kmatrix_All_In_One.png');
     out5 = fullfile(imgDir, 'LQR_Kmatrix_All_In_One_Animated.gif');
     exportgraphics(fig1, out1, 'Resolution', 220);
+    exportgraphics(fig1, out1b, 'Resolution', 220);
     exportgraphics(fig2, out2, 'Resolution', 220);
     exportgraphics(fig3, out3, 'Resolution', 220);
 
@@ -271,7 +273,7 @@ if exist(imgDir, "dir")
         warning('Animation export failed: %s', animErr.message);
     end
 
-    fprintf("\nSaved figures/videos:\n  %s\n  %s\n  %s\n  %s\n  %s\n", out1, out2, out3, out4, out5);
+    fprintf("\nSaved figures/videos:\n  %s\n  %s\n  %s\n  %s\n  %s\n  %s\n", out1, out1b, out2, out3, out4, out5);
 else
     fprintf("\nimages_2 folder not found. Figures not auto-saved.\n");
 end
