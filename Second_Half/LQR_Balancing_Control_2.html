@@ -439,6 +439,11 @@
 
           <p><strong>Step 5: Compute \(K\) from LQR</strong></p>
           <p>
+            The \(K\)-matrix computation is implemented in
+            <a class="matlab-link" data-file="build_reduced_model.m">build_reduced_model.m</a>,
+            where the gain is solved from the linearized model and selected \(Q,R\) weights.
+          </p>
+          <p>
             The gain is computed via
             \[
             K_{\mathrm{model}}=\mathrm{lqr}(A,B,Q,R).
@@ -492,6 +497,23 @@
             using \(A_{cl}=A-BK\), then the matrices are exported through
             <code>save('reduced_model_ABK.mat', 'A', 'B', 'K', 'K_model', 'p', 'ff')</code>,
             where \(K\) corresponds to the firmware-ready gain and \(K_{\mathrm{model}}\) preserves the original model sign convention.
+          </p>
+          <video controls autoplay loop muted playsinline preload="auto" style="width: 100%; max-width: 860px; height: auto; display: block; margin: 10px auto 8px auto; border-radius: 8px; border: 1px solid rgba(0,0,0,0.14); background: #000;">
+            <source src="videos_2/working%20LQR%20video.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+          </video>
+          <p style="text-align: center; margin-top: 0;"><em>Video 6.1: Normalized closed-loop response using the implemented \(K\)-matrix.</em></p>
+          <p>
+            This animation shows the time evolution of all six reduced states
+            \((\theta,\dot{\theta},x,\dot{x},\phi,\dot{\phi})\) under the same closed-loop simulation, where each trace is normalized by its own peak magnitude for visual comparison.
+            The intended verification outcome is that all states converge toward zero with decaying oscillation, indicating that the selected \(K\) stabilizes the linearized model.
+            The animation and exported response media are generated from
+            <a class="matlab-link" data-file="plot_kmatrix_response.m">plot_kmatrix_response.m</a>.
+          </p>
+          <p>
+            In project terms, this step is used as a consistency gate before firmware deployment:
+            it verifies sign-convention handling (\(K_{\mathrm{model}}\) vs. \(K_{\mathrm{firmware}}\)),
+            confirms response directionality after disturbance injection, and provides a quick reference for tuning trade-offs between correction aggressiveness and damping quality.
           </p>
         </div>
       </details>
