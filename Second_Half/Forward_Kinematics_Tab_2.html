@@ -615,7 +615,7 @@
         <summary><strong>4.1.3 Jacobian Torque Mapping</strong></summary>
         <div class="expand-body">
           <p>
-            This section explains the Jacobian-based kinematic and force transmission framework implemented in
+            This section presents the Jacobian-based kinematic and force transmission model implemented in
             <a href="#" class="matlab-link" data-file="VMC_WN_Jacobian_Transformation.m">VMC_WN_Jacobian_Transformation.m</a>
             and
             <a href="#" class="matlab-link" data-file="VMC_WN_Jacobian_Transformation_Animation.m">VMC_WN_Jacobian_Transformation_Animation.m</a>.
@@ -624,6 +624,16 @@
             \[
             \mathbf{G}=\begin{bmatrix}x\\y\end{bmatrix}.
             \]
+          </p>
+          <p>
+            This part is important because the forward kinematics alone only gives the position of the end point. For control, it is also necessary
+            to know how the end point moves when the joints move, and how a desired force at the end point is converted back into joint torque. That
+            relationship is given by the Jacobian.
+          </p>
+          <p>
+            In this project, the Jacobian is used for three main purposes: to relate joint velocity to end-point velocity, to study acceleration and
+            local motion behavior, and to map a desired Cartesian force at point \(\mathbf{G}\) into the corresponding joint torques through the
+            Jacobian transpose (Khatib, 1987).
           </p>
 
           <h3 class="subsection-title">4.1.3.1 Role of the Jacobian</h3>
@@ -638,9 +648,11 @@
             \qquad
             \mathbf{q}=\begin{bmatrix}\phi_1\\\phi_2\end{bmatrix}.
             \]
-            So joint angular velocities map directly to end-point linear velocity.
-            Physically, the Jacobian is the local transmission operator between actuator space and Cartesian space, which is consistent with standard robot
-            differential kinematics treatment (Khatib, 1987).
+          </p>
+          <p class="math-note">
+            This equation shows how the joint angular velocities are mapped to the Cartesian velocity of point \(\mathbf{G}\). At any given posture,
+            the Jacobian acts as the local transmission matrix between joint space and Cartesian space. This is the basic relation used to study how
+            effectively the mechanism can move the end point in different directions (Khatib, 1987).
           </p>
 
           <h3 class="subsection-title">4.1.3.2 Physical Meaning of the Matrix Columns</h3>
@@ -654,10 +666,10 @@
           \dfrac{\partial y}{\partial \phi_1} & \dfrac{\partial y}{\partial \phi_2}
           \end{bmatrix}.
           \]
-          <p>
-            Column 1 represents the velocity of $\mathbf{G}$ caused by unit speed at joint 1
-            with joint 2 fixed; column 2 represents the same for joint 2.
-            This is exactly how the code visualizes Jacobian vectors at point $G$.
+          <p class="math-note">
+            The first column shows how point \(\mathbf{G}\) moves if only \(\phi_1\) is changing, while the second column shows how \(\mathbf{G}\)
+            moves if only \(\phi_2\) is changing. This is why the Jacobian columns can be interpreted directly as local motion directions caused by
+            each actuator.
           </p>
 
           <h3 class="subsection-title">4.1.3.3 Numerical Jacobian Used in MATLAB</h3>
@@ -670,18 +682,27 @@
           \approx
           \frac{\mathbf{G}(\phi_1+h,\phi_2)-\mathbf{G}(\phi_1-h,\phi_2)}{2h},
           \]
+          <p class="math-note">
+            This gives the first Jacobian column numerically by slightly perturbing \(\phi_1\) in the positive and negative directions and observing
+            how the end point changes. It is a central-difference approximation of the partial derivative.
+          </p>
           \[
           \frac{\partial \mathbf{G}}{\partial \phi_2}\Big|_{\deg}
           \approx
           \frac{\mathbf{G}(\phi_1,\phi_2+h)-\mathbf{G}(\phi_1,\phi_2-h)}{2h}.
           \]
+          <p class="math-note">
+            This is the same procedure for the second joint. The end-point change is measured while perturbing \(\phi_2\), giving the second
+            Jacobian column.
+          </p>
           \[
           J_{\deg}=\left[\frac{\partial \mathbf{G}}{\partial \phi_1}\;\;\frac{\partial \mathbf{G}}{\partial \phi_2}\right]_{\deg},
           \qquad
           J_{\mathrm{rad}}=J_{\deg}\left(\frac{180}{\pi}\right).
           \]
-          <p>
-            So $J_{\deg}$ is in mm/deg and $J_{\mathrm{rad}}$ is in mm/rad.
+          <p class="math-note">
+            The Jacobian is first obtained in mm/deg because the finite difference is carried out in degrees. It is then converted into mm/rad so
+            that it is consistent with the velocity and torque calculations used later in the analysis.
           </p>
 
           <h3 class="subsection-title">4.1.3.4 Velocity and Acceleration Mapping</h3>
@@ -691,6 +712,10 @@
           \[
           \dot{\mathbf{G}}=J_{\mathrm{rad}}(\mathbf{q})\,\dot{\mathbf{q}}.
           \]
+          <p class="math-note">
+            This is the direct velocity mapping. Once the joint velocity vector is known, the Cartesian velocity of the end point can be obtained by
+            multiplying it with the Jacobian.
+          </p>
           <p>
             The code verifies this numerically by finite-difference velocity:
           </p>
@@ -699,6 +724,10 @@
           \approx
           \frac{\mathbf{G}(t+\Delta t)-\mathbf{G}(t)}{\Delta t}.
           \]
+          <p class="math-note">
+            This is used as a numerical check. Instead of using the Jacobian directly, the end-point velocity is estimated from successive FK
+            positions in time and then compared with the Jacobian-based result.
+          </p>
           <p>
             Acceleration kinematics:
           </p>
@@ -709,6 +738,10 @@
           +
           \dot{J}_{\mathrm{rad}}(\mathbf{q},\dot{\mathbf{q}})\,\dot{\mathbf{q}}.
           \]
+          <p class="math-note">
+            The acceleration relation contains two parts: one from the joint accelerations themselves, and another from the fact that the Jacobian
+            is changing with posture as the mechanism moves.
+          </p>
           <p>
             A corresponding finite-difference estimate is
           </p>
@@ -717,6 +750,10 @@
           \approx
           \frac{\mathbf{G}(t+\Delta t)-2\mathbf{G}(t)+\mathbf{G}(t-\Delta t)}{\Delta t^2}.
           \]
+          <p class="math-note">
+            This second-order finite difference provides a numerical estimate of end-point acceleration, which is again used as a consistency check
+            against the Jacobian-based acceleration model.
+          </p>
 
           <h3 class="subsection-title">4.1.3.5 Jacobian Transpose Torque Mapping</h3>
           <p>
@@ -727,6 +764,10 @@
           =
           J_{\mathrm{rad}}^\top(\mathbf{q})\,\mathbf{F}.
           \]
+          <p class="math-note">
+            This is the main force-to-torque mapping used in the project. Once a desired Cartesian force is defined at the end point, the Jacobian
+            transpose is used to convert it into the corresponding joint torque demand.
+          </p>
           <p>
             This follows from power/virtual-work consistency:
           </p>
@@ -739,14 +780,19 @@
           \;\Rightarrow\;
           \boldsymbol{\tau}=J^\top\mathbf{F}.
           \]
-          <p>
-            This Jacobian-transpose force mapping is the same core principle used in operational-space force control (Khatib, 1987).
+          <p class="math-note">
+            This derivation comes from virtual work. The joint-side power and Cartesian-side power must be consistent, which leads directly to the
+            transpose relation. This is the same principle commonly used in operational-space force control (Khatib, 1987).
           </p>
           <p>
             In the current script, torque is obtained in N$\cdot$mm and converted by:
             \[
             \boldsymbol{\tau}_{\mathrm{N\cdot m}}=\frac{\boldsymbol{\tau}_{\mathrm{N\cdot mm}}}{1000}.
             \]
+          </p>
+          <p class="math-note">
+            This conversion is only a unit change. The mapping itself gives torque in N·mm because the Jacobian is expressed using millimetres, so
+            the result is divided by \(1000\) to express torque in N·m.
           </p>
 
           <h3 class="subsection-title">4.1.3.6 Interpretation of Force-Direction Sweep in Code</h3>
@@ -760,9 +806,17 @@
           \[
           \boldsymbol{\tau}(\theta_F)=J^\top\mathbf{F}(\theta_F).
           \]
+          <p class="math-note">
+            In this test, the force magnitude is fixed and only the direction is changed. This makes it possible to see which Cartesian force
+            directions are easy to produce and which directions require much larger joint torque.
+          </p>
           <p>
             It then plots $\|\boldsymbol{\tau}\|$, $|\tau_1|$, and $|\tau_2|$ versus force direction.
             Peaks indicate poor mechanical leverage directions requiring large motor torque.
+          </p>
+          <p class="math-note">
+            Therefore, large peaks in the plot indicate directions where the mechanism has weak leverage. These are directions in which the motors
+            must work harder to generate the same unit Cartesian force.
           </p>
 
           <h3 class="subsection-title">4.1.3.7 Singularity and Manipulability</h3>
@@ -775,8 +829,14 @@
             \[
             w=\left|\det\!\left(J_{\mathrm{rad}}\right)\right|.
             \]
-            Small $w$ corresponds to near-singular behavior: motion capability collapses in one direction and
-            torque demand spikes for certain Cartesian force directions.
+          </p>
+          <p class="math-note">
+            The velocity ellipse describes the set of Cartesian velocities that can be produced when the joint-velocity magnitude is fixed. It gives
+            a visual indication of how easily the mechanism can move in different directions at a given posture.
+          </p>
+          <p class="math-note">
+            The determinant-based index \(w\) is used as a simple manipulability indicator. A small value of \(w\) means the mechanism is approaching
+            a singular configuration, where motion capability becomes poor in one direction and force demand can rise sharply.
           </p>
 
           <h3 class="subsection-title">4.1.3.8 Control Relevance</h3>
@@ -787,6 +847,13 @@
             \[
             \boldsymbol{\tau}_{\mathrm{des}}=J^\top\mathbf{F}_{\mathrm{des}}.
             \]
+          </p>
+          <p class="math-note">
+            This is the main reason the Jacobian torque mapping is needed in the control framework. Higher-level control can decide what force is
+            required at the leg end point, but the motors still need torque commands. The Jacobian transpose provides the link between these two
+            levels.
+          </p>
+          <p>
             Thus, Jacobian transpose mapping is the key bridge between endpoint force objectives and motor torque actuation.
           </p>
         </div>
