@@ -6,11 +6,11 @@
     One side of the HT8108 motor was unable to provide the correct torque compared to the functioning side (left side).
   </p>
   <p>
-    It was observed that the electrical offset of the motor drifted significantly within a single day. As a result, one side
+    It was observed that the <strong>electrical offset</strong> of the motor drifted significantly within a single day. As a result, one side
     of the motor could not respond consistently to the LQR control commands.
   </p>
   <p>
-    Electrical offset is the angular mismatch between encoder zero and the motor electrical zero used by the FOC controller.
+    <strong>Electrical offset</strong> is the angular mismatch between encoder zero and the motor electrical zero used by the FOC controller.
     If this offset is wrong or drifting, the phase current is injected at the wrong electrical angle, so commanded torque is no
     longer produced accurately. This issue is critical because the balancing controller assumes predictable torque response:
     once torque output becomes inconsistent, state correction quality degrades, closed-loop stability margin drops, and the robot
