@@ -35,10 +35,10 @@
     }
 
     .fk-tab-scope .subsection-title {
-      font-size: 16pt;
-      font-weight: bold;
-      margin: 26px 0 10px 0;
-      padding-top: 26px;
+      font-size: 1rem;
+      font-weight: 400;
+      margin: 18px 0 8px 0;
+      padding-top: 8px;
     }
 
     .fk-tab-scope .section-title::before,
@@ -49,6 +49,12 @@
     .fk-tab-scope p {
       margin: 0 0 12px 0;
       line-height: 1.65;
+    }
+
+    .fk-tab-scope .math-note {
+      margin: 6px 0 12px 0;
+      line-height: 1.6;
+      color: #2f3740;
     }
 
     .h-row {
@@ -117,6 +123,7 @@
       align-items: center;
       margin: 0;
       padding: 0;
+      font-size: 1rem;
       font-weight: bold;
       margin-bottom: 6px;
     }
@@ -393,12 +400,23 @@
         <summary><strong>4.1.2 Inverse Kinematics</strong></summary>
         <div class="expand-body">
           <p>
-            The inverse-kinematic module solves for the input angles
+            This section presents the inverse-kinematic method used to recover the input angles
             $(\phi_1,\phi_2)$ such that the forward-kinematic output
             $\mathbf{G}(\phi_1,\phi_2)$ matches a desired target point
             $\mathbf{G}_{\mathrm{des}}=[G_x^{\mathrm{des}},G_y^{\mathrm{des}}]^\top$.
             The implementation follows <code>IK_phi1phi2_from_G</code> in
             <a href="#" class="matlab-link" data-file="VMC_WN_Cleaned_IK_Function.m">VMC_WN_Cleaned_IK_Function.m</a>.
+          </p>
+          <p>
+            A numerical solver is used here because the mechanism is not a simple open-chain arm. It is a closed-chain linkage with several
+            dependent internal angles and nested geometric relations in the forward-kinematic model. Because of that, the inverse map from the
+            Cartesian end-point \(\mathbf{G}\) back to \((\phi_1,\phi_2)\) is not convenient to write as one clean closed-form expression over
+            the full usable range.
+          </p>
+          <p>
+            For that reason, the IK is implemented as a bounded nonlinear least-squares solve. The procedure starts from an initial estimate of the
+            joint angles, evaluates the forward kinematics, measures the position error relative to the target point, and then updates the joint
+            variables until the Cartesian error is minimized within the imposed bounds (MathWorks, n.d.-b).
           </p>
 
           <h3 class="subsection-title">4.1.2.1 State, Target, and Constraints</h3>
@@ -413,6 +431,10 @@
           \phi_2
           \end{bmatrix},
           \]
+          <p class="math-note">
+            This shows that the unknowns in the IK problem are the two actuated joint angles only. The internal linkage angles are not solved
+            independently here, because they are reconstructed automatically when the forward kinematics are evaluated.
+          </p>
           <p>
             and the task-space target is
           </p>
@@ -424,6 +446,10 @@
           G_y^{\mathrm{des}}
           \end{bmatrix}.
           \]
+          <p class="math-note">
+            This is the Cartesian target point for the end of the linkage. The purpose of the IK is to find a pair of joint angles that places
+            the forward-kinematic point \( \mathbf{G} \) at this location.
+          </p>
           <p>
             In the current code, the target is set as
             $\mathbf{G}_{\mathrm{des}}=[41.56,\,-292.4]^\top$ mm,
@@ -432,6 +458,10 @@
             \boldsymbol{\phi}_{\mathrm{lb}}=[0,\;0]^\top,\qquad
             \boldsymbol{\phi}_{\mathrm{ub}}=[140,\;140]^\top \text{ (deg)}.
             \]
+          </p>
+          <p class="math-note">
+            These lower and upper bounds define the physically allowed joint range. This is necessary so the solver does not return angle
+            combinations that may satisfy the mathematics but cannot be achieved by the actual mechanism.
           </p>
 
           <h3 class="subsection-title">4.1.2.2 Problem Formulation</h3>
@@ -448,6 +478,10 @@
           G_y(\phi_1,\phi_2)-G_y^{\mathrm{des}}
           \end{bmatrix}.
           \]
+          <p class="math-note">
+            This residual vector is the main quantity used in the solve. It compares the Cartesian point predicted by the current angle estimate
+            against the desired target point. If both entries become zero, then the IK has been satisfied exactly.
+          </p>
           <p>
             The bounded nonlinear least-squares objective is
           </p>
@@ -467,11 +501,15 @@
           <p>
             This objective directly minimizes Cartesian end-point mismatch in millimeters.
           </p>
+          <p class="math-note">
+            The squared-error form is used so that both the horizontal and vertical position errors are reduced together. The solver therefore
+            searches for the angle pair that gives the smallest overall position mismatch while remaining within the joint limits.
+          </p>
 
           <h3 class="subsection-title">4.1.2.3 Numerical Solver Used in Code</h3>
           <p>
             In MATLAB, the solution is obtained via
-            <code>lsqnonlin</code>:
+            <code>lsqnonlin</code> (MathWorks, n.d.-b):
           </p>
           \[
           \begin{bmatrix}\phi_1^\star\\\phi_2^\star\end{bmatrix}
@@ -484,6 +522,11 @@
           \boldsymbol{\phi}_{\mathrm{ub}}
           \right).
           \]
+          <p class="math-note">
+            This means MATLAB starts from an initial guess \(\boldsymbol{\phi}_0\), repeatedly evaluates the forward-kinematic error, and updates
+            the joint angles until the residual becomes sufficiently small. The bounds are included directly in the solve so that the search stays
+            within the allowed motion range.
+          </p>
           <p>
             The initial guess is first limited to the allowed range:
           </p>
@@ -492,14 +535,9 @@
           \min\!\big(\boldsymbol{\phi}_{\mathrm{ub}},
           \max(\boldsymbol{\phi}_{\mathrm{lb}},\boldsymbol{\phi}_0)\big).
           \]
-          <p>
-            Solver options used in the script are:
-            \[
-            \texttt{MaxFunctionEvaluations}=8000,\;
-            \texttt{MaxIterations}=300,\;
-            \texttt{FunctionTolerance}=10^{-12},\;
-            \texttt{StepTolerance}=10^{-12}.
-            \]
+          <p class="math-note">
+            This step clips the initial estimate so that it is valid before the optimization starts. It avoids starting the solve from a point that
+            is already outside the permitted joint range.
           </p>
           <p>
             After optimization, each angle is normalized by
@@ -509,6 +547,10 @@
           \qquad
           \phi_i^\star \leftarrow \mathcal{W}(\phi_i^\star),\; i\in\{1,2\}.
           \]
+          <p class="math-note">
+            The wrapping step keeps the returned angles in one consistent angle convention. This is useful because different numerical angle values
+            can correspond to the same physical orientation.
+          </p>
           <p>
             The reported solution quality is computed from
             \[
@@ -517,6 +559,10 @@
             \qquad
             \|\mathbf{G}_{\mathrm{err}}\|_2.
             \]
+          </p>
+          <p class="math-note">
+            This is the final error check. After the solver returns \(\phi_1^\star\) and \(\phi_2^\star\), the forward kinematics are evaluated
+            again to verify how close the resulting point is to the target. A smaller error norm indicates a better IK result.
           </p>
 
           <h3 class="subsection-title">4.1.2.4 Multi-Start Search</h3>
@@ -534,6 +580,10 @@
           -\mathbf{G}_{\mathrm{des}}
           \right\|_2.
           \]
+          <p class="math-note">
+            This step is used because the problem is nonlinear, so different starting guesses can converge to different local solutions. By solving
+            the IK from multiple starting pairs and retaining the smallest final error, the implementation becomes more reliable.
+          </p>
           <p>
             In implementation, each axis is sampled with 7 points over the allowed range, giving
             $7\times7=49$ starting pairs. The candidate with minimum terminal task-space error is retained.
@@ -541,13 +591,22 @@
           <p>
             This strategy improves stability against local minima and reduces sensitivity to one poor initial guess.
           </p>
+          <p class="math-note">
+            This is a repeated-initialization approach in which multiple starting pairs are tested and the solution with the smallest terminal
+            Cartesian error is retained. It is particularly useful for closed-chain geometry where one target point may be associated with more than
+            one nearby solution branch.
+          </p>
 
           <h3 class="subsection-title">4.1.2.5 Practical Interpretation</h3>
           <p>
-            The IK routine enforces physically admissible joint ranges while solving directly in Cartesian space.
-            Because the mechanism is nonlinear, multiple joint configurations may produce nearby end-point locations.
-            The bounded least-squares + multi-start structure provides a stable and implementation-ready
-            inverse map for later control and firmware integration.
+            The IK routine enforces physically admissible joint ranges while solving directly in Cartesian space. Because the mechanism is nonlinear,
+            multiple joint configurations may produce similar end-point locations. The bounded least-squares together with the multi-start search
+            provides a practical and stable inverse solution for later control and firmware integration.
+          </p>
+          <p class="math-note">
+            Overall, the IK workflow is to define a target point, assign an initial estimate of the joint angles, run the forward kinematics,
+            evaluate the Cartesian error, refine the joint variables, and retain the best valid solution. In this way, the inverse solution is
+            obtained through a structured optimization procedure rather than by direct algebraic inversion.
           </p>
         </div>
       </details>
