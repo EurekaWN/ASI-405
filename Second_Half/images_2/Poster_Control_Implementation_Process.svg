@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 860" width="1100" height="860">
+  <defs>
+    <style>
+      .connector {
+        stroke: #c9d0de;
+        stroke-width: 10;
+        fill: none;
+        stroke-linecap: round;
+      }
+      .orbit {
+        stroke: #2d3139;
+        stroke-width: 5;
+        fill: none;
+        marker-end: url(#arrow);
+      }
+      .core {
+        fill: #d8b79a;
+        stroke: #9b7a5f;
+        stroke-width: 6;
+      }
+      .node {
+        fill: #ffffff;
+        stroke: #667182;
+        stroke-width: 5;
+      }
+      .center-title {
+        font: 700 56px "Times New Roman", Times, serif;
+        fill: #111827;
+      }
+      .center-text {
+        font: 700 48px "Times New Roman", Times, serif;
+        fill: #111827;
+      }
+      .node-title {
+        font: 700 46px "Times New Roman", Times, serif;
+        fill: #111827;
+      }
+    </style>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="9.5" refY="6" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L12,6 L0,12 z" fill="#2d3139"/>
+    </marker>
+  </defs>
+
+  <line x1="550" y1="388" x2="255" y2="182" class="connector"/>
+  <line x1="550" y1="388" x2="845" y2="182" class="connector"/>
+  <line x1="550" y1="388" x2="240" y2="528" class="connector"/>
+  <line x1="550" y1="388" x2="550" y2="650" class="connector"/>
+  <line x1="550" y1="388" x2="860" y2="528" class="connector"/>
+
+  <path d="M118 304 C72 264 70 201 118 162" class="orbit"/>
+  <path d="M214 640 C276 692 370 694 436 644" class="orbit"/>
+  <path d="M664 646 C736 698 830 694 898 636" class="orbit"/>
+  <path d="M984 164 C1032 204 1035 265 986 308" class="orbit"/>
+
+  <circle cx="550" cy="388" r="170" class="core"/>
+  <text x="550" y="340" text-anchor="middle" class="center-title">Control</text>
+  <text x="550" y="398" text-anchor="middle" class="center-title">Implementation</text>
+  <text x="550" y="456" text-anchor="middle" class="center-text">Process</text>
+
+  <circle cx="205" cy="160" r="120" class="node"/>
+  <text x="205" y="126" text-anchor="middle" class="node-title">A. Kinematic</text>
+  <text x="205" y="178" text-anchor="middle" class="node-title">Modelling</text>
+
+  <circle cx="875" cy="160" r="120" class="node"/>
+  <text x="875" y="126" text-anchor="middle" class="node-title">E. Control-</text>
+  <text x="875" y="178" text-anchor="middle" class="node-title">Oriented</text>
+
+  <circle cx="220" cy="540" r="120" class="node"/>
+  <text x="220" y="506" text-anchor="middle" class="node-title">B. Force and</text>
+  <text x="220" y="558" text-anchor="middle" class="node-title">Transmission</text>
+
+  <circle cx="550" cy="708" r="120" class="node"/>
+  <text x="550" y="674" text-anchor="middle" class="node-title">C. Dynamic</text>
+  <text x="550" y="726" text-anchor="middle" class="node-title">Modelling</text>
+
+  <circle cx="890" cy="540" r="120" class="node"/>
+  <text x="890" y="506" text-anchor="middle" class="node-title">D. Contact and</text>
+  <text x="890" y="558" text-anchor="middle" class="node-title">Actuation</text>
+</svg>

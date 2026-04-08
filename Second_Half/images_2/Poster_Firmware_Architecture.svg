@@ -1,0 +1,113 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1880 980" width="1880" height="980">
+  <defs>
+    <style>
+      .bg { fill: #f4f7fc; }
+      .lane { font: 700 38px "Times New Roman", Times, serif; fill: #273552; }
+      .lane-line { stroke: #c9d3e4; stroke-width: 3; }
+      .block { fill: #ffffff; stroke: #27457f; stroke-width: 4; rx: 26; ry: 26; }
+      .block-accent { fill: #edf3ff; stroke: #1c3f88; stroke-width: 5; rx: 26; ry: 26; }
+      .title { font: 700 58px "Times New Roman", Times, serif; fill: #1b2640; }
+      .subtitle { font: 400 36px "Times New Roman", Times, serif; fill: #455675; }
+      .block-title { font: 700 46px "Times New Roman", Times, serif; fill: #1d2740; }
+      .block-text { font: 400 34px "Times New Roman", Times, serif; fill: #31405b; }
+      .sig { font: 700 30px "Times New Roman", Times, serif; fill: #30405f; }
+      .note { font: 400 32px "Times New Roman", Times, serif; fill: #3b4b67; }
+      .arrow { stroke: #1f2a44; stroke-width: 5; fill: none; marker-end: url(#arrowHead); }
+      .feedback { stroke: #29599f; stroke-width: 4; fill: none; stroke-dasharray: 14 10; marker-end: url(#softHead); }
+    </style>
+    <marker id="arrowHead" markerWidth="14" markerHeight="12" refX="12" refY="6" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L14,6 L0,12 z" fill="#1f2a44"/>
+    </marker>
+    <marker id="softHead" markerWidth="12" markerHeight="10" refX="10.5" refY="5" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L12,5 L0,10 z" fill="#29599f"/>
+    </marker>
+  </defs>
+
+  <rect x="0" y="0" width="1880" height="980" class="bg"/>
+
+  <text x="940" y="74" text-anchor="middle" class="title">Code-Grounded Control and Firmware Architecture</text>
+  <text x="940" y="118" text-anchor="middle" class="subtitle">Acquire -> Estimate -> Control -> Map -> Limit -> Actuate</text>
+
+  <text x="250" y="178" text-anchor="middle" class="lane">Inputs and Estimation</text>
+  <line x1="70" y1="190" x2="430" y2="190" class="lane-line"/>
+
+  <text x="735" y="178" text-anchor="middle" class="lane">Control Layers</text>
+  <line x1="490" y1="190" x2="980" y2="190" class="lane-line"/>
+
+  <text x="1265" y="178" text-anchor="middle" class="lane">Fusion and Safety</text>
+  <line x1="1040" y1="190" x2="1490" y2="190" class="lane-line"/>
+
+  <text x="1660" y="178" text-anchor="middle" class="lane">Actuation</text>
+  <line x1="1540" y1="190" x2="1785" y2="190" class="lane-line"/>
+
+  <rect x="88" y="236" width="324" height="152" class="block"/>
+  <text x="250" y="293" text-anchor="middle" class="block-title">Reference</text>
+  <text x="250" y="340" text-anchor="middle" class="block-text">balance target,</text>
+  <text x="250" y="382" text-anchor="middle" class="block-text">leg target, F_des</text>
+
+  <rect x="88" y="462" width="324" height="206" class="block"/>
+  <text x="250" y="523" text-anchor="middle" class="block-title">State Estimation</text>
+  <text x="250" y="571" text-anchor="middle" class="block-text">IMU + encoders</text>
+  <text x="250" y="613" text-anchor="middle" class="block-text">wheel odometry +</text>
+  <text x="250" y="655" text-anchor="middle" class="block-text">Kalman-filtered states</text>
+
+  <rect x="522" y="236" width="434" height="136" class="block-accent"/>
+  <text x="739" y="290" text-anchor="middle" class="block-title">LQR Balance Loop</text>
+  <text x="739" y="336" text-anchor="middle" class="block-text">u = -K x_err</text>
+
+  <rect x="522" y="430" width="434" height="128" class="block"/>
+  <text x="739" y="480" text-anchor="middle" class="block-title">VMC Force Loop</text>
+  <text x="739" y="526" text-anchor="middle" class="block-text">tau = J(q)^T F_des</text>
+
+  <rect x="522" y="612" width="434" height="136" class="block"/>
+  <text x="739" y="666" text-anchor="middle" class="block-title">Leg-Length Support</text>
+  <text x="739" y="712" text-anchor="middle" class="block-text">PD + feedforward</text>
+
+  <rect x="1044" y="388" width="470" height="220" class="block-accent"/>
+  <text x="1279" y="448" text-anchor="middle" class="block-title">Command Fusion</text>
+  <text x="1279" y="496" text-anchor="middle" class="block-text">tau_raw = LQR + VMC</text>
+  <text x="1279" y="538" text-anchor="middle" class="block-text">+ support + compensation</text>
+  <text x="1279" y="580" text-anchor="middle" class="block-text">sign map + channel split</text>
+
+  <rect x="1572" y="402" width="250" height="142" class="block"/>
+  <text x="1697" y="456" text-anchor="middle" class="block-title">Safety</text>
+  <text x="1697" y="502" text-anchor="middle" class="block-text">clip, slew,</text>
+  <text x="1697" y="544" text-anchor="middle" class="block-text">interlocks</text>
+
+  <rect x="1572" y="614" width="250" height="138" class="block"/>
+  <text x="1697" y="668" text-anchor="middle" class="block-title">Drivers</text>
+  <text x="1697" y="714" text-anchor="middle" class="block-text">HT8108 + M3508</text>
+
+  <rect x="1040" y="792" width="782" height="128" class="block-accent"/>
+  <text x="1431" y="845" text-anchor="middle" class="block-title">Wheel-Leg Robot Plant</text>
+  <text x="1431" y="892" text-anchor="middle" class="block-text">mechanics, transmission, contact, measured motion</text>
+
+  <path d="M412 312 L522 312" class="arrow"/>
+  <path d="M412 312 L472 312 L472 494 L522 494" class="arrow"/>
+  <path d="M412 312 L462 312 L462 680 L522 680" class="arrow"/>
+
+  <path d="M412 560 L492 560 L492 336 L522 336" class="arrow"/>
+  <path d="M412 560 L492 560 L492 496 L522 496" class="arrow"/>
+  <path d="M412 560 L492 560 L492 680 L522 680" class="arrow"/>
+
+  <path d="M956 304 L1044 450" class="arrow"/>
+  <path d="M956 494 L1044 494" class="arrow"/>
+  <path d="M956 680 L1044 552" class="arrow"/>
+
+  <path d="M1514 498 L1572 472" class="arrow"/>
+  <path d="M1697 544 L1697 614" class="arrow"/>
+  <path d="M1697 752 L1697 792" class="arrow"/>
+
+  <path d="M1040 846 L520 846 L520 560 L412 560" class="feedback"/>
+  <path d="M1040 896 L934 896 L934 494 L956 494" class="feedback"/>
+
+  <text x="430" y="286" class="sig">setpoints</text>
+  <text x="426" y="592" class="sig">estimated states</text>
+  <text x="978" y="454" class="sig">tau terms</text>
+  <text x="1520" y="460" class="sig">tau_cmd</text>
+  <text x="1715" y="780" class="sig">actuation</text>
+  <text x="690" y="835" class="sig">sensor feedback</text>
+  <text x="930" y="940" class="sig">force and kinematic feedback</text>
+
+  <text x="940" y="962" text-anchor="middle" class="note">Code path used in the repo: bias-corrected sensing, corrected joint angles, full-state control, safe torque limiting, then hardware output.</text>
+</svg>
