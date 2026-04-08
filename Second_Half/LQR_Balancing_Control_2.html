@@ -358,30 +358,52 @@
             <li><strong>Body pitch inertia:</strong> \(I_M = 0.13421\ \mathrm{kg\cdot m^2}\)</li>
           </ul>
           <p>
-            Lumped masses are calculated directly from CAD mass aggregation in the MATLAB file:
+            Lumped masses are calculated directly from CAD mass aggregation:
+          </p>
+          \[
+          m_w = \frac{2\left(\sum m_{\mathrm{wheel\ assembly}}\right)}{1000}
+          \]
+          \[
+          \begin{aligned}
+          m_w &= \frac{2\left(259.36 + 2(151.64) + 113.6 + 4(25.73) + 15\right)}{1000}\\
+              &= \frac{2(794.16)}{1000}\\
+              &= 1.58832\ \mathrm{kg}
+          \end{aligned}
+          \]
+          <p>
+            Here, \(m_w\) represents the lumped wheel-side mass used in the reduced model. It groups the parts that move together with the wheel
+            assembly and contribute to the wheel-side inertia and loading term.
+          </p>
+          \[
+          m_p = \frac{2\left(\sum m_{\mathrm{leg/pole\ assembly}}\right)}{1000}
+          \]
+          \[
+          \begin{aligned}
+          m_p &= \frac{2\left(471.98 + 70.62 + 44.28 + 105.83 + 44.98 + 472.93 + 58.26 + 126.12\right)}{1000}\\
+              &\quad + \frac{2\left(146.57 + 22.03 + 33.58 + 336.4 + 12(15) + 50\right)}{1000}\\
+              &= \frac{2(2163.58)}{1000}\\
+              &= 4.32716\ \mathrm{kg}
+          \end{aligned}
+          \]
+          <p>
+            Here, \(m_p\) represents the lumped leg-side mass used in the reduced model. It combines the structural members and mounted parts on
+            the leg/body-side assembly that influence the pendulum-like dynamics.
+          </p>
+          <div data-no-auto-caption="true" class="no-auto-caption" style="margin: 12px auto 10px auto; width: 100%; max-width: 210px; border: 1px solid rgba(0,0,0,0.14); border-radius: 8px; background: #fff; overflow: hidden;">
+            <img src="images_2/LQR_Model_Labeled.svg" alt="Reduced-order balancing model with labeled lumped masses" style="width: 100%; height: auto; display: block;">
+          </div>
+          <p style="text-align:center; margin-top: 0;">
+            <em>Figure 6.3: Reduced-order balancing model with labeled lumped masses used in the LQR parameter definition.</em>
           </p>
           <p>
-            \[
-            m_w = \frac{2\left(\sum m_{\mathrm{wheel\ assembly}}\right)}{1000}
-            \]
-            \[
-            \begin{aligned}
-            m_w &= \frac{2\left(259.36 + 2(151.64) + 113.6 + 4(25.73) + 15\right)}{1000}\\
-                &= \frac{2(794.16)}{1000}\\
-                &= 1.58832\ \mathrm{kg}
-            \end{aligned}
-            \]
-            \[
-            m_p = \frac{2\left(\sum m_{\mathrm{leg/pole\ assembly}}\right)}{1000}
-            \]
-            \[
-            \begin{aligned}
-            m_p &= \frac{2\left(471.98 + 70.62 + 44.28 + 105.83 + 44.98 + 472.93 + 58.26 + 126.12\right)}{1000}\\
-                &\quad + \frac{2\left(146.57 + 22.03 + 33.58 + 336.4 + 12(15) + 50\right)}{1000}\\
-                &= \frac{2(2163.58)}{1000}\\
-                &= 4.32716\ \mathrm{kg}
-            \end{aligned}
-            \]
+            In this reduced model, the detailed off-centre mass distribution of the leg is not modelled explicitly. Instead, it is absorbed into the
+            equivalent parameters \(m_p\), \(L\), and \(I_p\). This is done because the reduced LQR model is intended to capture the dominant
+            sagittal-plane balancing behaviour around the upright operating point, not the full distributed multibody geometry.
+          </p>
+          <p>
+            So the leg COM is not ignored completely. Rather, its detailed offset is replaced by one equivalent lumped mass location and one
+            equivalent inertia term. This keeps the model compact enough for linearization and controller design while still preserving the main
+            gravitational and inertial effects needed for the balancing dynamics.
           </p>
           <p>
             These parameters define the reduced balancing model used for linearization.

@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 520" width="720" height="520">
+  <defs>
+    <style>
+      .bg { fill: #fbfcff; }
+      .ground { stroke: #d6dce8; stroke-width: 4; }
+      .body { fill: #ffffff; stroke: #1f2738; stroke-width: 3.5; }
+      .rod { stroke: #1f2738; stroke-width: 5; stroke-linecap: round; }
+      .guide { stroke: #6980b0; stroke-width: 2.2; fill: none; }
+      .mass { fill: #ffffff; stroke: #1f2738; stroke-width: 2.8; }
+      .center { fill: #1f2738; }
+      .tag { fill: #eef3ff; stroke: #5f79b5; stroke-width: 2; rx: 14; ry: 14; }
+      .tag-title { font: 700 20px "Times New Roman", Times, serif; fill: #1f376f; }
+      .tag-text { font: 400 17px "Times New Roman", Times, serif; fill: #2b3b59; }
+      .label { font: italic 700 26px "Times New Roman", Times, serif; fill: #1f2d4e; }
+    </style>
+  </defs>
+
+  <rect x="0" y="0" width="720" height="520" class="bg"/>
+  <line x1="34" y1="450" x2="690" y2="450" class="ground"/>
+
+  <!-- Reduced-order geometry -->
+  <circle cx="120" cy="370" r="60" class="body"/>
+  <circle cx="120" cy="370" r="4.5" class="center"/>
+
+  <line x1="120" y1="370" x2="260" y2="212" class="rod"/>
+
+  <g transform="rotate(-12 318 142)">
+    <rect x="255" y="48" width="126" height="188" class="body"/>
+  </g>
+
+  <!-- Lumped masses -->
+  <circle cx="120" cy="370" r="15" class="mass"/>
+  <circle cx="186" cy="295" r="15" class="mass"/>
+  <circle cx="322" cy="138" r="15" class="mass"/>
+
+  <text x="84" y="348" class="label">m<tspan baseline-shift="sub" font-size="15">w</tspan></text>
+  <text x="196" y="289" class="label">m<tspan baseline-shift="sub" font-size="15">p</tspan></text>
+  <text x="334" y="132" class="label">M</text>
+
+  <!-- Callout cards -->
+  <rect x="448" y="72" width="220" height="64" class="tag"/>
+  <text x="466" y="98" class="tag-title">Body/Chassis Mass</text>
+  <text x="466" y="121" class="tag-text">M = 8.700 kg</text>
+  <path d="M448 105 C418 108, 388 116, 338 136" class="guide"/>
+
+  <rect x="448" y="186" width="220" height="64" class="tag"/>
+  <text x="466" y="212" class="tag-title">Leg-Side Mass</text>
+  <text x="466" y="235" class="tag-text">m<tspan baseline-shift="sub" font-size="13">p</tspan> = 4.327 kg</text>
+  <path d="M448 219 C402 228, 306 250, 202 291" class="guide"/>
+
+  <rect x="448" y="300" width="220" height="64" class="tag"/>
+  <text x="466" y="326" class="tag-title">Wheel-Side Mass</text>
+  <text x="466" y="349" class="tag-text">m<tspan baseline-shift="sub" font-size="13">w</tspan> = 1.588 kg</text>
+  <path d="M448 333 C372 340, 260 352, 136 368" class="guide"/>
+</svg>
