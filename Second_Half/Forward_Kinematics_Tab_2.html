@@ -1,4 +1,4 @@
-  <style>
+﻿  <style>
     .fk-tab-scope {
       font-family: inherit;
       background: transparent;
@@ -149,6 +149,38 @@
 
     .fk-tab-scope .expand-body {
       padding-top: 8px;
+    }
+
+    .fk-tab-scope details.inner-example {
+      margin: 14px 0 4px 0;
+      padding: 10px 12px;
+      border-radius: 7px;
+      background: rgba(255, 255, 255, 0.58);
+      border: 1px solid rgba(140, 160, 220, 0.35);
+    }
+
+    .fk-tab-scope details.inner-example summary {
+      cursor: pointer;
+      list-style: none;
+      display: flex;
+      align-items: center;
+      font-size: 0.98rem;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .fk-tab-scope details.inner-example summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .fk-tab-scope details.inner-example summary::before {
+      content: "▶";
+      font-size: 10pt;
+      margin-right: 6px;
+    }
+
+    .fk-tab-scope details.inner-example[open] summary::before {
+      content: "▼";
     }
 
     .page-intro-title {
@@ -755,6 +787,163 @@
             against the Jacobian-based acceleration model.
           </p>
 
+          <details class="inner-example">
+            <summary>4.1.3.4.1 Worked Example: FK Differentiation Check</summary>
+            <div class="expand-body">
+              <p>
+                This example uses the same FK symbols as the derivation: \(\phi_1\), \(\phi_2\), \(a_2\), \(a_3\), \(\phi_4\), \(a_6\), and
+                \(\phi_5\). During differentiation, all angle terms are treated in radians so that the final Jacobian is in \(\mathrm{mm/rad}\).
+              </p>
+              <p><strong>Step 1. Express point \(\mathbf{G}\)</strong></p>
+              \[
+              \mathbf{G}
+              =
+              \begin{bmatrix}x_G\\y_G\end{bmatrix}
+              =
+              \begin{bmatrix}
+              -L_1\cos\phi_1+L_7\cos\phi_5\\
+              -L_1\sin\phi_1-L_7\sin\phi_5
+              \end{bmatrix}.
+              \]
+              <p class="math-note">
+                Therefore, the derivative only needs the direct \(\phi_1\) term and the derivative of the final angle \(\phi_5\).
+              </p>
+              <p><strong>Step 2. Differentiate the angle chain</strong></p>
+              \[
+              a_3=\frac{\pi-(\phi_1+\phi_2)}{2},
+              \qquad
+              x_{\mathrm{link}}=\frac{L_2}{L_3}\sin a_3,
+              \qquad
+              a_2=\sin^{-1}(x_{\mathrm{link}}),
+              \]
+              \[
+              \phi_4=a_3+\phi_2-a_2,
+              \qquad
+              a_6=\phi_4+k_{a5},
+              \qquad
+              \phi_5=a_6+k_{163}-\pi-a_7.
+              \]
+              \[
+              \frac{\partial a_3}{\partial\phi_1}
+              =
+              \frac{\partial a_3}{\partial\phi_2}
+              =-
+              \frac{1}{2},
+              \qquad
+              \frac{\partial a_2}{\partial\phi_i}
+              =
+              \frac{\frac{L_2}{L_3}\cos a_3\,\frac{\partial a_3}{\partial\phi_i}}
+              {\sqrt{1-x_{\mathrm{link}}^2}}.
+              \]
+              \[
+              \frac{\partial\phi_5}{\partial\phi_1}
+              =
+              \frac{\partial a_3}{\partial\phi_1}
+              -
+              \frac{\partial a_2}{\partial\phi_1},
+              \qquad
+              \frac{\partial\phi_5}{\partial\phi_2}
+              =
+              \frac{\partial a_3}{\partial\phi_2}
+              +1
+              -
+              \frac{\partial a_2}{\partial\phi_2}.
+              \]
+              <p class="math-note">
+                The \(+1\) in the second equation appears because \(\phi_2\) is directly inside \(\phi_4=a_3+\phi_2-a_2\).
+              </p>
+              <p><strong>Step 3. Form the Jacobian columns</strong></p>
+              \[
+              \frac{\partial\mathbf{G}}{\partial\phi_1}
+              =
+              \begin{bmatrix}
+              L_1\sin\phi_1-L_7\sin\phi_5\,\frac{\partial\phi_5}{\partial\phi_1}\\
+              -L_1\cos\phi_1-L_7\cos\phi_5\,\frac{\partial\phi_5}{\partial\phi_1}
+              \end{bmatrix},
+              \]
+              \[
+              \frac{\partial\mathbf{G}}{\partial\phi_2}
+              =
+              \begin{bmatrix}
+              -L_7\sin\phi_5\,\frac{\partial\phi_5}{\partial\phi_2}\\
+              -L_7\cos\phi_5\,\frac{\partial\phi_5}{\partial\phi_2}
+              \end{bmatrix}.
+              \]
+              <p><strong>Step 4. Substitute one test posture</strong></p>
+              \[
+              \phi_1=62.43^\circ,
+              \qquad
+              \phi_2=53.22^\circ,
+              \qquad
+              \mathbf{G}=
+              \begin{bmatrix}60.074\\-314.332\end{bmatrix}\mathrm{mm}.
+              \]
+              \[
+              a_3=32.175^\circ,
+              \qquad
+              a_2=26.344^\circ,
+              \qquad
+              \phi_4=59.051^\circ,
+              \qquad
+              a_6=75.491^\circ,
+              \qquad
+              \phi_5=37.791^\circ.
+              \]
+              \[
+              \frac{\partial a_2}{\partial\phi_1}
+              =
+              \frac{\partial a_2}{\partial\phi_2}
+              =-0.3935,
+              \qquad
+              \frac{\partial\phi_5}{\partial\phi_1}=-0.1065,
+              \qquad
+              \frac{\partial\phi_5}{\partial\phi_2}=0.8935.
+              \]
+              \[
+              J_{\mathrm{rad}}
+              =
+              \begin{bmatrix}
+              203.759 & -110.573\\
+              -82.521 & -142.595
+              \end{bmatrix}
+              \mathrm{mm/rad}.
+              \]
+              <p class="math-note">
+                The same value is obtained from the central-difference check, so the differentiated FK and numerical Jacobian are consistent.
+              </p>
+              <p><strong>Step 5. Check velocity and acceleration</strong></p>
+              \[
+              \dot{\mathbf{q}}
+              =
+              \begin{bmatrix}0.5\\-0.2\end{bmatrix}\mathrm{rad/s},
+              \qquad
+              \dot{\mathbf{G}}_{J}
+              =
+              \begin{bmatrix}123.994\\-12.742\end{bmatrix}\mathrm{mm/s},
+              \qquad
+              \dot{\mathbf{G}}_{\mathrm{FD}}
+              =
+              \begin{bmatrix}124.002\\-12.715\end{bmatrix}\mathrm{mm/s}.
+              \]
+              \[
+              \ddot{\mathbf{q}}
+              =
+              \begin{bmatrix}0.3\\-0.1\end{bmatrix}\mathrm{rad/s^2},
+              \qquad
+              \ddot{\mathbf{G}}_{J}
+              =
+              \begin{bmatrix}87.953\\43.130\end{bmatrix}\mathrm{mm/s^2},
+              \qquad
+              \ddot{\mathbf{G}}_{\mathrm{FD}}
+              =
+              \begin{bmatrix}87.953\\43.130\end{bmatrix}\mathrm{mm/s^2}.
+              \]
+              <p class="math-note">
+                The velocity and acceleration results are close to the finite-difference checks. This confirms that the Jacobian and
+                \(\dot{J}\dot{\mathbf{q}}\) term are correctly representing the local motion of point \(\mathbf{G}\).
+              </p>
+            </div>
+          </details>
           <h3 class="subsection-title">4.1.3.5 Jacobian Transpose Torque Mapping</h3>
           <p>
             For end-point force $\mathbf{F}=[F_x,F_y]^\top$ (same global frame as FK), the required joint torques are:
@@ -874,7 +1063,7 @@
       const root = document.getElementById("sec-forward-kinematics-tab");
       if (!root) return;
 
-      const tabs = root.querySelectorAll("details.expand-box");
+      const tabs = root.querySelectorAll("details.expand-box, details.inner-example");
       if (!tabs.length) return;
 
       async function typesetMath(target, retries = 60) {
