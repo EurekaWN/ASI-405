@@ -207,6 +207,19 @@
       background: #000;
     }
 
+    .fk-tab-scope .video-figure {
+      margin: 0 0 14px 0;
+      max-width: 720px;
+    }
+
+    .fk-tab-scope .video-figure figcaption {
+      margin-top: -4px;
+      font-size: 0.9rem;
+      line-height: 1.45;
+      color: #2f3740;
+      text-align: center;
+    }
+
     .fk-tab-scope .matlab-link {
       color: #0b3d91;
       text-decoration: underline;
@@ -431,6 +444,13 @@
       <details class="expand-box" id="ik-tab">
         <summary><strong>4.1.2 Inverse Kinematics</strong></summary>
         <div class="expand-body">
+          <figure class="video-figure" data-no-auto-caption="true">
+            <video class="intro-video" controls autoplay muted playsinline loop preload="metadata">
+              <source src="videos_2/IK%20Animation%20Video.mp4" type="video/mp4">
+              Your browser does not support the video tag.
+            </video>
+            <figcaption><strong>Video 4.1:</strong> Inverse kinematics animation showing how the desired end-point position is reconstructed into the corresponding linkage motion.</figcaption>
+          </figure>
           <p>
             This section presents the inverse-kinematic method used to recover the input angles
             $(\phi_1,\phi_2)$ such that the forward-kinematic output
@@ -984,31 +1004,98 @@
             the result is divided by \(1000\) to express torque in N·m.
           </p>
 
-          <h3 class="subsection-title">4.1.3.6 Interpretation of Force-Direction Sweep in Code</h3>
-          <p>
-            The script sweeps unit-force direction
-            $\theta_F\in[-180^\circ,180^\circ]$:
-          </p>
-          \[
-          F_x=\cos\theta_F,\qquad F_y=\sin\theta_F,\qquad \|\mathbf{F}\|_2=1,
-          \]
-          \[
-          \boldsymbol{\tau}(\theta_F)=J^\top\mathbf{F}(\theta_F).
-          \]
-          <p class="math-note">
-            In this test, the force magnitude is fixed and only the direction is changed. This makes it possible to see which Cartesian force
-            directions are easy to produce and which directions require much larger joint torque.
-          </p>
-          <p>
-            It then plots $\|\boldsymbol{\tau}\|$, $|\tau_1|$, and $|\tau_2|$ versus force direction.
-            Peaks indicate poor mechanical leverage directions requiring large motor torque.
-          </p>
-          <p class="math-note">
-            Therefore, large peaks in the plot indicate directions where the mechanism has weak leverage. These are directions in which the motors
-            must work harder to generate the same unit Cartesian force.
-          </p>
+          <details class="inner-example">
+            <summary>4.1.3.5.1 Worked Example: Force to Joint Torque</summary>
+            <div class="expand-body">
+              <p>
+                This example uses the same posture as the previous Jacobian check. The aim is to show how a desired force at point \(\mathbf{G}\)
+                is converted into the torque required at \(\phi_1\) and \(\phi_2\).
+              </p>
+              <p><strong>Step 1. Use the Jacobian at the selected posture</strong></p>
+              \[
+              \phi_1=62.43^\circ,
+              \qquad
+              \phi_2=53.22^\circ,
+              \qquad
+              J_{\mathrm{rad}}
+              =
+              \begin{bmatrix}
+              203.759 & -110.573\\
+              -82.521 & -142.595
+              \end{bmatrix}
+              \mathrm{mm/rad}.
+              \]
+              <p class="math-note">
+                The Jacobian is in \(\mathrm{mm/rad}\), so multiplying \(J_{\mathrm{rad}}^\top\) by force in N gives torque in N·mm.
+              </p>
+              <p><strong>Step 2. Define a test force at point \(\mathbf{G}\)</strong></p>
+              \[
+              \mathbf{F}
+              =
+              \begin{bmatrix}
+              F_x\\F_y
+              \end{bmatrix}
+              =
+              \begin{bmatrix}
+              0\\100
+              \end{bmatrix}
+              \mathrm{N}.
+              \]
+              <p class="math-note">
+                This represents a 100 N force in the positive \(y\)-direction of the FK coordinate frame. The sign follows the same convention used
+                in the kinematic model.
+              </p>
+              <p><strong>Step 3. Apply Jacobian transpose mapping</strong></p>
+              \[
+              \boldsymbol{\tau}_{\mathrm{N\cdot mm}}
+              =
+              J_{\mathrm{rad}}^\top\mathbf{F}
+              =
+              \begin{bmatrix}
+              203.759 & -82.521\\
+              -110.573 & -142.595
+              \end{bmatrix}
+              \begin{bmatrix}
+              0\\100
+              \end{bmatrix}.
+              \]
+              \[
+              \boldsymbol{\tau}_{\mathrm{N\cdot mm}}
+              =
+              \begin{bmatrix}
+              -8252.1\\
+              -14259.5
+              \end{bmatrix}
+              \mathrm{N\cdot mm}.
+              \]
+              <p class="math-note">
+                The first entry is the required torque at \(\phi_1\), and the second entry is the required torque at \(\phi_2\). The negative sign
+                only indicates direction based on the chosen positive rotation convention.
+              </p>
+              <p><strong>Step 4. Convert the torque unit</strong></p>
+              \[
+              \boldsymbol{\tau}_{\mathrm{N\cdot m}}
+              =
+              \frac{1}{1000}
+              \begin{bmatrix}
+              -8252.1\\
+              -14259.5
+              \end{bmatrix}
+              =
+              \begin{bmatrix}
+              -8.252\\
+              -14.260
+              \end{bmatrix}
+              \mathrm{N\cdot m}.
+              \]
+              <p class="math-note">
+                For this force direction, the second joint requires a larger torque magnitude. This shows how the same Cartesian force can load the
+                two joint motors differently depending on the linkage posture.
+              </p>
+            </div>
+          </details>
 
-          <h3 class="subsection-title">4.1.3.7 Singularity and Manipulability</h3>
+          <h3 class="subsection-title">4.1.3.6 Singularity and Manipulability</h3>
           <p>
             The velocity ellipse is generated by
             \[
@@ -1028,7 +1115,7 @@
             a singular configuration, where motion capability becomes poor in one direction and force demand can rise sharply.
           </p>
 
-          <h3 class="subsection-title">4.1.3.8 Control Relevance</h3>
+          <h3 class="subsection-title">4.1.3.7 Control Relevance</h3>
           <p>
             In virtual-model or force-based control, a desired Cartesian force
             $\mathbf{F}_{\mathrm{des}}$ is first generated from task objectives

@@ -773,6 +773,39 @@ p.sub {
       content: "▼";
     }
 
+    details.inner-example {
+      margin: 14px 0 4px 0;
+      padding: 10px 12px;
+      border-radius: 7px;
+      background: rgba(255, 255, 255, 0.58);
+      border: 1px solid rgba(140, 160, 220, 0.35);
+      cursor: pointer;
+    }
+
+    details.inner-example summary {
+      cursor: pointer;
+      list-style: none;
+      margin: 0 0 4px 0;
+      padding: 0;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      font-size: 0.98rem;
+    }
+
+    details.inner-example summary::-webkit-details-marker { display: none; }
+    details.inner-example summary::marker { content: ""; }
+
+    details.inner-example summary::before {
+      content: "▶";
+      font-size: 10pt;
+      margin-right: 6px;
+    }
+
+    details.inner-example[open] summary::before {
+      content: "▼";
+    }
+
     /* Remove divider line inside expandables */
     details.expand-box .section-title::before,
     details.expand-box .subsection-title::before,
@@ -1761,6 +1794,18 @@ p.sub {
           box.open = false;
         }
 
+        box.addEventListener("toggle", () => {
+          if (box.open) {
+            if (window.MathJax && typeof window.MathJax.typesetPromise === "function") {
+              window.MathJax.typesetPromise([box]).catch(() => {});
+            } else {
+              typesetAllMathWithRetry(20);
+            }
+          }
+        });
+      });
+
+      document.querySelectorAll("details.inner-example").forEach(box => {
         box.addEventListener("toggle", () => {
           if (box.open) {
             if (window.MathJax && typeof window.MathJax.typesetPromise === "function") {

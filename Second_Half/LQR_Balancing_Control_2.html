@@ -95,6 +95,38 @@
       padding-top: 8px;
     }
 
+    details.inner-example {
+      margin: 14px 0 4px 0;
+      padding: 10px 12px;
+      border-radius: 7px;
+      background: rgba(255, 255, 255, 0.58);
+      border: 1px solid rgba(140, 160, 220, 0.35);
+    }
+
+    details.inner-example summary {
+      cursor: pointer;
+      list-style: none;
+      display: flex;
+      align-items: center;
+      font-size: 0.98rem;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    details.inner-example summary::-webkit-details-marker {
+      display: none;
+    }
+
+    details.inner-example summary::before {
+      content: "▶";
+      font-size: 10pt;
+      margin-right: 6px;
+    }
+
+    details.inner-example[open] summary::before {
+      content: "▼";
+    }
+
     .tab-body mjx-container[display="true"] {
       display: block;
       overflow-x: auto;
@@ -459,7 +491,154 @@
             b_{51}&b_{52}\\
             b_{61}&b_{62}
             \end{bmatrix}.
+            \]
           </p>
+
+          <details class="inner-example">
+            <summary>6.2.3.1 Worked Example: Getting \(A\) and \(B\)</summary>
+            <div class="tab-body">
+              <p>
+                The matrices \(A\) and \(B\) are obtained by differentiating the nonlinear reduced model around the upright condition. The
+                calculation is based on the state vector
+                \[
+                \mathbf{x}=[\theta,\dot{\theta},x,\dot{x},\phi,\dot{\phi}]^T,
+                \qquad
+                \mathbf{u}=[T,\;T_p]^T.
+                \]
+              </p>
+              <p><strong>Step 1. Define the simplified COM positions</strong></p>
+              <p>
+                The leg COM and body COM positions are first written using the simplified inverted-pendulum geometry:
+                \[
+                \mathbf{r}_{leg}
+                =
+                \begin{bmatrix}
+                x+L\sin\theta\\
+                -L\cos\theta
+                \end{bmatrix},
+                \qquad
+                \mathbf{r}_{body}
+                =
+                \begin{bmatrix}
+                x+(L+L_M)\sin\theta+l\sin\phi\\
+                -(L+L_M)\cos\theta+l\cos\phi
+                \end{bmatrix}.
+                \]
+                These two position vectors are used to calculate the leg and body velocities, then the kinetic energy and potential energy of the
+                reduced system.
+              </p>
+              <p><strong>Step 2. Write the acceleration model</strong></p>
+              <p>
+                The nonlinear dynamics are first arranged in the form
+                \[
+                \mathbf{M}(\mathbf{q})\ddot{\mathbf{q}}+\mathbf{h}(\mathbf{q},\dot{\mathbf{q}})=\mathbf{Q},
+                \qquad
+                \mathbf{q}=[x,\theta,\phi]^T.
+                \]
+                Therefore,
+                \[
+                \ddot{\mathbf{q}}
+                =
+                \mathbf{M}(\mathbf{q})^{-1}
+                \left(\mathbf{Q}-\mathbf{h}(\mathbf{q},\dot{\mathbf{q}})\right).
+                \]
+                This is the source of the acceleration terms:
+                \[
+                \ddot{x},
+                \qquad
+                \ddot{\theta},
+                \qquad
+                \ddot{\phi}.
+                \]
+              </p>
+              <p><strong>Step 3. Substitute the upright operating point</strong></p>
+              <p>
+                At the upright point, \(\theta=0\), \(\phi=0\), and all velocities are zero. The mass matrix becomes
+                \[
+                \mathbf{M}_0
+                =
+                \begin{bmatrix}
+                15.1968 & 2.6266 & 0.4065\\
+                2.6266 & 0.6114 & 0.0992\\
+                0.4065 & 0.0992 & 0.1532
+                \end{bmatrix}.
+                \]
+                The two main gravity-gradient terms at this point are
+                \[
+                k_\theta=g\left(m_pL+M(L+L_M)\right)=25.7671,
+                \qquad
+                k_\phi=Mgl=3.9874.
+                \]
+              </p>
+              <p><strong>Step 4. Separate state effect and input effect</strong></p>
+              <p>
+                Near upright, the acceleration part can be written approximately as
+                \[
+                \ddot{\mathbf{q}}
+                =
+                \mathbf{M}_0^{-1}
+                \left(
+                \begin{bmatrix}
+                T/R\\-T_p\\T_p
+                \end{bmatrix}
+                -
+                \begin{bmatrix}
+                0\\k_\theta\theta\\-k_\phi\phi
+                \end{bmatrix}
+                \right).
+                \]
+                This equation shows the split clearly. The \(\theta\) and \(\phi\) terms contribute to \(A\), while \(T\) and \(T_p\) contribute
+                to \(B\).
+              </p>
+              <p><strong>Step 5. Use the Jacobian linearization command</strong></p>
+              <p>
+                In the symbolic calculation, the following operations are applied:
+                \[
+                A=\left.\frac{\partial f}{\partial\mathbf{x}}\right|_{\mathbf{x}=0,\mathbf{u}=0},
+                \qquad
+                B=\left.\frac{\partial f}{\partial\mathbf{u}}\right|_{\mathbf{x}=0,\mathbf{u}=0}.
+                \]
+                This is equivalent to checking how each state and input changes
+                \[
+                f(\mathbf{x},\mathbf{u})
+                =
+                [\dot{\theta},\ddot{\theta},\dot{x},\ddot{x},\dot{\phi},\ddot{\phi}]^T
+                \]
+                at the upright point.
+              </p>
+              <p><strong>Step 6. Final matrices used for LQR</strong></p>
+              <p>
+                With the current model parameters, the resulting linearized matrices are
+                \[
+                A=
+                \begin{bmatrix}
+                0 & 1 & 0 & 0 & 0 & 0\\
+                -170.052 & 0 & 0 & 0 & -5.351 & 0\\
+                0 & 0 & 0 & 1 & 0 & 0\\
+                28.467 & 0 & 0 & 0 & 0.146 & 0\\
+                0 & 0 & 0 & 0 & 0 & 1\\
+                34.578 & 0 & 0 & 0 & 29.104 & 0
+                \end{bmatrix},
+                \]
+                \[
+                B=
+                \begin{bmatrix}
+                0 & 0\\
+                -6.655 & -7.942\\
+                0 & 0\\
+                1.541 & 1.141\\
+                0 & 0\\
+                0.221 & 8.641
+                \end{bmatrix}.
+                \]
+              </p>
+              <p>
+                The \(A\) matrix represents how the robot moves naturally near upright, especially how \(\theta\) and \(\phi\) create acceleration.
+                The \(B\) matrix represents how the two control inputs \(T\) and \(T_p\) affect the same acceleration states. These two matrices are
+                then used directly for the LQR gain calculation.
+              </p>
+            </div>
+          </details>
 
           <p><strong>6.2.4 Step 4: Choose weighting matrices \(Q,R\)</strong></p>
           <p>
@@ -678,7 +857,61 @@
             <li>Optional compensation terms (for implementation-specific offset/friction handling) if enabled.</li>
           </ul>
 
-          <p><strong>6.4.3 Final Torque Composition (Before Motor Mapping)</strong></p>
+          <p><strong>6.4.3 Gain-Scheduled LQR for Different Leg Lengths</strong></p>
+          <p>
+            A practical way to combine leg-length control and LQR balancing is to use different LQR gains for different nominal leg lengths. This is
+            useful because the robot dynamics change when the wheel centre moves up or down. A longer or shorter leg changes the effective pendulum
+            length, centre of mass location, inertia distribution, and actuator leverage. Therefore, one fixed \(K\)-matrix is only most accurate near
+            the leg length where that \(K\) was designed.
+          </p>
+          <p>
+            The idea is to treat each leg length as a different operating point. For selected leg lengths
+            \[
+            l_1,\;l_2,\;\ldots,\;l_n,
+            \]
+            the model is linearized again:
+            \[
+            A_i=A(l_i),\qquad B_i=B(l_i).
+            \]
+            A corresponding LQR gain is then calculated for each operating point:
+            \[
+            K_i=\mathrm{lqr}(A_i,B_i,Q_i,R_i).
+            \]
+          </p>
+          <p>
+            During runtime, the current leg-length command or measured wheel-centre height is used to select the nearest gain, or interpolate between
+            two neighbouring gains:
+            \[
+            K(l)\approx (1-\alpha)K_i+\alpha K_{i+1}.
+            \]
+            The balance command is then calculated using the gain that matches the current leg configuration:
+            \[
+            \mathbf{u}_{\mathrm{LQR}}=-K(l)\mathbf{x}.
+            \]
+          </p>
+          <p>
+            This explains why leg-length PD and LQR do not have to fight each other. The leg-length PD loop mainly controls the desired wheel-centre
+            height or support extension, while the LQR loop balances the body around that current height. In other words, the leg-length controller
+            changes the operating point, and the scheduled LQR gain controls balance at that operating point.
+          </p>
+          <p>
+            The command flow can be summarized as
+            \[
+            l_{\mathrm{des}}
+            \rightarrow
+            \tau_{\mathrm{support}},
+            \qquad
+            l_{\mathrm{des}}\ \text{or}\ l_{\mathrm{meas}}
+            \rightarrow
+            K(l)
+            \rightarrow
+            \tau_{\mathrm{LQR}}.
+            \]
+            The support command and balance command are then combined in torque sequencing. This keeps the two objectives separated: the PD loop
+            handles leg length, while LQR uses a gain that is valid for that leg length.
+          </p>
+
+          <p><strong>6.4.4 Final Torque Composition (Before Motor Mapping)</strong></p>
           <p>
             In compact form, the generalized command is assembled as
             \[
@@ -691,7 +924,7 @@
             where \(\tau_{\mathrm{support}}\) is the leg-length support contribution and \(\tau_{\mathrm{comp}}\) represents optional correction terms.
           </p>
 
-          <p><strong>6.4.4 Mapping to Motor Commands</strong></p>
+          <p><strong>6.4.5 Mapping to Motor Commands</strong></p>
           <ol>
             <li>Acquire and preprocess states \( \mathbf{x}=[\theta,\dot{\theta},x,\dot{x},\phi,\dot{\phi}]^T \).</li>
             <li>Compute \(\tau_{\mathrm{LQR}}\), then add \(\tau_{\mathrm{VMC}}\), support, and compensation terms to form \(\tau_{\mathrm{raw}}\).</li>
@@ -701,7 +934,7 @@
             <li>Publish final motor torque/current command to drivers.</li>
           </ol>
 
-          <p><strong>6.4.5 Verification Reference</strong></p>
+          <p><strong>6.4.6 Verification Reference</strong></p>
           <p>
             Verification scripts used in this torque-sequencing section are
             <a class="matlab-link" data-file="test_lqr_linear.m">test_lqr_linear.m</a>
@@ -727,6 +960,28 @@
     (function () {
       const root = document.getElementById("sec-6-lqr-balancing-control");
       if (!root) return;
+
+      async function typesetMath(target, retries = 60) {
+        if (!(window.MathJax && typeof window.MathJax.typesetPromise === "function")) {
+          if (retries > 0) setTimeout(() => typesetMath(target, retries - 1), 250);
+          return;
+        }
+        try {
+          if (window.MathJax.startup && window.MathJax.startup.promise) {
+            await window.MathJax.startup.promise;
+          }
+          await window.MathJax.typesetPromise(target ? [target] : [root]);
+        } catch (err) {
+          console.warn("MathJax typeset failed:", err);
+        }
+      }
+
+      root.querySelectorAll("details.expand-box, details.inner-example").forEach((tab) => {
+        tab.addEventListener("toggle", () => {
+          if (tab.open) typesetMath(tab);
+        });
+      });
+      typesetMath(root);
 
       const modal = document.getElementById("code-modal-lqr");
       const modalTitle = document.getElementById("code-modal-title-lqr");
